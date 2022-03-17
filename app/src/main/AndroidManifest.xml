@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.muedsa.bilibililivetv">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:logo="@mipmap/ic_launcher"
+        android:banner="@mipmap/ic_banner"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BilibiliLiveTV">
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:logo="@mipmap/ic_launcher"
+            android:banner="@mipmap/ic_banner"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.DetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PlaybackActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BrowseErrorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.SearchActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>

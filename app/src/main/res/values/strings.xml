@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">BilibiliLiveTV</string>
+    <string name="browse_title">Bilibili Live</string>
+    <string name="related_movies">相关推荐</string>
+    <string name="clear_history">清除历史记录</string>
+    <string name="error_fragment">Error Fragment</string>
+    <string name="personal_settings">Personal Settings</string>
+    <string name="watch_trailer_1">播放</string>
+    <string name="watch_trailer_2">PLAY</string>
+    <string name="room_live_status">直播状态</string>
+    <string name="room_living">直播中</string>
+    <string name="room_no_live">未开播</string>
+    <string name="room_online_num">热度</string>
+    <string name="liveRoom">liveRoom</string>
+    <string name="live_play_failure">主播未开播或获取直播地址失败</string>
+    <string name="live_room_info_failure">获取直播间信息失败</string>
+    <!-- Error messages -->
+    <string name="error_fragment_message">An error occurred</string>
+    <string name="dismiss_error">Dismiss</string>
+    <string name="search_input_hint">请输入房间号</string>
+</resources>
