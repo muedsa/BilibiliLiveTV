@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/BilibiliLiveApiClient" />
             <option value="$PROJECT_DIR$/HttpJsonClient" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/repository" />
+            <option value="$PROJECT_DIR$/repository/DanmakuFlameMaster" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

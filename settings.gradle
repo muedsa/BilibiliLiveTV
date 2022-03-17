@@ -16,3 +16,4 @@ rootProject.name = "BilibiliLiveTV"
 include ':app'
 include ':HttpJsonClient'
 include ':BilibiliLiveApiClient'
+include ':repository:DanmakuFlameMaster'

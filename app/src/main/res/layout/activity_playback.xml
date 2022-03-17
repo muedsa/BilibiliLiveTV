@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_playback"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.DetailsActivity"
+    tools:deviceIds="tv" >
+
+    <LinearLayout
+        android:id="@+id/playback_fragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" />
+
+    <master.flame.danmaku.ui.widget.DanmakuView
+        android:id="@+id/sv_danmaku"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+</FrameLayout>

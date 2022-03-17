@@ -5,6 +5,8 @@ import android.view.WindowManager;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.muedsa.bilibililivetv.R;
+
 /**
  * Loads {@link PlaybackVideoFragment}.
  */
@@ -13,10 +15,11 @@ public class PlaybackActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_playback);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(android.R.id.content, new PlaybackVideoFragment())
+                    .replace(R.id.playback_fragment, new PlaybackVideoFragment())
                     .commit();
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/Sdk/platforms/android-28/data/res/layout/auto_complete_list.xml" value="0.24166666666666667" />
+        <entry key="..\:/Android/Sdk/platforms/android-28/data/res/layout/list_content.xml" value="0.24166666666666667" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/drawable/bilibili_logo.xml" value="0.1685" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/drawable/default_background.xml" value="0.272" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/drawable/ic_banner_foreground.xml" value="0.178" />
@@ -10,6 +12,8 @@
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/activity_details.xml" value="0.1" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/activity_main.xml" value="0.2223731884057971" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/activity_main2.xml" value="0.15520833333333334" />
+        <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/activity_playback.xml" value="0.1" />
+        <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/activity_playback_video.xml" value="0.24166666666666667" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/activity_search.xml" value="0.1" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/fragment_blank.xml" value="0.15" />
         <entry key="..\:/mine/AndroidStudioProjects/BilibiliLiveTV/app/src/main/res/layout/fragment_first.xml" value="0.25407608695652173" />
