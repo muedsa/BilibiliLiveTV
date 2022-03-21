@@ -2,14 +2,7 @@ package com.muedsa.bilibililivetv.ui;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ImageSpan;
 import android.widget.Toast;
 
 import androidx.leanback.app.VideoSupportFragment;
@@ -23,31 +16,22 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.danmuku.BiliDanmukuParser;
 import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.task.TaskRunner;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 
+import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.controller.IDanmakuView;
-import master.flame.danmaku.danmaku.loader.ILoader;
-import master.flame.danmaku.danmaku.loader.IllegalDataException;
-import master.flame.danmaku.danmaku.loader.android.DanmakuLoaderFactory;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.DanmakuTimer;
+import master.flame.danmaku.danmaku.model.IDanmakus;
 import master.flame.danmaku.danmaku.model.IDisplayer;
-import master.flame.danmaku.danmaku.model.android.BaseCacheStuffer;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
-import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
-import master.flame.danmaku.danmaku.parser.IDataSource;
-import master.flame.danmaku.danmaku.util.IOUtils;
 
 /**
  * Handles video playback with media controls.
@@ -60,12 +44,19 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     private LiveRoom liveRoom;
     private IDanmakuView danmakuView;
     private DanmakuContext danmakuContext;
+    private BaseDanmakuParser danmakuParser;
+    private TaskRunner taskRunner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         liveRoom = (LiveRoom) getActivity().getIntent().getSerializableExtra(DetailsActivity.LIVE_ROOM);
+        taskRunner = TaskRunner.getInstance();
+        initDanmaku();
+        initPlayer();
+    }
 
+    private void initDanmaku(){
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
         maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
@@ -76,74 +67,73 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
 
         danmakuView = getActivity().findViewById(R.id.sv_danmaku);
 
-        danmakuContext= DanmakuContext.create();
-        danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false).setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
-                //.setCacheStuffer(new SpannedCacheStuffer(), mCacheStufferAdapter) // 图文混排使用SpannedCacheStuffer
-//        .setCacheStuffer(new BackgroundCacheStuffer())  // 绘制背景使用BackgroundCacheStuffer
+        danmakuContext = DanmakuContext.create();
+        danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
+                .setDuplicateMergingEnabled(false)
+                .setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
                 .setMaximumLines(maxLinesPair)
                 .preventOverlapping(overlappingEnablePair).setDanmakuMargin(40);
 
-        danmakuView.prepare(new BiliDanmukuParser(), danmakuContext);
-        danmakuView.showFPS(true);
-
-        danmakuView.setCallback(new master.flame.danmaku.controller.DrawHandler.Callback() {
+        danmakuParser = new BaseDanmakuParser() {
             @Override
-            public void updateTimer(DanmakuTimer timer) {
+            protected IDanmakus parse() {
+                return new Danmakus();
+            }
+        };
+        danmakuView.prepare(danmakuParser, danmakuContext);
+        danmakuView.showFPS(true);
+        danmakuView.enableDanmakuDrawingCache(true);
+
+        danmakuView.setCallback(new DrawHandler.Callback() {
+            @Override
+            public void prepared() {
+                danmakuView.start();
+                taskRunner.executeAsync(() -> {
+                    Random random = new Random();
+                    while(true){
+                        try {
+                            Thread.sleep(random.nextInt(10) * 200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if(danmakuView.isPrepared()){
+                            addDanmaku("这是一条弹幕");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void updateTimer(DanmakuTimer danmakuTimer) {
+            }
+
+            @Override
+            public void danmakuShown(BaseDanmaku baseDanmaku) {
             }
 
             @Override
             public void drawingFinished() {
-
-            }
-
-            @Override
-            public void danmakuShown(BaseDanmaku danmaku) {
-//                    Log.d("DFM", "danmakuShown(): text=" + danmaku.text);
-            }
-
-            @Override
-            public void prepared() {
-                danmakuView.start();
             }
         });
-
-        initPlayer();
     }
 
-    private BaseDanmakuParser createParser(InputStream stream) {
+    private void addDanmaku(String content){
+        if(danmakuContext != null){
+            BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
+            if (danmaku != null && danmakuView != null && danmakuParser != null) {
+                danmaku.text = content + System.nanoTime();
+                danmaku.padding = 5;
+                danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
+                danmaku.isLive = true;
+                danmaku.setTime(danmakuView.getCurrentTime() + 1200);
+                danmaku.textSize = 25f * (danmakuParser.getDisplayer().getDensity() - 0.6f);
+                danmaku.textColor = Color.WHITE;
+                danmaku.textShadowColor = Color.BLACK;
+                danmakuView.addDanmaku(danmaku);
+            }
 
-        if (stream == null) {
-            return new BaseDanmakuParser() {
-
-                @Override
-                protected Danmakus parse() {
-                    return new Danmakus();
-                }
-            };
         }
-
-        ILoader loader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
-
-        try {
-            loader.load(stream);
-        } catch (IllegalDataException e) {
-            e.printStackTrace();
-        }
-        BaseDanmakuParser parser = new BiliDanmukuParser();
-        IDataSource<?> dataSource = loader.getDataSource();
-        parser.load(dataSource);
-        return parser;
-
     }
-
-
-
-
-
-
-
-
-
 
 
     private void initPlayer(){
@@ -189,22 +179,28 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         if (mTransportControlGlue != null) {
             mTransportControlGlue.pause();
         }
+        if(danmakuView != null){
+            danmakuView.pause();
+        }
     }
 
-
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
 
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayer();
-    }
-
-    private void releasePlayer() {
         if (exoPlayer != null) {
             exoPlayer.release();
             exoPlayer = null;
             playerAdapter = null;
             mTransportControlGlue = null;
+        }
+        if(danmakuView != null){
+            danmakuView.release();
+            danmakuView = null;
         }
     }
 }

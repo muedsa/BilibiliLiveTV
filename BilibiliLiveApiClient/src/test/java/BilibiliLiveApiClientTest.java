@@ -1,4 +1,5 @@
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
+import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
@@ -57,4 +58,11 @@ public class BilibiliLiveApiClientTest {
         String message = String.format("roomId:%d, title:%s", roomInfo.getRoomId(), roomInfo.getTitle());
         logger.info(message);
     }
+
+    @Test
+    public void wsTest() throws InterruptedException {
+        ChatBroadcastWsClient client = new ChatBroadcastWsClient();
+        client.start();
+    }
+
 }
