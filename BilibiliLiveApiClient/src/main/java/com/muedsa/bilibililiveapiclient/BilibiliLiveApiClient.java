@@ -3,6 +3,7 @@ package com.muedsa.bilibililiveapiclient;
 import com.alibaba.fastjson.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
+import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
 import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
@@ -38,4 +39,10 @@ public class BilibiliLiveApiClient {
                 params,
                 new TypeReference<BilibiliResponse<RoomInfo>>(){});
     }
+
+    public BilibiliResponse<DanmuInfo> getDanmuInfo(Long roomId) throws IOException {
+        String url = ApiUrlContainer.fillUrl(ApiUrlContainer.GET_DANMU_INFO, roomId);
+        return httpJsonClient.GetJson(url, new TypeReference<BilibiliResponse<DanmuInfo>>(){});
+    }
+
 }
