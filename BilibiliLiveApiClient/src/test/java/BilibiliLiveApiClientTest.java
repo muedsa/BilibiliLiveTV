@@ -84,7 +84,12 @@ public class BilibiliLiveApiClientTest {
 
     @Test
     public void wsTest() throws IOException, InterruptedException {
-        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId);
+        BilibiliResponse<DanmuInfo> response = client.getDanmuInfo(roomId);
+        Assertions.assertEquals(0L, response.getCode());
+        DanmuInfo danmuInfo = response.getData();
+        Assertions.assertNotNull(danmuInfo);
+        Assertions.assertNotNull(danmuInfo.getToken());
+        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, danmuInfo.getToken());
         client.start();
         Assertions.assertTrue(client.isOpen());
     }

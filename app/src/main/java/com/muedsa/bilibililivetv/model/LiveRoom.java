@@ -20,6 +20,7 @@ public class LiveRoom implements Serializable {
     private String playUrl;
     private int liveStatus;
     private int onlineNum;
+    private String danmuWsToken;
 
     public long getId() {
         return id;
@@ -115,5 +116,13 @@ public class LiveRoom implements Serializable {
             liveStatusDesc = resources.getString(R.string.room_living);
         }
         return liveStatusDesc;
+    }
+
+    public String getDanmuWsToken() {
+        return danmuWsToken;
+    }
+
+    public void setDanmuWsToken(String danmuWsToken) {
+        this.danmuWsToken = danmuWsToken;
     }
 }

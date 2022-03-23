@@ -34,7 +34,7 @@ public class ChatBroadcastWsClient {
 
     private CallBack callBack;
 
-    public ChatBroadcastWsClient(long roomId){
+    public ChatBroadcastWsClient(long roomId, String token){
         this.roomId = roomId;
         webSocketClient = new WebSocketClient(URI.create(ApiUrlContainer.WS_CHAT), new Draft_6455()) {
             @Override
@@ -53,8 +53,12 @@ public class ChatBroadcastWsClient {
                                 String cmd = jsonObject.getString("cmd");
                                 if(ChatBroadcast.CMD_DANMU_MSG.equals(cmd)){
                                     JSONArray infoJsonArray = jsonObject.getJSONArray("info");
-                                    String content = infoJsonArray.getString(1);
-                                    callBack.onReceiveDanmu(content);
+                                    JSONArray propertyJsonArray = infoJsonArray.getJSONArray(0);
+                                    float textSize = propertyJsonArray.getFloatValue(2);
+                                    int textColor = (int) (0x00000000ff000000 | propertyJsonArray.getLongValue(3));
+                                    boolean textShadowTransparent = "true".equalsIgnoreCase(propertyJsonArray.getString(11));
+                                    String text = infoJsonArray.getString(1);
+                                    callBack.onReceiveDanmu(text, textSize, textColor, textShadowTransparent);
                                 }
                             }
                             catch (Exception e){
@@ -84,27 +88,34 @@ public class ChatBroadcastWsClient {
         };
     }
 
-    public void start() throws IOException, InterruptedException  {
-        BilibiliLiveApiClient bilibiliLiveApiClient = new BilibiliLiveApiClient();
-        BilibiliResponse<DanmuInfo> danmuInfoResponse = bilibiliLiveApiClient.getDanmuInfo(roomId);
-        token = danmuInfoResponse.getData().getToken();
-        webSocketClient.connectBlocking();
-        String joinRoomJson = String.format(Locale.CHINA, ChatBroadcastPacketUtil.ROOM_AUTH_JSON, roomId, token);
-        webSocketClient.send(ChatBroadcastPacketUtil.encode(joinRoomJson, 1, ChatBroadcastPacketUtil.OPERATION_AUTH));
-        heartTimer = new Timer();
-        heartTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                webSocketClient.send(ChatBroadcastPacketUtil.HEART_PACKET);
-            }
-        }, 1000, 30000);
+    public void start() throws InterruptedException  {
+        if(!webSocketClient.isOpen()){
+            webSocketClient.connectBlocking();
+            String joinRoomJson = String.format(Locale.CHINA, ChatBroadcastPacketUtil.ROOM_AUTH_JSON, roomId, token);
+            webSocketClient.send(ChatBroadcastPacketUtil.encode(joinRoomJson, 1, ChatBroadcastPacketUtil.OPERATION_AUTH));
+        }
+        if(heartTimer == null){
+            heartTimer = new Timer();
+            heartTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if(webSocketClient.isOpen()){
+                        webSocketClient.send(ChatBroadcastPacketUtil.HEART_PACKET);
+                    }
+                }
+            }, 1000, 30000);
+        }
     }
 
     public void close(){
-        heartTimer.cancel();
-        heartTimer = null;
-        webSocketClient.close();
-        webSocketClient = null;
+        if(heartTimer != null){
+            heartTimer.cancel();
+            heartTimer = null;
+        }
+        if(webSocketClient != null){
+            webSocketClient.close();
+            webSocketClient = null;
+        }
     }
 
     public boolean isClosed(){
@@ -124,18 +135,23 @@ public class ChatBroadcastWsClient {
 //
 //        void onStart();
 
-        void onReceiveDanmu(String content);
+        void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent);
 
         void onClose();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        ChatBroadcastWsClient client = new ChatBroadcastWsClient(1440094);
+        long roomId = 545068;
+        BilibiliLiveApiClient httpClient = new BilibiliLiveApiClient();
+        BilibiliResponse<DanmuInfo> response = httpClient.getDanmuInfo(roomId);
+        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, response.getData().getToken());
         client.start();
         client.setCallBack(new CallBack() {
+
             @Override
-            public void onReceiveDanmu(String content) {
-                System.out.println(content);
+            public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent) {
+                String message = String.format(Locale.CHINA, "text:%s, textSize:%f, textColor:%d, textShadowTransparent:%b", text, textSize, textColor, textShadowTransparent);
+                System.out.println(message);
             }
 
             @Override

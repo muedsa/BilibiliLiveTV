@@ -15,11 +15,15 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
+import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
+import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
+import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
@@ -59,7 +63,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     private void initDanmaku(){
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 9); // 滚动弹幕最大显示9行
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
@@ -72,7 +76,9 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                 .setDuplicateMergingEnabled(false)
                 .setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
                 .setMaximumLines(maxLinesPair)
-                .preventOverlapping(overlappingEnablePair).setDanmakuMargin(40);
+                .preventOverlapping(overlappingEnablePair)
+                .setDanmakuTransparency(0.85f)
+                .setDanmakuMargin(40);
 
         danmakuParser = new BaseDanmakuParser() {
             @Override
@@ -106,34 +112,37 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     }
 
     private void initChatBroadcast(){
-        chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId());
+        chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId(), liveRoom.getDanmuWsToken());
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
-            public void onReceiveDanmu(String content) {
-                addDanmaku(content);
+            public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent) {
+                addDanmaku(text, textSize, textColor, textShadowTransparent);
             }
 
             @Override
             public void onClose() {
                 if(exoPlayer.isPlaying()){
-                    try{
-                        chatBroadcastWsClient.start();
-                    }catch (Exception error){
-                        Toast.makeText(getActivity(), "重连弹幕失败: " + error.getLocalizedMessage(), Toast.LENGTH_LONG)
-                                .show();
-                    }
+                    startChatBroadcastWsClient();
                 }
             }
         });
-        try{
-            chatBroadcastWsClient.start();
-        }catch (Exception error){
-            Toast.makeText(getActivity(), "连接弹幕服务器失败: " + error.getLocalizedMessage(), Toast.LENGTH_LONG)
-                    .show();
+        startChatBroadcastWsClient();
+    }
+
+    private void startChatBroadcastWsClient(){
+        if(chatBroadcastWsClient != null){
+            try {
+                chatBroadcastWsClient.start();
+            }
+            catch (Exception error){
+                error.printStackTrace();
+                Toast.makeText(getActivity(), "连接弹幕服务器失败: " + error.getMessage(), Toast.LENGTH_LONG)
+                        .show();
+            }
         }
     }
 
-    private void addDanmaku(String content){
+    private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent){
         if(danmakuContext != null){
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
             if (danmaku != null && danmakuView != null && danmakuParser != null) {
@@ -141,10 +150,10 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                 danmaku.padding = 5;
                 danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
                 danmaku.isLive = true;
-                danmaku.setTime(danmakuView.getCurrentTime() + 1200);
-                danmaku.textSize = 25f * (danmakuParser.getDisplayer().getDensity() - 0.6f);
-                danmaku.textColor = Color.WHITE;
-                danmaku.textShadowColor = Color.BLACK;
+                danmaku.setTime(danmakuView.getCurrentTime() + 500);
+                danmaku.textSize = textSize * (danmakuParser.getDisplayer().getDensity() - 0.6f);
+                danmaku.textColor = textColor;
+                danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
                 danmakuView.addDanmaku(danmaku);
             }
 
@@ -167,7 +176,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             @Override
             public void onPlayerError(PlaybackException error) {
                 Player.Listener.super.onPlayerError(error);
-                Toast.makeText(getActivity(), error.getLocalizedMessage(), Toast.LENGTH_LONG)
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_LONG)
                         .show();
             }
         });
@@ -192,18 +201,35 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mTransportControlGlue != null) {
+        if (mTransportControlGlue != null && mTransportControlGlue.isPlaying()) {
             mTransportControlGlue.pause();
         }
-        if(danmakuView != null){
+        if(danmakuView != null && !danmakuView.isPaused()){
             danmakuView.pause();
         }
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(mTransportControlGlue != null){
+            if(mTransportControlGlue.isPrepared() && !mTransportControlGlue.isPlaying()){
+                mTransportControlGlue.play();
+            }
+        }else{
+            initPlayer();
+        }
+        if(mTransportControlGlue != null && mTransportControlGlue.isPrepared() && !mTransportControlGlue.isPlaying()){
+            mTransportControlGlue.play();
+        }
+        if (danmakuView != null) {
+            if(danmakuView.isPrepared() && danmakuView.isPaused()){
+                danmakuView.resume();
+            }
+        }else{
+            initDanmaku();
+        }
+    }
 
     @Override
     public void onStop() {

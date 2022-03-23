@@ -34,6 +34,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
+import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
 import com.muedsa.bilibililiveapiclient.model.RoomInfo;
@@ -80,8 +81,10 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
         mDetailsBackground = new DetailsSupportFragmentBackgroundController(this);
 
-        mSelectedLiveRoom =
-                (LiveRoom) getActivity().getIntent().getSerializableExtra(DetailsActivity.LIVE_ROOM);
+        mSelectedLiveRoom = (LiveRoom) getActivity().getIntent()
+                .getSerializableExtra(DetailsActivity.LIVE_ROOM);
+        mSelectedLiveRoom.setLiveStatus(0);
+        mSelectedLiveRoom.setOnlineNum(0);
 
         taskRunner = TaskRunner.getInstance();
         bilibiliLiveApiClient = new BilibiliLiveApiClient();
@@ -135,9 +138,32 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                                 .show();
                     }
                 });
+        taskRunner.executeAsync(
+                () ->{
+                    String errorMsg = getResources().getString(R.string.live_danmu_ws_token_failure);
+                    BilibiliResponse<DanmuInfo> response = bilibiliLiveApiClient.getDanmuInfo(mSelectedLiveRoom.getId());
+                    if(response != null){
+                        if(response.getCode() == 0){
+                            if(response.getData() != null){
+                                mSelectedLiveRoom.setDanmuWsToken(response.getData().getToken());
+                                errorMsg = null;
+                            }
+                        }else if(response.getMessage() != null){
+                            errorMsg = response.getMessage();
+                        }
+                    }
+                    return errorMsg;
+                },
+                errorMsg -> {
+                    if(errorMsg != null){
+                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
     }
 
     private void initializePlayUrl(){
+        playAction.setLabel2(getResources().getString(R.string.watch_trailer_loading));
         taskRunner.executeAsync(
                 () -> {
                     String errorMsg = getResources().getString(R.string.live_play_failure);
@@ -156,7 +182,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     return errorMsg;
                 },
                 errorMsg -> {
-                    if(errorMsg != null){
+                    if(errorMsg == null){
+                        playAction.setLabel2(getResources().getString(R.string.watch_trailer_play));
+                    }else{
                         Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG)
                                 .show();
                     }
@@ -207,7 +235,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         updateCardImage();
 
         ArrayObjectAdapter actionAdapter = new ArrayObjectAdapter();
-        playAction = new Action(ACTION_WATCH_TRAILER, getResources().getString(R.string.watch_trailer_1), getResources().getString(R.string.watch_trailer_2));
+        playAction = new Action(ACTION_WATCH_TRAILER, getResources().getString(R.string.watch_trailer_title), getResources().getString(R.string.watch_trailer_loading));
         actionAdapter.add(playAction);
         liveStatusAction = new Action(ACTION_NOTHING, getResources().getString(R.string.room_live_status), mSelectedLiveRoom.getLiveStatusDesc(getResources()));
         actionAdapter.add(liveStatusAction);
