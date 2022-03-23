@@ -85,8 +85,8 @@ public class BilibiliLiveApiClientTest {
     @Test
     public void wsTest() throws IOException, InterruptedException {
         ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId);
-        WebSocketClient webSocketClient = client.start();
-        Assertions.assertTrue(webSocketClient.isOpen());
+        client.start();
+        Assertions.assertTrue(client.isOpen());
     }
 
 }

@@ -43,11 +43,4 @@ public class ByteBufferUtil {
         }
         return content;
     }
-
-    private static String repeat(String content, int count) {
-        for (int i = 0; i < count; i++) {
-            content += content;
-        }
-        return content;
-    }
 }

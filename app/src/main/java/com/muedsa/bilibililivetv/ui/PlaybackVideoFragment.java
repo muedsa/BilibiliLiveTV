@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
+import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.task.TaskRunner;
@@ -45,23 +46,22 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     private IDanmakuView danmakuView;
     private DanmakuContext danmakuContext;
     private BaseDanmakuParser danmakuParser;
-    private TaskRunner taskRunner;
+    private ChatBroadcastWsClient chatBroadcastWsClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         liveRoom = (LiveRoom) getActivity().getIntent().getSerializableExtra(DetailsActivity.LIVE_ROOM);
-        taskRunner = TaskRunner.getInstance();
         initDanmaku();
         initPlayer();
     }
 
     private void initDanmaku(){
         // 设置最大显示行数
-        HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
         maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
         // 设置是否禁止重叠
-        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
+        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
         overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
 
@@ -81,26 +81,14 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             }
         };
         danmakuView.prepare(danmakuParser, danmakuContext);
-        danmakuView.showFPS(true);
+        danmakuView.showFPS(false);
         danmakuView.enableDanmakuDrawingCache(true);
 
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override
             public void prepared() {
                 danmakuView.start();
-                taskRunner.executeAsync(() -> {
-                    Random random = new Random();
-                    while(true){
-                        try {
-                            Thread.sleep(random.nextInt(10) * 200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if(danmakuView.isPrepared()){
-                            addDanmaku("这是一条弹幕");
-                        }
-                    }
-                });
+                initChatBroadcast();
             }
 
             @Override
@@ -117,11 +105,39 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         });
     }
 
+    private void initChatBroadcast(){
+        chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId());
+        chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
+            @Override
+            public void onReceiveDanmu(String content) {
+                addDanmaku(content);
+            }
+
+            @Override
+            public void onClose() {
+                if(exoPlayer.isPlaying()){
+                    try{
+                        chatBroadcastWsClient.start();
+                    }catch (Exception error){
+                        Toast.makeText(getActivity(), "重连弹幕失败: " + error.getLocalizedMessage(), Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+            }
+        });
+        try{
+            chatBroadcastWsClient.start();
+        }catch (Exception error){
+            Toast.makeText(getActivity(), "连接弹幕服务器失败: " + error.getLocalizedMessage(), Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
     private void addDanmaku(String content){
         if(danmakuContext != null){
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
             if (danmaku != null && danmakuView != null && danmakuParser != null) {
-                danmaku.text = content + System.nanoTime();
+                danmaku.text = content;
                 danmaku.padding = 5;
                 danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
                 danmaku.isLive = true;
@@ -201,6 +217,10 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         if(danmakuView != null){
             danmakuView.release();
             danmakuView = null;
+        }
+        if(chatBroadcastWsClient != null){
+            chatBroadcastWsClient.close();
+            chatBroadcastWsClient = null;
         }
     }
 }

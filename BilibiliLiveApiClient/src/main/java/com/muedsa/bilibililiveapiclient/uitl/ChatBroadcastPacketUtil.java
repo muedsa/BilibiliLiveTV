@@ -1,11 +1,15 @@
 package com.muedsa.bilibililiveapiclient.uitl;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,38 +44,37 @@ public class ChatBroadcastPacketUtil {
         packet.putInt(1);
         packet.put(body);
         packet.compact();
-        ByteBufferUtil.dump(packet);
-        System.out.println(ByteBufferUtil.toHex(packet));
+        //ByteBufferUtil.dump(packet);
+        //System.out.println(ByteBufferUtil.toHex(packet));
         return packet;
     }
 
-    public static void decode(ByteBuffer byteBuffer){
+    public static List<String> decode(ByteBuffer byteBuffer, List<String> msgList){
+        if(msgList == null){
+            msgList = new ArrayList<>();
+        }
         int packetLength = byteBuffer.getInt(0);
         short headerLength = byteBuffer.getShort(4);
         short protocolVersion = byteBuffer.getShort(6);
         int operation = byteBuffer.getInt(8);
         int sequenceId = byteBuffer.getInt(12);
-        if(protocolVersion == PROTOCOL_JSON || protocolVersion == PROTOCOL_INT32){
-            System.out.printf(Locale.CHINA, "[Rec] packetLength:%d, headerLength:%d, protocolVersion:%d, operation:%d, sequenceId:%d\n",
-                    packetLength, headerLength, protocolVersion, operation, sequenceId);
-        }
+//        if(protocolVersion == PROTOCOL_JSON || protocolVersion == PROTOCOL_INT32){
+//            System.out.printf(Locale.CHINA, "[Rec] packetLength:%d, headerLength:%d, protocolVersion:%d, operation:%d, sequenceId:%d\n",
+//                    packetLength, headerLength, protocolVersion, operation, sequenceId);
+//        }
         switch (protocolVersion){
             case PROTOCOL_JSON:
-                System.out.println("Data: ");
+                //System.out.println("Data: ");
                 byteBuffer.position(16);
                 ByteBuffer dataByteBuffer = byteBuffer.slice();
                 CharBuffer charBuffer = StandardCharsets.UTF_8.decode(dataByteBuffer);
                 String[] msgArr = charBuffer.toString().split("[\\x00-\\x1f]+");
                 for (String msg : msgArr) {
                     if(msg.length() > 1){
-                        System.out.println(msg);
+                        //System.out.println(msg);
+                        msgList.add(msg);
                     }
                 }
-                break;
-            case PROTOCOL_INT32:
-                System.out.print("Data: ");
-                int hot = byteBuffer.getInt();
-                System.out.println("HOT="+ hot);
                 break;
             case PROTOCOL_ZIP:
                 byte[] input = new byte[packetLength - headerLength];
@@ -80,15 +83,14 @@ public class ChatBroadcastPacketUtil {
                 byte[] output = InflateUtil.unZip(input);
                 if(output.length > 0){
                     ByteBuffer unzipByteBuffer = ByteBuffer.wrap(output);
-                    decode(unzipByteBuffer);
+                    decode(unzipByteBuffer, msgList);
                 }
                 break;
+            case PROTOCOL_INT32:
             case PROTOCOL_BROTLI:
-                System.out.println("!PROTOCOL_BROTLI");
-                break;
             default:
-                System.out.println("!new protocolVersion" + protocolVersion);
                 break;
         }
+        return msgList;
     }
 }
