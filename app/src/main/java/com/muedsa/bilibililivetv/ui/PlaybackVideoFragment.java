@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
+import androidx.leanback.media.PlaybackGlue;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 
 import com.google.android.exoplayer2.ExoPlayer;
@@ -195,6 +196,26 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                                         .build())
                         .build();
         exoPlayer.setMediaItem(mediaItem);
+        mTransportControlGlue.addPlayerCallback(new PlaybackGlue.PlayerCallback() {
+            @Override
+            public void onPlayStateChanged(PlaybackGlue glue) {
+                super.onPlayStateChanged(glue);
+                if(glue.isPlaying()){
+                    if(danmakuView != null && danmakuView.isPaused()){
+                        danmakuView.resume();
+                    }
+                }else{
+                    if(danmakuView != null && !danmakuView.isPaused()){
+                        danmakuView.pause();
+                    }
+                }
+            }
+
+            @Override
+            public void onPlayCompleted(PlaybackGlue glue) {
+                super.onPlayCompleted(glue);
+            }
+        });
         mTransportControlGlue.play();
     }
 
