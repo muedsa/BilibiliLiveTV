@@ -56,7 +56,7 @@ public class LiveRoomPlaybackControlGlue extends PlaybackTransportControlGlue<Le
                     LiveRoomPlayerCallback callback = (LiveRoomPlayerCallback) callbacks.get(i);
                     if (action instanceof DanmuPlayStopAction) {
                         callback.onDanmuStatusChange(this);
-                    } else if(action instanceof  PlaybackControlsRow.MoreActions){
+                    } else if(action instanceof ChangePlayUrlAction){
                         callback.onLiveUrlChange(this);
                     }
                 }
