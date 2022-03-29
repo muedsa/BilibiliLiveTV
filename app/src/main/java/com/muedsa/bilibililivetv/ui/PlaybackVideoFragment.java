@@ -139,7 +139,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     }
 
     private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent){
-        if(danmakuContext != null){
+        if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
             if (danmaku != null && danmakuView != null && danmakuParser != null) {
                 danmaku.text = content;
@@ -152,7 +152,6 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                 danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
                 danmakuView.addDanmaku(danmaku);
             }
-
         }
     }
 
@@ -191,7 +190,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                                         .build())
                         .build();
         exoPlayer.setMediaItem(mediaItem);
-        liveRoomPlaybackControlGlue.addPlayerCallback(new PlaybackGlue.PlayerCallback() {
+        liveRoomPlaybackControlGlue.addPlayerCallback(new LiveRoomPlaybackControlGlue.LiveRoomPlayerCallback() {
             @Override
             public void onPlayStateChanged(PlaybackGlue glue) {
                 super.onPlayStateChanged(glue);
@@ -209,6 +208,20 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             @Override
             public void onPlayCompleted(PlaybackGlue glue) {
                 super.onPlayCompleted(glue);
+            }
+
+            @Override
+            public void onDanmuStatusChange(PlaybackGlue glue) {
+                super.onDanmuStatusChange(glue);
+                if(danmakuView != null){
+                    releaseDanmaku();
+                    Toast.makeText(getActivity(), "弹幕关闭", Toast.LENGTH_SHORT)
+                            .show();
+                }else{
+                    initDanmaku();
+                    Toast.makeText(getActivity(), "弹幕开启", Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
         liveRoomPlaybackControlGlue.play();
@@ -256,9 +269,19 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             playerAdapter = null;
             liveRoomPlaybackControlGlue = null;
         }
+        releaseDanmaku();
+    }
+
+    private void releaseDanmaku(){
         if(danmakuView != null){
             danmakuView.release();
             danmakuView = null;
+        }
+        if(danmakuContext != null){
+            danmakuContext = null;
+        }
+        if(danmakuParser != null){
+            danmakuContext = null;
         }
         if(chatBroadcastWsClient != null){
             chatBroadcastWsClient.close();
