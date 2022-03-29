@@ -15,7 +15,6 @@ public final class LiveRoomConvert {
         liveRoom.setTitle("");
         liveRoom.setDescription("");
         liveRoom.setUname("");
-        liveRoom.setPlayUrl("");
         liveRoom.setCoverImageUrl("");
         liveRoom.setSystemCoverImageUrl("");
         liveRoom.setBackgroundImageUrl("");

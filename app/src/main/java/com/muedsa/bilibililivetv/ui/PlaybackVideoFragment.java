@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.leanback.app.VideoSupportFragment;
@@ -17,11 +18,14 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
+import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.player.LiveRoomPlaybackControlGlue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import master.flame.danmaku.controller.DrawHandler;
@@ -47,6 +51,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     private DanmakuContext danmakuContext;
     private BaseDanmakuParser danmakuParser;
     private ChatBroadcastWsClient chatBroadcastWsClient;
+    private List<MediaItem> mediaItemList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,10 +87,8 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                 return new Danmakus();
             }
         };
-        danmakuView.prepare(danmakuParser, danmakuContext);
-        danmakuView.showFPS(false);
         danmakuView.enableDanmakuDrawingCache(true);
-
+        danmakuView.showFPS(BuildConfig.DEBUG);
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override
             public void prepared() {
@@ -105,6 +108,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             public void drawingFinished() {
             }
         });
+        danmakuView.prepare(danmakuParser, danmakuContext);
     }
 
     private void initChatBroadcast(){
@@ -181,15 +185,6 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         liveRoomPlaybackControlGlue.setHost(glueHost);
         liveRoomPlaybackControlGlue.setTitle(liveRoom.getTitle());
         liveRoomPlaybackControlGlue.setSubtitle(liveRoom.getUname());
-        MediaItem mediaItem =
-                new MediaItem.Builder()
-                        .setUri(liveRoom.getPlayUrl())
-                        .setLiveConfiguration(
-                                new MediaItem.LiveConfiguration.Builder()
-                                        .setMaxPlaybackSpeed(1.02f)
-                                        .build())
-                        .build();
-        exoPlayer.setMediaItem(mediaItem);
         liveRoomPlaybackControlGlue.addPlayerCallback(new LiveRoomPlaybackControlGlue.LiveRoomPlayerCallback() {
             @Override
             public void onPlayStateChanged(PlaybackGlue glue) {
@@ -223,8 +218,34 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                             .show();
                 }
             }
+
+            @Override
+            public void onLiveUrlChange(PlaybackGlue glue) {
+                super.onLiveUrlChange(glue);
+                exoPlayer.seekToNextMediaItem();
+                Toast.makeText(getActivity(),
+                        "切换到线路" + (exoPlayer.getCurrentMediaItemIndex() + 1),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
         });
-        liveRoomPlaybackControlGlue.play();
+        mediaItemList = new ArrayList<>();
+        if(liveRoom.getPlayUrlArr() != null){
+            for (String playUrl : liveRoom.getPlayUrlArr()) {
+                mediaItemList.add(new MediaItem.Builder()
+                        .setUri(playUrl)
+                        .setLiveConfiguration(
+                                new MediaItem.LiveConfiguration.Builder()
+                                        .setMaxPlaybackSpeed(1.02f)
+                                        .build())
+                        .build());
+            }
+        }
+        if(mediaItemList.size() > 0){
+            exoPlayer.setMediaItems(mediaItemList);
+            exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+            liveRoomPlaybackControlGlue.play();
+        }
     }
 
     @Override

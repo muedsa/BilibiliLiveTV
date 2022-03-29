@@ -1,3 +1,4 @@
 <resources>
-    <item type="id" name="player_control_danmu_play_pause" />
+    <item type="id" name="playback_controls_danmu_play_stop" />
+    <item type="id" name="playback_controls_change_play_url"/>
 </resources>

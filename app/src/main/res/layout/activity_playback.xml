@@ -7,14 +7,15 @@
     tools:context=".ui.DetailsActivity"
     tools:deviceIds="tv" >
 
+    <master.flame.danmaku.ui.widget.DanmakuSurfaceView
+        android:id="@+id/sv_danmaku"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
     <LinearLayout
         android:id="@+id/playback_fragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" />
 
-    <master.flame.danmaku.ui.widget.DanmakuView
-        android:id="@+id/sv_danmaku"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
 </FrameLayout>

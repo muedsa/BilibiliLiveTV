@@ -17,6 +17,7 @@ import java.util.List;
 public class LiveRoomPlaybackControlGlue extends PlaybackTransportControlGlue<LeanbackPlayerAdapter> {
 
     DanmuPlayStopAction danmuPlayStopAction;
+    ChangePlayUrlAction changePlayUrlAction;
 
     public LiveRoomPlaybackControlGlue(Context context, LeanbackPlayerAdapter impl) {
         super(context, impl);
@@ -28,26 +29,36 @@ public class LiveRoomPlaybackControlGlue extends PlaybackTransportControlGlue<Le
         danmuPlayStopAction = new DanmuPlayStopAction(getContext());
         danmuPlayStopAction.setIndex(DanmuPlayStopAction.INDEX_STOP);
         primaryActionsAdapter.add(danmuPlayStopAction);
+
+        changePlayUrlAction = new ChangePlayUrlAction(getContext());
+        primaryActionsAdapter.add(changePlayUrlAction);
     }
 
     @Override
     public void onActionClicked(Action action) {
         if (action instanceof DanmuPlayStopAction) {
-            danmuStatusChange();
+            danmuStatusChange(action);
             ((DanmuPlayStopAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
                     action);
-        }else{
+        } else if(action instanceof ChangePlayUrlAction) {
+            danmuStatusChange(action);
+        } else {
             super.onActionClicked(action);
         }
     }
 
-    private void danmuStatusChange(){
+    private void danmuStatusChange(Action action){
         List<PlayerCallback> callbacks = getPlayerCallbacks();
         if (callbacks != null) {
             for (int i = 0, size = callbacks.size(); i < size; i++) {
                 if(callbacks.get(i) instanceof LiveRoomPlayerCallback){
-                    ((LiveRoomPlayerCallback)callbacks.get(i)).onDanmuStatusChange(this);
+                    LiveRoomPlayerCallback callback = (LiveRoomPlayerCallback) callbacks.get(i);
+                    if (action instanceof DanmuPlayStopAction) {
+                        callback.onDanmuStatusChange(this);
+                    } else if(action instanceof  PlaybackControlsRow.MoreActions){
+                        callback.onLiveUrlChange(this);
+                    }
                 }
             }
         }
@@ -60,7 +71,7 @@ public class LiveRoomPlaybackControlGlue extends PlaybackTransportControlGlue<Le
         public static final int INDEX_STOP = 1;
 
         public DanmuPlayStopAction(Context context) {
-            super(R.id.player_control_danmu_play_pause);
+            super(R.id.playback_controls_danmu_play_stop);
             Drawable[] drawables = new Drawable[2];
             drawables[INDEX_PLAY] = context.getDrawable(R.drawable.ic_danmu_enable);
             drawables[INDEX_STOP] = context.getDrawable(R.drawable.ic_danmu_disable);
@@ -72,10 +83,18 @@ public class LiveRoomPlaybackControlGlue extends PlaybackTransportControlGlue<Le
         }
     }
 
-    public abstract static class LiveRoomPlayerCallback extends PlayerCallback {
-        public void onDanmuStatusChange(PlaybackGlue glue) {
+    static class ChangePlayUrlAction extends Action {
 
+        public ChangePlayUrlAction(Context context) {
+            super(R.id.playback_controls_change_play_url);
+            setIcon(context.getDrawable(R.drawable.ic_baseline_swap_horizontal_circle));
+            setLabel1(context.getString(R.string.playback_controls_change_play_url));
         }
+    }
+
+    public abstract static class LiveRoomPlayerCallback extends PlayerCallback {
+        public void onDanmuStatusChange(PlaybackGlue glue) {}
+        public void onLiveUrlChange(PlaybackGlue glue) {}
     }
 
 }

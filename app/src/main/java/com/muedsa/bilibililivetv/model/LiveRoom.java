@@ -17,7 +17,7 @@ public class LiveRoom implements Serializable {
     private String coverImageUrl;
     private String systemCoverImageUrl;
     private String backgroundImageUrl;
-    private String playUrl;
+    private String[] playUrlArr;
     private int liveStatus;
     private int onlineNum;
     private String danmuWsToken;
@@ -86,12 +86,12 @@ public class LiveRoom implements Serializable {
         this.backgroundImageUrl = backgroundImageUrl;
     }
 
-    public String getPlayUrl() {
-        return playUrl;
+    public String[] getPlayUrlArr() {
+        return playUrlArr;
     }
 
-    public void setPlayUrl(String playUrl) {
-        this.playUrl = playUrl;
+    public void setPlayUrlArr(String[] playUrlArr) {
+        this.playUrlArr = playUrlArr;
     }
 
     public int getLiveStatus() {

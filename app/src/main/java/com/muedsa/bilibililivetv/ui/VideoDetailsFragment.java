@@ -35,6 +35,7 @@ import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
+import com.muedsa.bilibililiveapiclient.model.Durl;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
 import com.muedsa.bilibililiveapiclient.model.RoomInfo;
@@ -172,7 +173,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                         if(response.getCode() == 0){
                             if(response.getData() != null && response.getData().getDurl() != null && response.getData().getDurl().size() > 0){
                                 mSelectedLiveRoom.setLiveStatus(1);
-                                mSelectedLiveRoom.setPlayUrl(response.getData().getDurl().get(0).getUrl());
+                                mSelectedLiveRoom.setPlayUrlArr(response.getData().getDurl().stream().map(Durl::getUrl).toArray(String[]::new));
                                 errorMsg = null;
                             }
                         }else if(response.getMessage() != null){
@@ -271,7 +272,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             @Override
             public void onActionClicked(Action action) {
                 if (action.getId() == ACTION_WATCH_TRAILER) {
-                    if(Strings.isNullOrEmpty(mSelectedLiveRoom.getPlayUrl())){
+                    if(mSelectedLiveRoom.getPlayUrlArr() == null || mSelectedLiveRoom.getPlayUrlArr().length == 0){
                         Toast.makeText(getActivity(), getResources().getString(R.string.live_play_failure), Toast.LENGTH_SHORT).show();
                     }else{
                         Intent intent = new Intent(getActivity(), PlaybackActivity.class);

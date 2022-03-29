@@ -18,6 +18,7 @@
     <string name="live_danmu_ws_token_failure">获取弹幕Token失败</string>
     <string name="playback_controls_danmu_play">弹幕开</string>
     <string name="playback_controls_danmu_stop">弹幕关</string>
+    <string name="playback_controls_change_play_url">弹幕关</string>
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
