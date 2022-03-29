@@ -16,18 +16,13 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
-import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
-import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
-import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
-import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.player.LiveRoomPlaybackControlGlue;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Random;
 
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.controller.IDanmakuView;
@@ -44,7 +39,7 @@ import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
  */
 public class PlaybackVideoFragment extends VideoSupportFragment {
 
-    private PlaybackTransportControlGlue<LeanbackPlayerAdapter> mTransportControlGlue;
+    private LiveRoomPlaybackControlGlue liveRoomPlaybackControlGlue;
     private LeanbackPlayerAdapter playerAdapter;
     private ExoPlayer exoPlayer;
     private LiveRoom liveRoom;
@@ -183,10 +178,10 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         });
 
         playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
-        mTransportControlGlue = new PlaybackTransportControlGlue<>(context, playerAdapter);
-        mTransportControlGlue.setHost(glueHost);
-        mTransportControlGlue.setTitle(liveRoom.getTitle());
-        mTransportControlGlue.setSubtitle(liveRoom.getUname());
+        liveRoomPlaybackControlGlue = new LiveRoomPlaybackControlGlue(context, playerAdapter);
+        liveRoomPlaybackControlGlue.setHost(glueHost);
+        liveRoomPlaybackControlGlue.setTitle(liveRoom.getTitle());
+        liveRoomPlaybackControlGlue.setSubtitle(liveRoom.getUname());
         MediaItem mediaItem =
                 new MediaItem.Builder()
                         .setUri(liveRoom.getPlayUrl())
@@ -196,7 +191,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                                         .build())
                         .build();
         exoPlayer.setMediaItem(mediaItem);
-        mTransportControlGlue.addPlayerCallback(new PlaybackGlue.PlayerCallback() {
+        liveRoomPlaybackControlGlue.addPlayerCallback(new PlaybackGlue.PlayerCallback() {
             @Override
             public void onPlayStateChanged(PlaybackGlue glue) {
                 super.onPlayStateChanged(glue);
@@ -216,14 +211,14 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
                 super.onPlayCompleted(glue);
             }
         });
-        mTransportControlGlue.play();
+        liveRoomPlaybackControlGlue.play();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mTransportControlGlue != null && mTransportControlGlue.isPlaying()) {
-            mTransportControlGlue.pause();
+        if (liveRoomPlaybackControlGlue != null && liveRoomPlaybackControlGlue.isPlaying()) {
+            liveRoomPlaybackControlGlue.pause();
         }
         if(danmakuView != null && !danmakuView.isPaused()){
             danmakuView.pause();
@@ -233,15 +228,15 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(mTransportControlGlue != null){
-            if(mTransportControlGlue.isPrepared() && !mTransportControlGlue.isPlaying()){
-                mTransportControlGlue.play();
+        if(liveRoomPlaybackControlGlue != null){
+            if(liveRoomPlaybackControlGlue.isPrepared() && !liveRoomPlaybackControlGlue.isPlaying()){
+                liveRoomPlaybackControlGlue.play();
             }
         }else{
             initPlayer();
         }
-        if(mTransportControlGlue != null && mTransportControlGlue.isPrepared() && !mTransportControlGlue.isPlaying()){
-            mTransportControlGlue.play();
+        if(liveRoomPlaybackControlGlue != null && liveRoomPlaybackControlGlue.isPrepared() && !liveRoomPlaybackControlGlue.isPlaying()){
+            liveRoomPlaybackControlGlue.play();
         }
         if (danmakuView != null) {
             if(danmakuView.isPrepared() && danmakuView.isPaused()){
@@ -259,7 +254,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             exoPlayer.release();
             exoPlayer = null;
             playerAdapter = null;
-            mTransportControlGlue = null;
+            liveRoomPlaybackControlGlue = null;
         }
         if(danmakuView != null){
             danmakuView.release();

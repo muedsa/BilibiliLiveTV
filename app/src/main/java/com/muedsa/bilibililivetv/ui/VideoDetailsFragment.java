@@ -56,8 +56,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     private static final int ACTION_NOTHING = -1;
     private static final int ACTION_WATCH_TRAILER = 1;
 
-    private static final int DETAIL_THUMB_WIDTH = 274;
-    private static final int DETAIL_THUMB_HEIGHT = 274;
+    private static final int DETAIL_THUMB_WIDTH = 216;
+    private static final int DETAIL_THUMB_HEIGHT = 136;
 
     private LiveRoom mSelectedLiveRoom;
 
@@ -196,26 +196,14 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         updateBackground();
     }
     private void updateBackground(){
-        if(!Strings.isNullOrEmpty(mSelectedLiveRoom.getBackgroundImageUrl())){
+        String backgroundUrl = Strings.isNullOrEmpty(mSelectedLiveRoom.getBackgroundImageUrl()) ?
+                mSelectedLiveRoom.getSystemCoverImageUrl() : mSelectedLiveRoom.getBackgroundImageUrl();
+        if(!Strings.isNullOrEmpty(backgroundUrl)){
             Glide.with(getActivity())
                     .asBitmap()
                     .centerCrop()
-                    .error(R.drawable.bilibili_logo)
-                    .load(mSelectedLiveRoom.getBackgroundImageUrl())
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap bitmap,
-                                                    @Nullable Transition<? super Bitmap> transition) {
-                            mDetailsBackground.setCoverBitmap(bitmap);
-                            mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
-                        }
-                    });
-        }else{
-            Glide.with(getActivity())
-                    .asBitmap()
-                    .centerCrop()
-                    .error(R.drawable.bilibili_logo)
-                    .load(getResources().getDrawable(R.drawable.bilibili_logo, null))
+                    .error(R.drawable.default_background)
+                    .load(backgroundUrl)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(@NonNull Bitmap bitmap,
@@ -231,7 +219,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         Log.d(TAG, "doInBackground: " + mSelectedLiveRoom.getId());
         detailsOverviewRow = new DetailsOverviewRow(mSelectedLiveRoom);
         detailsOverviewRow.setImageDrawable(
-                ContextCompat.getDrawable(getContext(), R.drawable.bilibili_logo));
+                ContextCompat.getDrawable(getContext(), R.drawable.no_cover));
         updateCardImage();
 
         ArrayObjectAdapter actionAdapter = new ArrayObjectAdapter();
@@ -252,7 +240,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         Glide.with(getActivity())
                 .load(mSelectedLiveRoom.getCoverImageUrl())
                 .centerCrop()
-                .error(R.drawable.bilibili_logo)
+                .error(R.drawable.no_cover)
                 .into(new SimpleTarget<Drawable>(width, height) {
                     @Override
                     public void onResourceReady(@NonNull Drawable drawable,
