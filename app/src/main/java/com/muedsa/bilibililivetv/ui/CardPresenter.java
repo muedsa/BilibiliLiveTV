@@ -1,5 +1,7 @@
 package com.muedsa.bilibililivetv.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 
 import androidx.leanback.widget.ImageCardView;
@@ -7,11 +9,13 @@ import androidx.leanback.widget.Presenter;
 import androidx.core.content.ContextCompat;
 
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
@@ -79,6 +83,15 @@ public class CardPresenter extends Presenter {
                     .centerCrop()
                     .error(mDefaultCardImage)
                     .into(cardView.getMainImageView());
+            cardView.setOnLongClickListener(v -> {
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("确定删除?")
+                        .setPositiveButton("YES", (dialog, which) -> LiveRoomHistoryHolder.removeHistory(liveRoom))
+                        .setNegativeButton("NO", (dialog, which) -> {})
+                        .create()
+                        .show();
+                return true;
+            });
         }
     }
 

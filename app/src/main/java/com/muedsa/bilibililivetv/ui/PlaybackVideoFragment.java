@@ -64,7 +64,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     private void initDanmaku(){
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 9); // 滚动弹幕最大显示9行
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
@@ -75,11 +75,12 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         danmakuContext = DanmakuContext.create();
         danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
                 .setDuplicateMergingEnabled(false)
-                .setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
+                .setScrollSpeedFactor(1.2f)
+                .setScaleTextSize(1.2f)
                 .setMaximumLines(maxLinesPair)
                 .preventOverlapping(overlappingEnablePair)
                 .setDanmakuTransparency(0.85f)
-                .setDanmakuMargin(40);
+                .setDanmakuMargin(5);
 
         danmakuParser = new BaseDanmakuParser() {
             @Override
@@ -147,7 +148,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
             if (danmaku != null && danmakuView != null && danmakuParser != null) {
                 danmaku.text = content;
-                danmaku.padding = 5;
+                danmaku.padding = 0;
                 danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
                 danmaku.isLive = true;
                 danmaku.setTime(danmakuView.getCurrentTime() + 500);
