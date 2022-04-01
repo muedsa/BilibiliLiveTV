@@ -85,8 +85,8 @@ public class LiveRoomHistoryHolder {
                 }
                 list.clear();
                 list.addAll(JSON.parseArray(stringBuilder.toString(), LiveRoom.class));
+                flag = true;
             }
-            flag = true;
         }
         catch (Exception e){
             e.printStackTrace();
