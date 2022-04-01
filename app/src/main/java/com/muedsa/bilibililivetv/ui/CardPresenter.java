@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
+import com.muedsa.bilibililivetv.task.TaskRunner;
 
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
@@ -85,9 +86,11 @@ public class CardPresenter extends Presenter {
                     .into(cardView.getMainImageView());
             cardView.setOnLongClickListener(v -> {
                 new AlertDialog.Builder(v.getContext())
-                        .setTitle("确定删除?")
-                        .setPositiveButton("YES", (dialog, which) -> LiveRoomHistoryHolder.removeHistory(liveRoom))
-                        .setNegativeButton("NO", (dialog, which) -> {})
+                        .setTitle(v.getResources().getString(R.string.remove_history_alert))
+                        .setPositiveButton(v.getResources().getString(R.string.alert_yes), (dialog, which) ->
+                                TaskRunner.getInstance().executeAsync(() ->
+                                        LiveRoomHistoryHolder.removeHistory(liveRoom, v.getContext())))
+                        .setNegativeButton(v.getResources().getString(R.string.alert_no), (dialog, which) -> {})
                         .create()
                         .show();
                 return true;

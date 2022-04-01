@@ -3,6 +3,10 @@
     <string name="browse_title">Bilibili Live</string>
     <string name="related_movies">相关推荐</string>
     <string name="clear_history">清除历史记录</string>
+    <string name="clear_history_alert">确定清除历史记录?</string>
+    <string name="alert_yes">确定</string>
+    <string name="alert_no">取消</string>
+    <string name="remove_history_alert">确定删除?</string>
     <string name="error_fragment">Error Fragment</string>
     <string name="personal_settings">Personal Settings</string>
     <string name="watch_trailer_title">播放</string>

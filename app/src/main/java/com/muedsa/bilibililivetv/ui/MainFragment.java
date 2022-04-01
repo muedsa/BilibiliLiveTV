@@ -1,5 +1,6 @@
 package com.muedsa.bilibililivetv.ui;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -26,13 +27,12 @@ import androidx.core.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
@@ -78,19 +78,12 @@ public class MainFragment extends BrowseSupportFragment {
 
     private void initRows(){
         taskRunner.executeAsync(
-                () -> LiveRoomHistoryHolder.loadFormFile(getContext()),
-                success -> {
-                    if(!success){
-                        Toast.makeText(getActivity(), "读取历史记录失败", Toast.LENGTH_SHORT).show();
-                    }
-                    loadRows();
-                });
+                () -> LiveRoomHistoryHolder.loadFormFile(getContext()));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        loadRows();
     }
 
     @Override
@@ -100,6 +93,7 @@ public class MainFragment extends BrowseSupportFragment {
             Log.d(TAG, "onDestroy: " + mBackgroundTimer.toString());
             mBackgroundTimer.cancel();
         }
+        LiveRoomHistoryHolder.removeUpdateStatusListener(this);
     }
 
     private void loadRows() {
@@ -166,17 +160,16 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void setupEventListeners() {
-        setOnSearchClickedListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(intent);
-            }
+        setOnSearchClickedListener(view -> {
+            Intent intent = new Intent(getActivity(), SearchActivity.class);
+            startActivity(intent);
         });
 
         setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
+
+        LiveRoomHistoryHolder.addUpdateStatusListener(MainFragment.this, () ->
+                mHandler.post(MainFragment.this::loadRows));
     }
 
     private void updateBackground(String uri) {
@@ -186,11 +179,16 @@ public class MainFragment extends BrowseSupportFragment {
                 .load(uri)
                 .centerCrop()
                 .error(mDefaultBackground)
-                .into(new SimpleTarget<Drawable>(width, height) {
+                .into(new CustomTarget<Drawable>(width, height) {
                     @Override
                     public void onResourceReady(@NonNull Drawable drawable,
                                                 @Nullable Transition<? super Drawable> transition) {
                         mBackgroundManager.setDrawable(drawable);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
                     }
                 });
         mBackgroundTimer.cancel();
@@ -227,14 +225,14 @@ public class MainFragment extends BrowseSupportFragment {
                     Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);
                     startActivity(intent);
                 }else if(desc.contains(getString(R.string.clear_history))){
-                    taskRunner.executeAsync(
-                            () -> LiveRoomHistoryHolder.clearHistory(getContext()),
-                            success -> {
-                                if(!success){
-                                    Toast.makeText(getActivity(), "清除历史记录失败", Toast.LENGTH_SHORT).show();
-                                }
-                                loadRows();
-                            });
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(getString(R.string.clear_history_alert))
+                            .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> taskRunner.executeAsync(()
+                                    -> LiveRoomHistoryHolder.clearHistory(getContext())))
+                            .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
+                            .create()
+                            .show();
+
                 } else {
                     Toast.makeText(getActivity(), desc, Toast.LENGTH_SHORT).show();
                 }
