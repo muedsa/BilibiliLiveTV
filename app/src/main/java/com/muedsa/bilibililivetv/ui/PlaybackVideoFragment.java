@@ -90,6 +90,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         };
         danmakuView.enableDanmakuDrawingCache(true);
         danmakuView.showFPS(BuildConfig.DEBUG);
+        danmakuView.show();
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override
             public void prepared() {
@@ -296,6 +297,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
 
     private void releaseDanmaku(){
         if(danmakuView != null){
+            danmakuView.hide();
             danmakuView.release();
             danmakuView = null;
         }
