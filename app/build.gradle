@@ -9,8 +9,8 @@ android {
         applicationId "com.muedsa.bilibililivetv"
         minSdk 27
         targetSdk 28
-        versionCode 7
-        versionName "1.1.5"
+        versionCode 8
+        versionName "1.1.6"
 
     }
 
@@ -23,6 +23,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.muedsa.bilibililivetv'
 }
 
 dependencies {
