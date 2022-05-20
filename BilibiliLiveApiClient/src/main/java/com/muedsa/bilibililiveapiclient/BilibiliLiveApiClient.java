@@ -4,15 +4,13 @@ import com.alibaba.fastjson.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
+import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
-import com.muedsa.bilibililiveapiclient.model.RoomInfo;
 import com.muedsa.httpjsonclient.HttpJsonClient;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BilibiliLiveApiClient {
 
@@ -32,12 +30,9 @@ public class BilibiliLiveApiClient {
         return httpJsonClient.GetJson(url, new TypeReference<BilibiliResponse<BilibiliPageInfo<LiveRoomInfo>>>(){});
     }
 
-    public BilibiliResponse<RoomInfo> getRoomInfo(Long roomId) throws IOException {
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", roomId);
-        return httpJsonClient.PostJson(ApiUrlContainer.GET_ROOM_INFO,
-                params,
-                new TypeReference<BilibiliResponse<RoomInfo>>(){});
+    public BilibiliResponse<LargeInfo> getLargeInfo(Long roomId) throws IOException {
+        String url = ApiUrlContainer.fillUrl(ApiUrlContainer.GET_INFO, roomId);
+        return httpJsonClient.GetJson(url, new TypeReference<BilibiliResponse<LargeInfo>>(){});
     }
 
     public BilibiliResponse<DanmuInfo> getDanmuInfo(Long roomId) throws IOException {

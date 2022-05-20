@@ -247,6 +247,11 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             exoPlayer.setMediaItems(mediaItemList);
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
             liveRoomPlaybackControlGlue.play();
+        }else{
+            Toast.makeText(getActivity(),
+                            "获取播放列表失败",
+                            Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 

@@ -1,6 +1,7 @@
 package com.muedsa.bilibililivetv.model;
 
 import com.google.common.base.Strings;
+import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.RoomInfo;
 
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ public final class LiveRoomConvert {
             liveRoom.setSystemCoverImageUrl(roomInfo.getKeyframe());
         }
 
-        if(!Strings.isNullOrEmpty(roomInfo.getUserCover())){
-            liveRoom.setCoverImageUrl(roomInfo.getUserCover());
+        if(!Strings.isNullOrEmpty(roomInfo.getCover())){
+            liveRoom.setCoverImageUrl(roomInfo.getCover());
         }else if(Strings.isNullOrEmpty(liveRoom.getCoverImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())){
             liveRoom.setCoverImageUrl(liveRoom.getSystemCoverImageUrl());
         }
@@ -49,6 +50,17 @@ public final class LiveRoomConvert {
 
         if(!Objects.isNull(roomInfo.getOnline())){
             liveRoom.setOnlineNum(roomInfo.getOnline());
+        }
+    }
+
+    public static void updateRoomInfo(LiveRoom liveRoom, LargeInfo largeInfo){
+        if(!Objects.isNull(largeInfo.getRoomInfo())){
+            updateRoomInfo(liveRoom, largeInfo.getRoomInfo());
+        }
+
+        if(!Objects.isNull(largeInfo.getAnchorInfo())
+                && !Objects.isNull(largeInfo.getAnchorInfo().getBaseInfo())){
+            liveRoom.setUname(largeInfo.getAnchorInfo().getBaseInfo().getUname());
         }
     }
 }

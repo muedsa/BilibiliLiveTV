@@ -1,9 +1,12 @@
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
+import com.muedsa.bilibililiveapiclient.model.AnchorBaseInfo;
+import com.muedsa.bilibililiveapiclient.model.AnchorInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.DanmuHostInfo;
 import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
+import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
@@ -31,16 +34,23 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public void getRoomInfo() throws IOException {
-        BilibiliResponse<RoomInfo> response = client.getRoomInfo(roomId);
+    public void getLargeInfo() throws IOException {
+        BilibiliResponse<LargeInfo> response = client.getLargeInfo(roomId);
         Assertions.assertEquals(0L, response.getCode());
-        RoomInfo roomInfo = response.getData();
-        Assertions.assertNotNull(roomInfo);
+        LargeInfo largeInfo = response.getData();
+        Assertions.assertNotNull(largeInfo);
+        RoomInfo roomInfo = largeInfo.getRoomInfo();
         Assertions.assertNotNull(roomInfo.getRoomId());
         Assertions.assertNotNull(roomInfo.getTitle());
-        String message = String.format("roomId:%d, title:%s", roomInfo.getRoomId(), roomInfo.getTitle());
+        AnchorInfo anchorInfo = largeInfo.getAnchorInfo();
+        Assertions.assertNotNull(anchorInfo);
+        AnchorBaseInfo baseInfo = anchorInfo.getBaseInfo();
+        Assertions.assertNotNull(baseInfo);
+        Assertions.assertNotNull(baseInfo.getUname());
+        String message = String.format("roomId:%d, title:%s, uname:%s", roomInfo.getRoomId(), roomInfo.getTitle(), baseInfo.getUname());
         logger.info(message);
         roomId = roomInfo.getRoomId();
+
     }
 
     @Test
@@ -67,7 +77,7 @@ public class BilibiliLiveApiClientTest {
 
     @Test
     public void getDanmuInfoTest() throws IOException {
-        getRoomInfo();
+        getLargeInfo();
         BilibiliResponse<DanmuInfo> response = client.getDanmuInfo(roomId);
         Assertions.assertEquals(0L, response.getCode());
         DanmuInfo danmuInfo = response.getData();

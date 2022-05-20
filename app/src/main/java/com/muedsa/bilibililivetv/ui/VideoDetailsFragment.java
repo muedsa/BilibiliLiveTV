@@ -29,6 +29,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
@@ -36,16 +37,14 @@ import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
 import com.muedsa.bilibililiveapiclient.model.Durl;
+import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
-import com.muedsa.bilibililiveapiclient.model.RoomInfo;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.task.TaskRunner;
-
-import java.util.concurrent.Callable;
 
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
@@ -84,13 +83,11 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
         mSelectedLiveRoom = (LiveRoom) getActivity().getIntent()
                 .getSerializableExtra(DetailsActivity.LIVE_ROOM);
-        mSelectedLiveRoom.setLiveStatus(0);
-        mSelectedLiveRoom.setOnlineNum(0);
-
-        taskRunner = TaskRunner.getInstance();
-        bilibiliLiveApiClient = new BilibiliLiveApiClient();
 
         if (mSelectedLiveRoom != null && mSelectedLiveRoom.getId() > 0) {
+
+            taskRunner = TaskRunner.getInstance();
+            bilibiliLiveApiClient = new BilibiliLiveApiClient();
 
             mPresenterSelector = new ClassPresenterSelector();
             mAdapter = new ArrayObjectAdapter(mPresenterSelector);
@@ -101,6 +98,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             initializeBackground();
             setOnItemViewClickedListener(new ItemViewClickedListener());
 
+            mSelectedLiveRoom.setLiveStatus(0);
+            mSelectedLiveRoom.setOnlineNum(0);
+            mSelectedLiveRoom.setPlayUrlArr(new String[0]);
             initializePlayUrl();
             initializeLiveRoomInfo();
         } else {
@@ -114,7 +114,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         taskRunner.executeAsync(
                 () ->{
                     String errorMsg = getResources().getString(R.string.live_room_info_failure);
-                    BilibiliResponse<RoomInfo> response = bilibiliLiveApiClient.getRoomInfo(mSelectedLiveRoom.getId());
+                    BilibiliResponse<LargeInfo> response = bilibiliLiveApiClient.getLargeInfo(mSelectedLiveRoom.getId());
                     if(response != null){
                         if(response.getCode() == 0){
                             if(response.getData() != null){
@@ -172,7 +172,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     if(response != null){
                         if(response.getCode() == 0){
                             if(response.getData() != null && response.getData().getDurl() != null && response.getData().getDurl().size() > 0){
-                                mSelectedLiveRoom.setLiveStatus(1);
                                 mSelectedLiveRoom.setPlayUrlArr(response.getData().getDurl().stream().map(Durl::getUrl).toArray(String[]::new));
                                 errorMsg = null;
                             }
@@ -199,25 +198,29 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     private void updateBackground(){
         String backgroundUrl = Strings.isNullOrEmpty(mSelectedLiveRoom.getBackgroundImageUrl()) ?
                 mSelectedLiveRoom.getSystemCoverImageUrl() : mSelectedLiveRoom.getBackgroundImageUrl();
-        if(!Strings.isNullOrEmpty(backgroundUrl)){
-            Glide.with(getActivity())
-                    .asBitmap()
-                    .centerCrop()
-                    .error(R.drawable.default_background)
-                    .load(backgroundUrl)
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap bitmap,
-                                                    @Nullable Transition<? super Bitmap> transition) {
-                            mDetailsBackground.setCoverBitmap(bitmap);
-                            mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
-                        }
-                    });
-        }
+        Glide.with(getActivity())
+                .asBitmap()
+                .centerCrop()
+                .error(R.drawable.default_background)
+                .load(backgroundUrl)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap bitmap,
+                                                @Nullable Transition<? super Bitmap> transition) {
+                        Log.d(TAG, "details overview background image url ready: " + bitmap);
+                        mDetailsBackground.setCoverBitmap(bitmap);
+                        mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
     }
 
     private void setupDetailsOverviewRow() {
-        Log.d(TAG, "doInBackground: " + mSelectedLiveRoom.getId());
+        Log.d(TAG, "setupDetailsOverviewRow: " + mSelectedLiveRoom.getId());
         detailsOverviewRow = new DetailsOverviewRow(mSelectedLiveRoom);
         detailsOverviewRow.setImageDrawable(
                 ContextCompat.getDrawable(getContext(), R.drawable.no_cover));
@@ -242,13 +245,18 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 .load(mSelectedLiveRoom.getCoverImageUrl())
                 .centerCrop()
                 .error(R.drawable.no_cover)
-                .into(new SimpleTarget<Drawable>(width, height) {
+                .into(new CustomTarget<Drawable>(width, height) {
                     @Override
                     public void onResourceReady(@NonNull Drawable drawable,
                                                 @Nullable Transition<? super Drawable> transition) {
                         Log.d(TAG, "details overview card image url ready: " + drawable);
                         detailsOverviewRow.setImageDrawable(drawable);
                         mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
                     }
                 });
     }

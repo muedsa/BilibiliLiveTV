@@ -13,14 +13,8 @@ public class RoomInfo {
     @JSONField(name = "short_id")
     private Long shortId;
 
-    @JSONField(name = "attention")
-    private Long attention;
-
     @JSONField(name = "online")
     private Integer online;
-
-    @JSONField(name = "is_portrait")
-    private Boolean isPortrait;
 
     @JSONField(name = "description")
     private String description;
@@ -28,41 +22,32 @@ public class RoomInfo {
     @JSONField(name = "live_status")
     private Integer liveStatus;
 
-    @JSONField(name = "area_id")
-    private Integer areaId;
-
-    @JSONField(name = "parent_area_name")
-    private String parentAreaName;
-
-    @JSONField(name = "old_area_id")
-    private Integer oldAreaId;
-
     @JSONField(name = "background")
     private String background;
 
     @JSONField(name = "title")
     private String title;
 
-    @JSONField(name = "user_cover")
-    private String userCover;
+    @JSONField(name = "cover")
+    private String cover;
 
     @JSONField(name = "keyframe")
     private String keyframe;
 
-    @JSONField(name = "is_strict_room")
-    private Boolean isStrictRoom;
-
-    @JSONField(name = "live_time")
-    private String liveTime;
-
     @JSONField(name = "tags")
     private String tags;
 
-    @JSONField(name = "is_anchor")
-    private Integer isAnchor;
+    @JSONField(name = "area_id")
+    private Integer areaId;
 
     @JSONField(name = "area_name")
     private String areaName;
+
+    @JSONField(name = "parent_area_id")
+    private Integer parentAreaId;
+
+    @JSONField(name = "parent_area_name")
+    private String parentAreaName;
 
     public Long getUid() {
         return uid;
@@ -88,28 +73,12 @@ public class RoomInfo {
         this.shortId = shortId;
     }
 
-    public Long getAttention() {
-        return attention;
-    }
-
-    public void setAttention(Long attention) {
-        this.attention = attention;
-    }
-
     public Integer getOnline() {
         return online;
     }
 
     public void setOnline(Integer online) {
         this.online = online;
-    }
-
-    public Boolean getPortrait() {
-        return isPortrait;
-    }
-
-    public void setPortrait(Boolean portrait) {
-        isPortrait = portrait;
     }
 
     public String getDescription() {
@@ -128,30 +97,6 @@ public class RoomInfo {
         this.liveStatus = liveStatus;
     }
 
-    public Integer getAreaId() {
-        return areaId;
-    }
-
-    public void setAreaId(Integer areaId) {
-        this.areaId = areaId;
-    }
-
-    public String getParentAreaName() {
-        return parentAreaName;
-    }
-
-    public void setParentAreaName(String parentAreaName) {
-        this.parentAreaName = parentAreaName;
-    }
-
-    public Integer getOldAreaId() {
-        return oldAreaId;
-    }
-
-    public void setOldAreaId(Integer oldAreaId) {
-        this.oldAreaId = oldAreaId;
-    }
-
     public String getBackground() {
         return background;
     }
@@ -168,12 +113,12 @@ public class RoomInfo {
         this.title = title;
     }
 
-    public String getUserCover() {
-        return userCover;
+    public String getCover() {
+        return cover;
     }
 
-    public void setUserCover(String userCover) {
-        this.userCover = userCover;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
     public String getKeyframe() {
@@ -184,22 +129,6 @@ public class RoomInfo {
         this.keyframe = keyframe;
     }
 
-    public Boolean getStrictRoom() {
-        return isStrictRoom;
-    }
-
-    public void setStrictRoom(Boolean strictRoom) {
-        isStrictRoom = strictRoom;
-    }
-
-    public String getLiveTime() {
-        return liveTime;
-    }
-
-    public void setLiveTime(String liveTime) {
-        this.liveTime = liveTime;
-    }
-
     public String getTags() {
         return tags;
     }
@@ -208,12 +137,12 @@ public class RoomInfo {
         this.tags = tags;
     }
 
-    public Integer getIsAnchor() {
-        return isAnchor;
+    public Integer getAreaId() {
+        return areaId;
     }
 
-    public void setIsAnchor(Integer isAnchor) {
-        this.isAnchor = isAnchor;
+    public void setAreaId(Integer areaId) {
+        this.areaId = areaId;
     }
 
     public String getAreaName() {
@@ -222,5 +151,21 @@ public class RoomInfo {
 
     public void setAreaName(String areaName) {
         this.areaName = areaName;
+    }
+
+    public Integer getParentAreaId() {
+        return parentAreaId;
+    }
+
+    public void setParentAreaId(Integer parentAreaId) {
+        this.parentAreaId = parentAreaId;
+    }
+
+    public String getParentAreaName() {
+        return parentAreaName;
+    }
+
+    public void setParentAreaName(String parentAreaName) {
+        this.parentAreaName = parentAreaName;
     }
 }

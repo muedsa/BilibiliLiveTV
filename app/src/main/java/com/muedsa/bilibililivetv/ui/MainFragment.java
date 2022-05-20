@@ -211,8 +211,6 @@ public class MainFragment extends BrowseSupportFragment {
                 LiveRoom liveRoom = (LiveRoom) item;
                 Log.d(TAG, "roomId: " + liveRoom.getId());
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                liveRoom.setLiveStatus(0);
-                liveRoom.setOnlineNum(0);
                 intent.putExtra(DetailsActivity.LIVE_ROOM, liveRoom);
 
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(

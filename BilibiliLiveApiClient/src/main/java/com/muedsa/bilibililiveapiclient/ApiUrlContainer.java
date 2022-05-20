@@ -7,6 +7,8 @@ public class ApiUrlContainer {
 
     public static String GET_ROOM_INFO = "https://api.live.bilibili.com/room/v1/Room/get_info";
 
+    public static String GET_INFO = "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=%d";
+
     public static String GET_DANMU_INFO = "https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=%d&type=0";
 
     public static String WS_CHAT = "wss://broadcastlv.chat.bilibili.com:443/sub";
