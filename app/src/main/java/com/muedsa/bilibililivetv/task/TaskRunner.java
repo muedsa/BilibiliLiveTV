@@ -2,16 +2,17 @@ package com.muedsa.bilibililivetv.task;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class TaskRunner {
+    private static final String TAG = TaskRunner.class.getSimpleName();
 
     private static final TaskRunner instance = new TaskRunner();
 
@@ -27,19 +28,21 @@ public class TaskRunner {
         return instance;
     }
 
+    public interface Callable extends java.util.concurrent.Callable<Message> {}
+
     public interface Callback<R> {
         void onComplete(R result);
     }
 
-    public <R> void executeAsync(@NonNull Callable<R> callable, @NonNull Callback<R> callback) {
+    public void executeAsync(@NonNull Callable callable, @NonNull Callback<Message> callback) {
         executor.execute(() -> {
-            R result = null;
+            Message result = null;
             try {
                 result = callable.call();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "executeAsync failure", e);
             } finally {
-                final R finalResult = result;
+                final Message finalResult = result == null? Message.obtain() : result;
                 handler.post(() -> {
                     callback.onComplete(finalResult);
                 });

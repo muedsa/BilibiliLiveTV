@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.leanback.media.PlaybackGlue;
-import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.PlaybackControlsRow;
@@ -14,12 +13,12 @@ import com.muedsa.bilibililivetv.R;
 
 import java.util.List;
 
-public class LiveRoomPlaybackControlGlue extends PlaybackTransportControlGlue<LeanbackPlayerAdapter> {
+public class PlaybackTransportControlGlue extends androidx.leanback.media.PlaybackTransportControlGlue<LeanbackPlayerAdapter> {
 
     DanmuPlayStopAction danmuPlayStopAction;
     ChangePlayUrlAction changePlayUrlAction;
 
-    public LiveRoomPlaybackControlGlue(Context context, LeanbackPlayerAdapter impl) {
+    public PlaybackTransportControlGlue(Context context, LeanbackPlayerAdapter impl) {
         super(context, impl);
     }
 

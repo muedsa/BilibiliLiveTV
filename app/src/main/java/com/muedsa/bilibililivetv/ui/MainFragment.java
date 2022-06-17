@@ -275,7 +275,7 @@ public class MainFragment extends BrowseSupportFragment {
             view.setFocusable(true);
             view.setFocusableInTouchMode(true);
             view.setBackgroundColor(
-                    ContextCompat.getColor(getContext(), R.color.default_background));
+                    ContextCompat.getColor(requireContext(), R.color.default_background));
             view.setTextColor(Color.WHITE);
             view.setGravity(Gravity.CENTER);
             return new ViewHolder(view);
