@@ -116,7 +116,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     break;
                 case FAIL:
                 default:
-                    String errorMsg =  getResources().getString(R.string.live_room_info_failure) + (msg.obj instanceof String ? ":" + (String) msg.obj : "");
+                    String errorMsg =  getResources().getString(R.string.live_room_info_failure) + (msg.obj instanceof String ? ":" + msg.obj : "");
                     Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG).show();
                     break;
             }
@@ -129,7 +129,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     break;
                 case FAIL:
                 default:
-                    String errorMsg = getResources().getString(R.string.live_danmu_ws_token_failure) + (msg.obj instanceof String ? ":" + (String) msg.obj : "");
+                    String errorMsg = getResources().getString(R.string.live_danmu_ws_token_failure) + (msg.obj instanceof String ? ":" + msg.obj : "");
                     Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG).show();
                     break;
             }
@@ -157,13 +157,11 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         updateBackground();
     }
     private void updateBackground(){
-        String backgroundUrl = Strings.isNullOrEmpty(mSelectedLiveRoom.getBackgroundImageUrl()) ?
-                mSelectedLiveRoom.getSystemCoverImageUrl() : mSelectedLiveRoom.getBackgroundImageUrl();
         Glide.with(requireActivity())
                 .asBitmap()
                 .centerCrop()
                 .error(R.drawable.default_background)
-                .load(backgroundUrl)
+                .load(mSelectedLiveRoom.getSystemCoverImageUrl())
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap bitmap,
