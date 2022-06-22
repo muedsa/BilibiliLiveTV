@@ -31,11 +31,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
+import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.task.RequestDanmuInfoTask;
 import com.muedsa.bilibililivetv.task.RequestLiveRoomInfoTask;
@@ -77,7 +77,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         mDetailsBackground = new DetailsSupportFragmentBackgroundController(this);
 
         mSelectedLiveRoom = (LiveRoom) requireActivity().getIntent()
-                .getSerializableExtra(DetailsActivity.LIVE_ROOM);
+                .getParcelableExtra(DetailsActivity.LIVE_ROOM);
 
         if (mSelectedLiveRoom != null && mSelectedLiveRoom.getId() > 0) {
 

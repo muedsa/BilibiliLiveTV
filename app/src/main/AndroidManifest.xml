@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -26,11 +27,25 @@
             android:icon="@mipmap/ic_launcher"
             android:logo="@mipmap/ic_launcher"
             android:banner="@mipmap/ic_banner"
-            android:label="@string/app_name"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <!-- Used to launch our content directly from home screen launcher or Assistant -->
+                <action android:name="android.intent.action.VIEW" />
+                <!-- Allows our app to be launched from a URL, not just via explicit intent -->
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Allows our app to receive implicit intents -->
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <!-- Define the filters for the URI being sent -->
+                <data android:host="@string/host_name" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:pathPattern=".*" />
             </intent-filter>
         </activity>
         <activity

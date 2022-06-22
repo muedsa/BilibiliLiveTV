@@ -1,14 +1,17 @@
 package com.muedsa.bilibililivetv.model;
 
 import android.content.res.Resources;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.muedsa.bilibililivetv.R;
 
-import java.io.Serializable;
-import java.util.Objects;
+import java.util.regex.Pattern;
 
-public class LiveRoom implements Serializable {
-    static final long serialVersionUID = 727566175075960653L;
+public class LiveRoom implements Parcelable {
+
+    public static final Pattern ID_PATTERN =  Pattern.compile("^\\d+$");
+
     private long id;
     private Long shortId;
     private String title;
@@ -21,6 +24,40 @@ public class LiveRoom implements Serializable {
     private int liveStatus;
     private int onlineNum;
     private String danmuWsToken;
+
+    protected LiveRoom(Parcel in) {
+        id = in.readLong();
+        if (in.readByte() == 0) {
+            shortId = null;
+        } else {
+            shortId = in.readLong();
+        }
+        title = in.readString();
+        uname = in.readString();
+        description = in.readString();
+        coverImageUrl = in.readString();
+        systemCoverImageUrl = in.readString();
+        backgroundImageUrl = in.readString();
+        playUrlArr = in.createStringArray();
+        liveStatus = in.readInt();
+        onlineNum = in.readInt();
+        danmuWsToken = in.readString();
+    }
+
+    public static final Creator<LiveRoom> CREATOR = new Creator<LiveRoom>() {
+        @Override
+        public LiveRoom createFromParcel(Parcel in) {
+            return new LiveRoom(in);
+        }
+
+        @Override
+        public LiveRoom[] newArray(int size) {
+            return new LiveRoom[size];
+        }
+    };
+
+    public LiveRoom() {
+    }
 
     public long getId() {
         return id;
@@ -124,5 +161,26 @@ public class LiveRoom implements Serializable {
 
     public void setDanmuWsToken(String danmuWsToken) {
         this.danmuWsToken = danmuWsToken;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeValue(shortId);
+        dest.writeString(title);
+        dest.writeString(uname);
+        dest.writeString(description);
+        dest.writeString(coverImageUrl);
+        dest.writeString(systemCoverImageUrl);
+        dest.writeString(backgroundImageUrl);
+        dest.writeArray(playUrlArr);
+        dest.writeInt(liveStatus);
+        dest.writeInt(onlineNum);
+        dest.writeString(danmuWsToken);
     }
 }

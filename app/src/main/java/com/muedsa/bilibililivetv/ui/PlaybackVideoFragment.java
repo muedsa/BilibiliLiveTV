@@ -21,7 +21,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        liveRoom = (LiveRoom) requireActivity().getIntent().getSerializableExtra(DetailsActivity.LIVE_ROOM);
+        liveRoom = (LiveRoom) requireActivity().getIntent().getParcelableExtra(DetailsActivity.LIVE_ROOM);
         danmakuDelegate = new DanmakuDelegate(this, liveRoom);
         danmakuDelegate.init();
         ExoPlayerDelegate.Listener listener = new ExoPlayerDelegate.Listener() {

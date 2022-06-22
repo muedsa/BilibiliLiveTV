@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.model;
 import android.content.Context;
 
 import com.alibaba.fastjson.JSON;
+import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class LiveRoomHistoryHolder {
     private static final List<LiveRoom> list = new ArrayList<>();
     private static final String filename = "liveRoomHistory.json";
+    private static boolean isLoaded = false;
 
     private static final Map<Object, UpdateStatusListener> statusUpdateListeners = new HashMap<>();
 
@@ -28,15 +30,18 @@ public class LiveRoomHistoryHolder {
     }
 
     public static void addHistory(LiveRoom liveRoom, Context context){
+        if(!isLoaded) loadFormFile(context);
         removeHistory(liveRoom, context);
         list.add(0, liveRoom);
         saveToFile(context);
         for (Map.Entry<Object, UpdateStatusListener> entry : statusUpdateListeners.entrySet()) {
             entry.getValue().onUpdate();
         }
+        BilibiliLiveChannel.sync(context, liveRoom);
     }
 
     public static void removeHistory(LiveRoom liveRoom, Context context){
+        if(!isLoaded) loadFormFile(context);
         Optional<LiveRoom> first = list.stream().filter(i -> {
             boolean flag = liveRoom.getId() == i.getId();
             if(liveRoom.getShortId() != null){
@@ -93,6 +98,7 @@ public class LiveRoomHistoryHolder {
             e.printStackTrace();
         }
         if(flag){
+            isLoaded = true;
             for (Map.Entry<Object, UpdateStatusListener> entry : statusUpdateListeners.entrySet()) {
                 entry.getValue().onUpdate();
             }
