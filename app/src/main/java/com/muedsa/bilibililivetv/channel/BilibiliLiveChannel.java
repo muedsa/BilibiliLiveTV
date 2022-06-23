@@ -39,7 +39,7 @@ public class BilibiliLiveChannel {
                 context.getContentResolver().delete(TvContractCompat.buildPreviewProgramUri(programOptional.get().getId()), null, null);
             }else{
                 if(programs.size() >= MAX_PROGRAMS_NUM){
-                    context.getContentResolver().delete(TvContractCompat.buildPreviewProgramUri(programs.get(MAX_PROGRAMS_NUM - 1).getId()), null, null);
+                    context.getContentResolver().delete(TvContractCompat.buildPreviewProgramUri(programs.get(0).getId()), null, null);
                 }
             }
             createProgramAndPublish(context, channelId, liveRoom);

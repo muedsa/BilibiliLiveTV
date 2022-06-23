@@ -34,10 +34,10 @@ public class LiveRoomHistoryHolder {
         removeHistory(liveRoom, context);
         list.add(0, liveRoom);
         saveToFile(context);
+        BilibiliLiveChannel.sync(context, liveRoom);
         for (Map.Entry<Object, UpdateStatusListener> entry : statusUpdateListeners.entrySet()) {
             entry.getValue().onUpdate();
         }
-        BilibiliLiveChannel.sync(context, liveRoom);
     }
 
     public static void removeHistory(LiveRoom liveRoom, Context context){
