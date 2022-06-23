@@ -156,4 +156,10 @@ public class BilibiliLiveChannel {
 //                .appendPath(resources.getResourceEntryName(id))
 //                .build();
 //    }
+
+    public static void clear(Context context) {
+        long channelId = getChannelId(context);
+        context.getContentResolver().delete(TvContractCompat.buildPreviewProgramsUriForChannel(channelId), null, null);
+        context.getContentResolver().delete(TvContractCompat.buildChannelUri(channelId), null, null);
+    }
 }

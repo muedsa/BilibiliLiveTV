@@ -1,6 +1,7 @@
 package com.muedsa.bilibililivetv.ui;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
@@ -35,6 +37,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.task.TaskRunner;
@@ -90,7 +93,7 @@ public class MainFragment extends BrowseSupportFragment {
     public void onDestroy() {
         super.onDestroy();
         if (null != mBackgroundTimer) {
-            Log.d(TAG, "onDestroy: " + mBackgroundTimer.toString());
+            Log.d(TAG, "onDestroy: " + mBackgroundTimer);
             mBackgroundTimer.cancel();
         }
         LiveRoomHistoryHolder.removeUpdateStatusListener(this);
@@ -129,6 +132,7 @@ public class MainFragment extends BrowseSupportFragment {
         GridItemPresenter mGridPresenter = new GridItemPresenter();
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
         gridRowAdapter.add(getResources().getString(R.string.clear_history));
+        gridRowAdapter.add(getResources().getString(R.string.clear_channel));
         //gridRowAdapter.add(getString(R.string.error_fragment));
         //gridRowAdapter.add(getResources().getString(R.string.personal_settings));
         rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
@@ -137,13 +141,13 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void prepareBackgroundManager() {
+        FragmentActivity activity = requireActivity();
+        mBackgroundManager = BackgroundManager.getInstance(activity);
+        mBackgroundManager.attach(activity.getWindow());
 
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        mBackgroundManager.attach(getActivity().getWindow());
-
-        mDefaultBackground = ContextCompat.getDrawable(getContext(), R.drawable.default_background);
+        mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
         mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        activity.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
 
     private void setupUIElements() {
@@ -153,10 +157,11 @@ public class MainFragment extends BrowseSupportFragment {
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
+        Context context = requireContext();
         // set fastLane (or headers) background color
-        setBrandColor(ContextCompat.getColor(getContext(), R.color.fastlane_background));
+        setBrandColor(ContextCompat.getColor(context, R.color.fastlane_background));
         // set search icon color
-        setSearchAffordanceColor(ContextCompat.getColor(getContext(), R.color.search_opaque));
+        setSearchAffordanceColor(ContextCompat.getColor(context, R.color.search_opaque));
     }
 
     private void setupEventListeners() {
@@ -175,7 +180,7 @@ public class MainFragment extends BrowseSupportFragment {
     private void updateBackground(String uri) {
         int width = mMetrics.widthPixels;
         int height = mMetrics.heightPixels;
-        Glide.with(getActivity())
+        Glide.with(requireActivity())
                 .load(uri)
                 .centerCrop()
                 .error(mDefaultBackground)
@@ -208,17 +213,18 @@ public class MainFragment extends BrowseSupportFragment {
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
             if (item instanceof LiveRoom) {
+                FragmentActivity activity = requireActivity();
                 LiveRoom liveRoom = (LiveRoom) item;
                 Log.d(TAG, "roomId: " + liveRoom.getId());
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
                 intent.putExtra(DetailsActivity.LIVE_ROOM, liveRoom);
 
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        getActivity(),
+                                activity,
                         ((ImageCardView) itemViewHolder.view).getMainImageView(),
                         DetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
-                getActivity().startActivity(intent, bundle);
+                activity.startActivity(intent, bundle);
             } else if (item instanceof String) {
                 String desc = (String) item;
                 if (desc.contains(getString(R.string.error_fragment))) {
@@ -229,6 +235,15 @@ public class MainFragment extends BrowseSupportFragment {
                             .setTitle(getString(R.string.clear_history_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> taskRunner.executeAsync(()
                                     -> LiveRoomHistoryHolder.clearHistory(getContext())))
+                            .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
+                            .create()
+                            .show();
+
+                }else if(desc.contains(getString(R.string.clear_channel))){
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(getString(R.string.clear_channel_alert))
+                            .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> taskRunner.executeAsync(()
+                                    -> BilibiliLiveChannel.clear(getContext())))
                             .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
                             .create()
                             .show();
@@ -258,12 +273,7 @@ public class MainFragment extends BrowseSupportFragment {
 
         @Override
         public void run() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    updateBackground(mBackgroundUri);
-                }
-            });
+            mHandler.post(() -> updateBackground(mBackgroundUri));
         }
     }
 

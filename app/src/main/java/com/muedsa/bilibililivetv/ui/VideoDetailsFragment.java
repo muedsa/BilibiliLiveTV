@@ -77,7 +77,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         mDetailsBackground = new DetailsSupportFragmentBackgroundController(this);
 
         mSelectedLiveRoom = (LiveRoom) requireActivity().getIntent()
-                .getParcelableExtra(DetailsActivity.LIVE_ROOM);
+                .getSerializableExtra(DetailsActivity.LIVE_ROOM);
 
         if (mSelectedLiveRoom != null && mSelectedLiveRoom.getId() > 0) {
 

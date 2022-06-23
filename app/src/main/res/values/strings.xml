@@ -10,6 +10,8 @@
     <string name="remove_history_alert">确定删除?</string>
     <string name="error_fragment">Error Fragment</string>
     <string name="personal_settings">Personal Settings</string>
+    <string name="clear_channel">清除首屏节目</string>
+    <string name="clear_channel_alert">确定清除首屏节目?</string>
     <string name="watch_trailer_title">播放</string>
     <string name="watch_trailer_play">PLAY</string>
     <string name="watch_trailer_loading">LOADING</string>
