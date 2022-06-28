@@ -13,7 +13,5 @@ public class ApiUrlContainer {
 
     public static String WS_CHAT = "wss://broadcastlv.chat.bilibili.com:443/sub";
 
-    public static String fillUrl(String url, Object... args){
-        return String.format(url, args);
-    }
+    public static String SEARCH_LIVE = "https://api.bilibili.com/x/web-interface/search/type?page=%d&page_size=%d&order=online&platform=android&keyword=%s&search_type=live";
 }

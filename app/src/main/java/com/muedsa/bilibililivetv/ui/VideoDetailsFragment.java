@@ -31,11 +31,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
-import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.task.RequestDanmuInfoTask;
 import com.muedsa.bilibililivetv.task.RequestLiveRoomInfoTask;
@@ -47,7 +47,7 @@ import com.muedsa.bilibililivetv.task.TaskRunner;
  * It shows a detailed view of video and its meta plus related videos.
  */
 public class VideoDetailsFragment extends DetailsSupportFragment {
-    private static final String TAG = "VideoDetailsFragment";
+    private static final String TAG = VideoDetailsFragment.class.getSimpleName();
 
     private static final int ACTION_NOTHING = -1;
     private static final int ACTION_WATCH_TRAILER = 1;
@@ -157,6 +157,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         updateBackground();
     }
     private void updateBackground(){
+        if(Strings.isNullOrEmpty(mSelectedLiveRoom.getSystemCoverImageUrl())) return;
+        Log.d(TAG, "updateBackground Glide, url:" + mSelectedLiveRoom.getSystemCoverImageUrl());
         Glide.with(requireActivity())
                 .asBitmap()
                 .centerCrop()
@@ -199,9 +201,10 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
     private void updateCardImage(){
         FragmentActivity activity = getActivity();
-        if(activity == null) return;
+        if(activity == null || Strings.isNullOrEmpty(mSelectedLiveRoom.getCoverImageUrl())) return;
         int width = convertDpToPixel(activity.getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = convertDpToPixel(activity.getApplicationContext(), DETAIL_THUMB_HEIGHT);
+        Log.d(TAG, "updateCardImage Glide, url: " + mSelectedLiveRoom.getCoverImageUrl());
         Glide.with(activity)
                 .load(mSelectedLiveRoom.getCoverImageUrl())
                 .centerCrop()

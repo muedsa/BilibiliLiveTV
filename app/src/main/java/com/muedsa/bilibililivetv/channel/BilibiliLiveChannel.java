@@ -34,7 +34,7 @@ public class BilibiliLiveChannel {
         try {
             long channelId = getChannelId(context);
             List<PreviewProgram> programs = getPrograms(context, channelId);
-            Optional<PreviewProgram> programOptional = programs.stream().findFirst().filter(p -> liveRoom.getId() == p.getInternalProviderFlag1());
+            Optional<PreviewProgram> programOptional = programs.stream().filter(p -> liveRoom.getId() == p.getInternalProviderFlag1()).findFirst();
             if (programOptional.isPresent()) {
                 context.getContentResolver().delete(TvContractCompat.buildPreviewProgramUri(programOptional.get().getId()), null, null);
             }else{

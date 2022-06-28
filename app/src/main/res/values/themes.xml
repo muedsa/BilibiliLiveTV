@@ -1,3 +1,10 @@
 <resources>
     <style name="Theme.BilibiliLiveTV" parent="@style/Theme.Leanback" />
+
+    <style name="LiveUserImageCardTheme" parent="@style/Theme.BilibiliLiveTV">
+        <item name="imageCardViewStyle">@style/LiveUserImageCardViewStyle</item>
+    </style>
+    <style name="LiveUserImageCardViewStyle" parent="@style/Widget.Leanback.ImageCardViewStyle">
+        <item name="lbImageCardViewType">Title</item>
+    </style>
 </resources>

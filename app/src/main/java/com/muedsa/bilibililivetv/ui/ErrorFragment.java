@@ -13,7 +13,7 @@ import com.muedsa.bilibililivetv.R;
  * This class demonstrates how to extend ErrorSupportFragment.
  */
 public class ErrorFragment extends ErrorSupportFragment {
-    private static final String TAG = "ErrorFragment";
+    private static final String TAG = ErrorFragment.class.getSimpleName();
     private static final boolean TRANSLUCENT = true;
 
     @Override

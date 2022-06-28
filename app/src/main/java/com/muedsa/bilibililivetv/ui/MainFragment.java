@@ -40,6 +40,7 @@ import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
+import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 
 import java.util.List;
@@ -47,12 +48,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainFragment extends BrowseSupportFragment {
-    private static final String TAG = "MainFragment";
+    private static final String TAG = MainFragment.class.getSimpleName();
 
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH = 200;
     private static final int GRID_ITEM_HEIGHT = 200;
     private static final int MAX_NUM_COLS = 8;
+    private static final int HEAD_TITLE_HISTORY = 1;
+    private static final int HEAD_TITLE_OTHER = 2;
 
     private final Handler mHandler = new Handler();
     private Drawable mDefaultBackground;
@@ -103,16 +106,17 @@ public class MainFragment extends BrowseSupportFragment {
         List<LiveRoom> list = LiveRoomHistoryHolder.getList();
 
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        CardPresenter cardPresenter = new CardPresenter();
+        LiveRoomPresenter liveRoomPresenter = new LiveRoomPresenter();
 
-        HeaderItem historyRecordHeader = new HeaderItem(0, "历史记录");
+        HeaderItem historyRecordHeader = new HeaderItem(HEAD_TITLE_HISTORY,
+                getResources().getString(R.string.head_title_history));
         int row = list.size() / MAX_NUM_COLS;
         int mod = list.size() % MAX_NUM_COLS;
         if(mod > 0){
             row++;
         }
         for(int rowIndex = 0; rowIndex < row; rowIndex++){
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(liveRoomPresenter);
             int max_num_cols = MAX_NUM_COLS;
             if(mod > 0 && rowIndex == row - 1){
                 max_num_cols = mod;
@@ -128,7 +132,8 @@ public class MainFragment extends BrowseSupportFragment {
             }
         }
 
-        HeaderItem gridHeader = new HeaderItem(1, "其他");
+        HeaderItem gridHeader = new HeaderItem(HEAD_TITLE_OTHER,
+                getResources().getString(R.string.head_title_other));
         GridItemPresenter mGridPresenter = new GridItemPresenter();
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
         gridRowAdapter.add(getResources().getString(R.string.clear_history));

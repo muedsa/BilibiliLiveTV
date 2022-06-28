@@ -11,8 +11,9 @@ import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
 import com.muedsa.bilibililiveapiclient.model.RoomInfo;
+import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
+import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
 
-import org.java_websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -104,4 +105,25 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertTrue(client.isOpen());
     }
 
+    @Test
+    public void searchLive() throws IOException {
+        BilibiliResponse<SearchAggregation> response = client.searchLive("1000", 1, 10);
+        Assertions.assertEquals(0L, response.getCode());
+        SearchAggregation searchAggregation = response.getData();
+        Assertions.assertNotNull(searchAggregation);
+        if(searchAggregation.getResult().getLiveRoom() != null){
+            logger.info("liveRoom search result:");
+            searchAggregation.getResult().getLiveRoom().forEach(liveRoom -> {
+                String message = String.format("roomId:%d, title:%s", liveRoom.getRoomId(), ApiUtil.removeSearchHighlight(liveRoom.getTitle()));
+                logger.info(message);
+            });
+        }
+        if(searchAggregation.getResult().getLiveUser() != null){
+            logger.info("liveUser search result:");
+            searchAggregation.getResult().getLiveUser().forEach(liveUser -> {
+                String message = String.format("roomId:%d, uname:%s", liveUser.getRoomId(),  ApiUtil.removeSearchHighlight(liveUser.getUname()));
+                logger.info(message);
+            });
+        }
+    }
 }
