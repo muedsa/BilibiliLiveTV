@@ -129,10 +129,13 @@ public class ExoPlayerDelegate {
     }
 
     public void resume(){
-        if(playbackTransportControlGlue != null
-                && playbackTransportControlGlue.isPrepared()
-                && !playbackTransportControlGlue.isPlaying()){
-            playbackTransportControlGlue.play();
+        if(playbackTransportControlGlue != null){
+            if(playbackTransportControlGlue.isPrepared()
+                    && !playbackTransportControlGlue.isPlaying()){
+                playbackTransportControlGlue.play();
+            }
+        }else{
+            init();
         }
     }
 

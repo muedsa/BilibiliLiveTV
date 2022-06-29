@@ -150,6 +150,8 @@ public class DanmakuDelegate {
             if(danmakuView.isPrepared() && danmakuView.isPaused()){
                 danmakuView.resume();
             }
+        }else{
+            init();
         }
     }
 
