@@ -1,9 +1,11 @@
 package com.muedsa.bilibililivetv.player;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
@@ -24,6 +26,7 @@ import master.flame.danmaku.danmaku.model.android.Danmakus;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 
 public class DanmakuDelegate {
+    private static final String TAG = DanmakuDelegate.class.getSimpleName();
 
     private final PlaybackVideoFragment fragment;
     private final LiveRoom liveRoom;
@@ -36,7 +39,6 @@ public class DanmakuDelegate {
     public DanmakuDelegate(@NonNull PlaybackVideoFragment fragment, @NonNull LiveRoom liveRoom){
         this.fragment = fragment;
         this.liveRoom = liveRoom;
-
     }
 
     public void init(){
@@ -95,12 +97,28 @@ public class DanmakuDelegate {
         chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId(), liveRoom.getDanmuWsToken());
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
+            public void onStart() {
+                if(BuildConfig.DEBUG){
+                    FragmentActivity activity = fragment.requireActivity();
+                    Toast.makeText(activity,
+                                    activity.getString(R.string.toast_msg_danmu_connect_success),
+                                    Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+
+            @Override
             public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent) {
                 addDanmaku(text, textSize, textColor, textShadowTransparent);
             }
 
             @Override
-            public void onClose() {
+            public void onClose(int code, String reason, boolean remote) {
+                FragmentActivity activity = fragment.requireActivity();
+                Toast.makeText(activity,
+                                String.format(activity.getString(R.string.toast_msg_danmu_connect_error), reason),
+                                Toast.LENGTH_LONG)
+                        .show();
                 if(fragment.isPlaying()){
                     startChatBroadcastWsClient();
                 }
@@ -115,8 +133,11 @@ public class DanmakuDelegate {
                 chatBroadcastWsClient.start();
             }
             catch (Exception error){
-                error.printStackTrace();
-                Toast.makeText(fragment.requireActivity(), "连接弹幕服务器失败: " + error.getMessage(), Toast.LENGTH_LONG)
+                Log.d(TAG, "startChatBroadcastWsClient: ", error);
+                FragmentActivity activity = fragment.requireActivity();
+                Toast.makeText(activity,
+                                String.format(activity.getString(R.string.toast_msg_danmu_connect_error), error.getLocalizedMessage()),
+                                Toast.LENGTH_LONG)
                         .show();
             }
         }
@@ -166,13 +187,18 @@ public class DanmakuDelegate {
     }
 
     public void danmakuReleaseSwitch(){
+        FragmentActivity activity = fragment.requireActivity();
         if(danmakuView != null){
             release();
-            Toast.makeText(fragment.requireActivity(), "弹幕关闭", Toast.LENGTH_SHORT)
+            Toast.makeText(activity,
+                            activity.getString(R.string.toast_msg_danmu_open),
+                            Toast.LENGTH_SHORT)
                     .show();
         }else{
             init();
-            Toast.makeText(fragment.requireActivity(), "弹幕开启", Toast.LENGTH_SHORT)
+            Toast.makeText(activity,
+                            activity.getString(R.string.toast_msg_danmu_stop),
+                            Toast.LENGTH_SHORT)
                     .show();
         }
     }

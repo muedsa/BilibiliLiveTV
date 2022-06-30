@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
 import androidx.leanback.media.PlaybackGlue;
@@ -15,6 +16,7 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
+import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 
 import java.util.ArrayList;
@@ -84,8 +86,10 @@ public class ExoPlayerDelegate {
             public void onLiveUrlChange(PlaybackGlue glue) {
                 super.onLiveUrlChange(glue);
                 exoPlayer.seekToNextMediaItem();
-                Toast.makeText(fragment.requireActivity(),
-                                "切换到线路" + (exoPlayer.getCurrentMediaItemIndex() + 1),
+                FragmentActivity activity = fragment.requireActivity();
+                Toast.makeText(activity,
+                                String.format(activity.getString(R.string.total_msg_change_play_url),
+                                        exoPlayer.getCurrentMediaItemIndex() + 1),
                                 Toast.LENGTH_SHORT)
                         .show();
             }
@@ -107,8 +111,9 @@ public class ExoPlayerDelegate {
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
             playbackTransportControlGlue.play();
         }else{
-            Toast.makeText(fragment.requireActivity(),
-                            "获取播放列表失败",
+            FragmentActivity activity = fragment.requireActivity();
+            Toast.makeText(activity,
+                            activity.getString(R.string.live_play_failure),
                             Toast.LENGTH_SHORT)
                     .show();
         }

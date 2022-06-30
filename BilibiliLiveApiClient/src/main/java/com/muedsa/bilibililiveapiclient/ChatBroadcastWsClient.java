@@ -39,8 +39,8 @@ public class ChatBroadcastWsClient {
         this.token = token;
         webSocketClient = new WebSocketClient(URI.create(ApiUrlContainer.WS_CHAT), new Draft_6455()) {
             @Override
-            public void onOpen(ServerHandshake handshakedata) {
-                //System.out.println("[Open]");
+            public void onOpen(ServerHandshake handshakeData) {
+                if(callBack != null) callBack.onStart();
             }
 
             @Override
@@ -78,8 +78,9 @@ public class ChatBroadcastWsClient {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                String message = String.format(Locale.CHINA, "[Close] code:%d reason:%s remote:%b", code, reason, remote);
-                System.out.println(message);
+                if(callBack != null){
+                    callBack.onClose(code, reason, remote);
+                }
             }
 
             @Override
@@ -132,13 +133,11 @@ public class ChatBroadcastWsClient {
     }
 
     public interface CallBack{
-//        void onOpen();
-//
-//        void onStart();
+        void onStart();
 
         void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent);
 
-        void onClose();
+        void onClose(int code, String reason, boolean remote);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -150,13 +149,17 @@ public class ChatBroadcastWsClient {
         client.setCallBack(new CallBack() {
 
             @Override
+            public void onStart() {
+            }
+
+            @Override
             public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent) {
                 String message = String.format(Locale.CHINA, "text:%s, textSize:%f, textColor:%d, textShadowTransparent:%b", text, textSize, textColor, textShadowTransparent);
                 System.out.println(message);
             }
 
             @Override
-            public void onClose() {
+            public void onClose(int code, String reason, boolean remote) {
 
             }
         });
