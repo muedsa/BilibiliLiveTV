@@ -5,4 +5,5 @@
     <color name="search_opaque">#ffffff</color>
     <color name="selected_background">#fb7299</color>
     <color name="default_background">#3d3d3d</color>
+    <color name="search_orb_icon_color">#40c5f1</color>
 </resources>

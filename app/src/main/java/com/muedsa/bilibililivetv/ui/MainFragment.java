@@ -165,8 +165,6 @@ public class MainFragment extends BrowseSupportFragment {
         Context context = requireContext();
         // set fastLane (or headers) background color
         setBrandColor(ContextCompat.getColor(context, R.color.fastlane_background));
-        // set search icon color
-        setSearchAffordanceColor(ContextCompat.getColor(context, R.color.search_opaque));
     }
 
     private void setupEventListeners() {
