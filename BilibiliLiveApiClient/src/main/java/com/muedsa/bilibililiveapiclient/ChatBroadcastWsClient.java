@@ -36,6 +36,7 @@ public class ChatBroadcastWsClient {
 
     public ChatBroadcastWsClient(long roomId, String token){
         this.roomId = roomId;
+        this.token = token;
         webSocketClient = new WebSocketClient(URI.create(ApiUrlContainer.WS_CHAT), new Draft_6455()) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
