@@ -1,10 +1,17 @@
 package com.muedsa.bilibililivetv.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.DisplayMetrics;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.SearchSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
@@ -13,10 +20,15 @@ import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.OnItemViewClickedListener;
+import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.FitCenter;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
@@ -30,6 +42,12 @@ import com.muedsa.bilibililivetv.task.RequestBilibiliSearchTask;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.GrayscaleTransformation;
+import jp.wasabeef.glide.transformations.MaskTransformation;
 
 public class SearchFragment extends SearchSupportFragment implements SearchSupportFragment.SearchResultProvider {
     private static final String TAG = SearchFragment.class.getSimpleName();
@@ -39,16 +57,97 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
 
     private ArrayObjectAdapter mRowsAdapter;
 
+    private final Handler mHandler = new Handler();
+    private static final int BACKGROUND_UPDATE_DELAY = 300;
+    private Drawable mDefaultBackground;
+    private DisplayMetrics mMetrics;
+    private Timer mBackgroundTimer;
+    private String mBackgroundUri;
+    private BackgroundManager mBackgroundManager;
+
     private TaskRunner taskRunner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prepareBackgroundManager();
+        setOnItemViewClickedListener(new ItemViewClickedListener());
+        setOnItemViewSelectedListener(new ItemViewSelectedListener());
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         setSearchResultProvider(this);
-        setOnItemViewClickedListener(new ItemViewClickedListener());
         taskRunner = TaskRunner.getInstance();
     }
+
+    private void prepareBackgroundManager() {
+        FragmentActivity activity = requireActivity();
+        mBackgroundManager = BackgroundManager.getInstance(activity);
+        mBackgroundManager.attach(activity.getWindow());
+        if(mBackgroundManager.getDrawable() == null) {
+            mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
+        }else{
+            mDefaultBackground = mBackgroundManager.getDrawable();
+        }
+        mMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        setBlurBackground(mDefaultBackground);
+    }
+
+    private void setBlurBackground(Drawable drawable) {
+        Glide.with(requireActivity())
+                .load(drawable)
+                .transform(new BlurTransformation(25, 3))
+                .error(mDefaultBackground)
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable drawable,
+                                                @Nullable Transition<? super Drawable> transition) {
+                        mBackgroundManager.setDrawable(drawable);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+    }
+
+    private void updateBackground(String uri) {
+        int width = mMetrics.widthPixels;
+        int height = mMetrics.heightPixels;
+        Glide.with(requireActivity())
+                .load(uri)
+                .transform(new FitCenter(), new BlurTransformation(25, 3))
+                .error(mDefaultBackground)
+                .into(new CustomTarget<Drawable>(width, height) {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable drawable,
+                                                @Nullable Transition<? super Drawable> transition) {
+                        mBackgroundManager.setDrawable(drawable);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+        mBackgroundTimer.cancel();
+    }
+
+    private void startBackgroundTimer() {
+        if (null != mBackgroundTimer) {
+            mBackgroundTimer.cancel();
+        }
+        mBackgroundTimer = new Timer();
+        mBackgroundTimer.schedule(new SearchFragment.UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
+    }
+
+    private class UpdateBackgroundTask extends TimerTask {
+        @Override
+        public void run() {
+            mHandler.post(() -> updateBackground(mBackgroundUri));
+        }
+    }
+
 
     @Override
     public ObjectAdapter getResultsAdapter() {
@@ -125,6 +224,23 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
                                 DetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
                 activity.startActivity(intent, bundle);
+            }
+        }
+    }
+
+    private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
+        @Override
+        public void onItemSelected(
+                Presenter.ViewHolder itemViewHolder,
+                Object item,
+                RowPresenter.ViewHolder rowViewHolder,
+                Row row) {
+            if (item instanceof LiveUser) {
+                mBackgroundUri = ((LiveUser) item).getUface();
+                startBackgroundTimer();
+            }else if(item instanceof LiveRoom){
+                mBackgroundUri = ((LiveRoom) item).getSystemCoverImageUrl();
+                startBackgroundTimer();
             }
         }
     }
