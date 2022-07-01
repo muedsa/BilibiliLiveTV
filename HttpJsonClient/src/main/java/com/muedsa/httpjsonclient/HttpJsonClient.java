@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,10 +54,27 @@ public class HttpJsonClient {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder sb = new StringBuilder();
         String line = null;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append("\n");
+        try{
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
         }
-        inputStream.close();
+        catch (IOException e) {
+            throw e;
+        }
+        finally {
+            safeClose(inputStream);
+            safeClose(reader);
+        }
         return sb.toString();
+    }
+    private void safeClose(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
