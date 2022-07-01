@@ -59,9 +59,6 @@ public class HttpJsonClient {
                 sb.append(line).append("\n");
             }
         }
-        catch (IOException e) {
-            throw e;
-        }
         finally {
             safeClose(inputStream);
             safeClose(reader);
