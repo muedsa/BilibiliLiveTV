@@ -5,4 +5,4 @@
 [![GitHub Releases](https://img.shields.io/github/downloads/MUedsa/BilibiliLiveTV/total?logo=github)](https://github.com/MUedsa/BilibiliLiveTV/releases)  
 [Leanback](https://developer.android.google.cn/training/tv/start/start#tv-libraries) + [ExoPlayer](https://github.com/google/ExoPlayer) + [DanmakuFlameMaster](https://github.com/bilibili/DanmakuFlameMaster)
 ## Usage
-Try to touch ![Search](https://fonts.gstatic.com/s/i/materialicons/search/v17/24px.svg)  
+Try to touch [![Search](https://fonts.gstatic.com/s/i/materialicons/search/v17/24px.svg)](https://github.com/MUedsa/BilibiliLiveTV/tree/master/screenshot)  
