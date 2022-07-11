@@ -1,0 +1,54 @@
+package com.muedsa.bilibililivetv.player;
+
+import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.leanback.widget.RowPresenter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class PlaybackTransportRowPresenter extends androidx.leanback.widget.PlaybackTransportRowPresenter {
+    private final Context context;
+    private final View.OnKeyListener keyListener;
+    private Timer timer;
+
+    public PlaybackTransportRowPresenter(Context context, View.OnKeyListener keyListener) {
+        this.context = context;
+        this.keyListener = keyListener;
+    }
+
+    @Override
+    protected void onBindRowViewHolder(RowPresenter.ViewHolder vh, Object item) {
+        super.onBindRowViewHolder(vh, item);
+        vh.setOnKeyListener(keyListener);
+        androidx.leanback.widget.PlaybackTransportRowPresenter.ViewHolder mvh = (androidx.leanback.widget.PlaybackTransportRowPresenter.ViewHolder) vh;
+        TextView durationView = mvh.getDurationView();
+        if(timer == null) {
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm",
+                        context.getResources().getConfiguration().getLocales().get(0));
+                @Override
+                public void run() {
+                    if(durationView != null) {
+                        final String clock = sdf.format(new Date());
+                        vh.view.post(() -> durationView.setText(clock));
+                    }
+                }
+            }, 100, 100);
+        }
+    }
+    @Override
+    protected void onUnbindRowViewHolder(RowPresenter.ViewHolder vh) {
+        super.onUnbindRowViewHolder(vh);
+        vh.setOnKeyListener(null);
+        if(timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+}

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.leanback.media.PlaybackGlue;
+import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.PlaybackControlsRow;
+import androidx.leanback.widget.PlaybackRowPresenter;
 
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.muedsa.bilibililivetv.R;
@@ -20,6 +22,22 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
 
     public PlaybackTransportControlGlue(Context context, LeanbackPlayerAdapter impl) {
         super(context, impl);
+    }
+
+    @Override
+    protected PlaybackRowPresenter onCreateRowPresenter() {
+        PlaybackTransportRowPresenter rowPresenter = new PlaybackTransportRowPresenter(getContext(),
+                PlaybackTransportControlGlue.this);
+        rowPresenter.setDescriptionPresenter(new AbstractDetailsDescriptionPresenter() {
+            @Override
+            protected void onBindDescription(ViewHolder
+                                                     viewHolder, Object obj) {
+                PlaybackTransportControlGlue glue = (PlaybackTransportControlGlue) obj;
+                viewHolder.getTitle().setText(glue.getTitle());
+                viewHolder.getSubtitle().setText(glue.getSubtitle());
+            }
+        });
+        return rowPresenter;
     }
 
     @Override
