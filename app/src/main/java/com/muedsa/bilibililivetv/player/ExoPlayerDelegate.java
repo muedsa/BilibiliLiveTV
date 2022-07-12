@@ -54,11 +54,10 @@ public class ExoPlayerDelegate {
             @Override
             public void onPlayerError(@NonNull PlaybackException error) {
                 Player.Listener.super.onPlayerError(error);
-                Toast.makeText(fragment.requireContext(), error.getMessage(), Toast.LENGTH_LONG)
+                Toast.makeText(context, error.getMessage(), Toast.LENGTH_LONG)
                         .show();
             }
         });
-
         playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
         playbackTransportControlGlue = new PlaybackTransportControlGlue(context, playerAdapter);
         playbackTransportControlGlue.setHost(glueHost);

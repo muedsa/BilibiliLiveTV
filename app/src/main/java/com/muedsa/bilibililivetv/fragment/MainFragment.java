@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.fragment;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -33,10 +33,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.activity.DetailsActivity;
+import com.muedsa.bilibililivetv.activity.SearchActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
@@ -138,8 +140,6 @@ public class MainFragment extends BrowseSupportFragment {
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
         gridRowAdapter.add(getResources().getString(R.string.clear_history));
         gridRowAdapter.add(getResources().getString(R.string.clear_channel));
-        //gridRowAdapter.add(getString(R.string.error_fragment));
-        //gridRowAdapter.add(getResources().getString(R.string.personal_settings));
         rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
 
         setAdapter(rowsAdapter);
@@ -156,7 +156,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void setupUIElements() {
-        //setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.bilibili_logo, null));
+        setBadgeDrawable(requireActivity().getResources().getDrawable(R.drawable.bilibili_logo, null));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
         // over title
         setHeadersState(HEADERS_ENABLED);
@@ -183,7 +183,7 @@ public class MainFragment extends BrowseSupportFragment {
     private void updateBackground(String uri) {
         int width = mMetrics.widthPixels;
         int height = mMetrics.heightPixels;
-        Glide.with(requireActivity())
+        GlideApp.with(requireActivity())
                 .load(uri)
                 .centerCrop()
                 .error(mDefaultBackground)
@@ -230,10 +230,7 @@ public class MainFragment extends BrowseSupportFragment {
                 activity.startActivity(intent, bundle);
             } else if (item instanceof String) {
                 String desc = (String) item;
-                if (desc.contains(getString(R.string.error_fragment))) {
-                    Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);
-                    startActivity(intent);
-                }else if(desc.contains(getString(R.string.clear_history))){
+                if(desc.contains(getString(R.string.clear_history))){
                     new AlertDialog.Builder(getContext())
                             .setTitle(getString(R.string.clear_history_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> taskRunner.executeAsync(()

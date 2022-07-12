@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,10 +6,10 @@ import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.common.base.Strings;
-import com.muedsa.bilibililiveapiclient.model.RoomInfo;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
+import com.muedsa.bilibililivetv.fragment.MainFragment;
 
 import java.util.List;
 

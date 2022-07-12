@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.fragment;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class ErrorFragment extends ErrorSupportFragment {
         setTitle(getResources().getString(R.string.app_name));
     }
 
-    void setErrorContent() {
+    public void setErrorContent() {
         setImageDrawable(ContextCompat.getDrawable(getContext(), androidx.leanback.R.drawable.lb_ic_sad_cloud));
         setMessage(getResources().getString(R.string.error_fragment_message));
         setDefaultBackground(TRANSLUCENT);

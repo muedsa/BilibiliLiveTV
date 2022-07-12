@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,10 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.fragment.ErrorFragment;
+import com.muedsa.bilibililivetv.fragment.MainFragment;
 
-/*
- * BrowseErrorActivity shows how to use ErrorFragment
- */
 public class BrowseErrorActivity extends FragmentActivity {
     private static final int TIMER_DELAY = 3000;
     private static final int SPINNER_WIDTH = 100;

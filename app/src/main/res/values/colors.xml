@@ -1,4 +1,5 @@
 <resources>
+    <color name="primary">#fb7299</color>
     <color name="background_gradient_start">#000000</color>
     <color name="background_gradient_end">#DDDDDD</color>
     <color name="fastlane_background">#fb7299</color>

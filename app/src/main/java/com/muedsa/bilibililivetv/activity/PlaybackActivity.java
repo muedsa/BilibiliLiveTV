@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.activity;
 
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -6,6 +6,7 @@ import android.view.WindowManager;
 import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 
 /**
  * Loads {@link PlaybackVideoFragment}.
@@ -19,7 +20,7 @@ public class PlaybackActivity extends FragmentActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.playback_fragment, new PlaybackVideoFragment())
+                    .replace(R.id.activity_playback, new PlaybackVideoFragment())
                     .commit();
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

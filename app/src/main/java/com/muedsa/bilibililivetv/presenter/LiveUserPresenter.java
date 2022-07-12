@@ -10,6 +10,7 @@ import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 
 import com.bumptech.glide.Glide;
+import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveUser;
 
@@ -69,7 +70,7 @@ public class LiveUserPresenter extends Presenter {
             cardView.setTitleText(liveUser.getUname());
             cardView.setContentDescription(liveUser.getLiveStatusDesc(cardView.getContext().getResources()));
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
-            Glide.with(viewHolder.view.getContext())
+            GlideApp.with(viewHolder.view.getContext())
                     .load(liveUser.getUface())
                     .centerCrop()
                     .error(mDefaultCardImage)

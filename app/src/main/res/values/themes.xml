@@ -1,5 +1,8 @@
 <resources>
     <style name="Theme.BilibiliLiveTV" parent="@style/Theme.Leanback">
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="searchOrbViewStyle">@style/CustomSearchOrbView</item>
     </style>
     <style name="CustomSearchOrbView" parent="@style/Widget.Leanback.SearchOrbViewStyle">

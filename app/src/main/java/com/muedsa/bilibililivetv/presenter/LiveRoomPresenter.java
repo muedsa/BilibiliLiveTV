@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
+import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
@@ -77,7 +77,7 @@ public class LiveRoomPresenter extends Presenter {
             cardView.setTitleText(liveRoom.getTitle());
             cardView.setContentText(liveRoom.getUname());
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
-            Glide.with(viewHolder.view.getContext())
+            GlideApp.with(viewHolder.view.getContext())
                     .load(liveRoom.getCoverImageUrl())
                     .centerCrop()
                     .error(mDefaultCardImage)

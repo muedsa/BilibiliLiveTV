@@ -4,6 +4,6 @@
     android:id="@+id/search_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SearchActivity"
+    tools:context=".activity.SearchActivity"
     tools:deviceIds="tv">
 </FrameLayout>

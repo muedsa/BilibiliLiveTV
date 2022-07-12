@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.fragment;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -9,7 +9,6 @@ import android.util.DisplayMetrics;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.SearchSupportFragment;
@@ -25,12 +24,13 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
+import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveUser;
@@ -46,8 +46,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
-import jp.wasabeef.glide.transformations.GrayscaleTransformation;
-import jp.wasabeef.glide.transformations.MaskTransformation;
 
 public class SearchFragment extends SearchSupportFragment implements SearchSupportFragment.SearchResultProvider {
     private static final String TAG = SearchFragment.class.getSimpleName();
@@ -82,18 +80,16 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         FragmentActivity activity = requireActivity();
         mBackgroundManager = BackgroundManager.getInstance(activity);
         mBackgroundManager.attach(activity.getWindow());
-        if(mBackgroundManager.getDrawable() == null) {
-            mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
-        }else{
-            mDefaultBackground = mBackgroundManager.getDrawable();
-        }
         mMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-        setBlurBackground(mDefaultBackground);
+        if(mBackgroundManager.getDrawable() != null) {
+            mDefaultBackground = mBackgroundManager.getDrawable();
+            setBlurBackground(mDefaultBackground);
+        }
     }
 
     private void setBlurBackground(Drawable drawable) {
-        Glide.with(requireActivity())
+        GlideApp.with(requireActivity())
                 .load(drawable)
                 .transform(new BlurTransformation(25, 3))
                 .error(mDefaultBackground)
@@ -114,7 +110,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     private void updateBackground(String uri) {
         int width = mMetrics.widthPixels;
         int height = mMetrics.heightPixels;
-        Glide.with(requireActivity())
+        GlideApp.with(requireActivity())
                 .load(uri)
                 .transform(new FitCenter(), new BlurTransformation(25, 3))
                 .error(mDefaultBackground)

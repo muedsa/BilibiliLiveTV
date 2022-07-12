@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,24 +28,24 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
+import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.activity.DetailsActivity;
+import com.muedsa.bilibililivetv.activity.MainActivity;
+import com.muedsa.bilibililivetv.activity.PlaybackActivity;
 import com.muedsa.bilibililivetv.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
+import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.task.RequestDanmuInfoTask;
 import com.muedsa.bilibililivetv.task.RequestLiveRoomInfoTask;
 import com.muedsa.bilibililivetv.task.RequestPlayUrlTask;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 
-/*
- * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
- * It shows a detailed view of video and its meta plus related videos.
- */
 public class VideoDetailsFragment extends DetailsSupportFragment {
     private static final String TAG = VideoDetailsFragment.class.getSimpleName();
 
@@ -154,12 +154,11 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
     private void initializeBackground() {
         mDetailsBackground.enableParallax();
-        updateBackground();
     }
     private void updateBackground(){
         if(Strings.isNullOrEmpty(mSelectedLiveRoom.getSystemCoverImageUrl())) return;
         Log.d(TAG, "updateBackground Glide, url:" + mSelectedLiveRoom.getSystemCoverImageUrl());
-        Glide.with(requireActivity())
+        GlideApp.with(requireActivity())
                 .asBitmap()
                 .centerCrop()
                 .error(R.drawable.default_background)
@@ -185,7 +184,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         detailsOverviewRow = new DetailsOverviewRow(mSelectedLiveRoom);
         detailsOverviewRow.setImageDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.no_cover));
-        updateCardImage();
 
         ArrayObjectAdapter actionAdapter = new ArrayObjectAdapter();
         playAction = new Action(ACTION_WATCH_TRAILER, getResources().getString(R.string.watch_trailer_title), getResources().getString(R.string.watch_trailer_loading));
@@ -205,7 +203,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         int width = convertDpToPixel(activity.getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = convertDpToPixel(activity.getApplicationContext(), DETAIL_THUMB_HEIGHT);
         Log.d(TAG, "updateCardImage Glide, url: " + mSelectedLiveRoom.getCoverImageUrl());
-        Glide.with(activity)
+        GlideApp.with(activity)
                 .load(mSelectedLiveRoom.getCoverImageUrl())
                 .centerCrop()
                 .error(R.drawable.no_cover)

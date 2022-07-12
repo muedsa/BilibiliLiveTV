@@ -11,7 +11,7 @@ import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveRoom;
-import com.muedsa.bilibililivetv.ui.PlaybackVideoFragment;
+import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 
 import java.util.HashMap;
 
@@ -36,8 +36,9 @@ public class DanmakuDelegate {
     private BaseDanmakuParser danmakuParser;
     private ChatBroadcastWsClient chatBroadcastWsClient;
 
-    public DanmakuDelegate(@NonNull PlaybackVideoFragment fragment, @NonNull LiveRoom liveRoom){
+    public DanmakuDelegate(@NonNull PlaybackVideoFragment fragment, IDanmakuView danmakuView, @NonNull LiveRoom liveRoom){
         this.fragment = fragment;
+        this.danmakuView = danmakuView;
         this.liveRoom = liveRoom;
     }
 
@@ -50,7 +51,7 @@ public class DanmakuDelegate {
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
         overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
 
-        danmakuView = fragment.requireActivity().findViewById(R.id.sv_danmaku);
+        //danmakuView = fragment.requireActivity().findViewById(R.id.sv_danmaku);
 
         danmakuContext = DanmakuContext.create();
         danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)

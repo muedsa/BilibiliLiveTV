@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.ui;
+package com.muedsa.bilibililivetv.presenter;
 
 import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
