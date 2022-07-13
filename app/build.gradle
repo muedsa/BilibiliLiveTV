@@ -41,10 +41,8 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.0'
     implementation 'com.google.android.exoplayer:extension-leanback:2.18.0'
 
-    implementation 'com.alibaba:fastjson:1.2.79'
-
     implementation project(path: ':repository:DanmakuFlameMaster')
-    implementation 'com.github.ctiao:ndkbitmap-armv7a:0.9.21'
-    implementation 'com.github.ctiao:ndkbitmap-armv5:0.9.21'
-    implementation 'com.github.ctiao:ndkbitmap-x86:0.9.21'
+    implementation 'com.github.ctiao:ndkbitmap-armv7a:0.9.24'
+    implementation 'com.github.ctiao:ndkbitmap-armv5:0.9.24'
+    implementation 'com.github.ctiao:ndkbitmap-x86:0.9.24'
 }

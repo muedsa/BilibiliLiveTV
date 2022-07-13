@@ -1,6 +1,6 @@
 package com.muedsa.bilibililiveapiclient.model.search;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson2.annotation.JSONField;
 
 public class PageInfo {
 

@@ -8,8 +8,8 @@ java {
 }
 
 dependencies {
-    implementation project(path: ':HttpJsonClient')
-    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+    api project(path: ':HttpJsonClient')
+    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
 
     testImplementation platform('org.junit:junit-bom:5.8.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'

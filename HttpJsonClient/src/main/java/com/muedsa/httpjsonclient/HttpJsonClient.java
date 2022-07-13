@@ -1,7 +1,7 @@
 package com.muedsa.httpjsonclient;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -53,7 +53,7 @@ public class HttpJsonClient {
     private String convertStreamToString(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder sb = new StringBuilder();
-        String line = null;
+        String line;
         try{
             while ((line = reader.readLine()) != null) {
                 sb.append(line).append("\n");

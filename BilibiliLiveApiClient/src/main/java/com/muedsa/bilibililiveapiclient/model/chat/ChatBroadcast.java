@@ -1,6 +1,6 @@
 package com.muedsa.bilibililiveapiclient.model.chat;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson2.annotation.JSONField;
 
 public class ChatBroadcast {
     public static final String CMD_DANMU_MSG = "DANMU_MSG";
