@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.RoomInfo;
 import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 import java.util.Objects;
 

@@ -17,7 +17,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 import java.util.ArrayList;
 import java.util.List;

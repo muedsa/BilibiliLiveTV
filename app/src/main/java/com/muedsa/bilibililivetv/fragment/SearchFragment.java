@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +32,7 @@ import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveUser;
 import com.muedsa.bilibililivetv.model.LiveUserConvert;
@@ -163,6 +164,8 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
                 mRowsAdapter.clear();
                 loadLiveUserSearchData(searchResult.getLiveUser());
                 loadLiveRoomSearchData(searchResult.getLiveRoom());
+            }else if(result.what == Message.MessageType.FAIL){
+                Toast.makeText(requireActivity(), (String) result.obj, Toast.LENGTH_SHORT).show();
             }
         });
         return true;
@@ -187,7 +190,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         if(liveRoomList == null || liveRoomList.isEmpty()){
             return;
         }
-        LiveRoomPresenter liveRoomPresenter = new LiveRoomPresenter();
+        LiveRoomPresenter liveRoomPresenter = new LiveRoomPresenter(null);
         ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(liveRoomPresenter);
         for (com.muedsa.bilibililiveapiclient.model.search.LiveRoom searchLiveRoom : liveRoomList) {
             LiveRoom liveRoom = LiveRoomConvert.buildWithRoomId(0);

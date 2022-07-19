@@ -24,6 +24,7 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -32,19 +33,24 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
+import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.activity.MainActivity;
 import com.muedsa.bilibililivetv.activity.PlaybackActivity;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
+import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
-import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.task.RequestDanmuInfoTask;
 import com.muedsa.bilibililivetv.task.RequestLiveRoomInfoTask;
 import com.muedsa.bilibililivetv.task.RequestPlayUrlTask;
 import com.muedsa.bilibililivetv.task.TaskRunner;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VideoDetailsFragment extends DetailsSupportFragment {
     private static final String TAG = VideoDetailsFragment.class.getSimpleName();
@@ -69,19 +75,25 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
     private TaskRunner taskRunner;
 
+    private LiveRoomViewModel liveRoomViewModel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate DetailsFragment");
         super.onCreate(savedInstanceState);
 
         mDetailsBackground = new DetailsSupportFragmentBackgroundController(this);
+        FragmentActivity activity = requireActivity();
 
-        mSelectedLiveRoom = (LiveRoom) requireActivity().getIntent()
+        mSelectedLiveRoom = (LiveRoom) activity.getIntent()
                 .getSerializableExtra(DetailsActivity.LIVE_ROOM);
 
         if (mSelectedLiveRoom != null && mSelectedLiveRoom.getId() > 0) {
 
             taskRunner = TaskRunner.getInstance();
+            liveRoomViewModel = new ViewModelProvider(VideoDetailsFragment.this,
+                    new LiveRoomViewModel.Factory(((App) activity.getApplication()).getDatabase().getLiveRoomDaoWrapper()))
+                    .get(LiveRoomViewModel.class);
 
             mPresenterSelector = new ClassPresenterSelector();
             mAdapter = new ArrayObjectAdapter(mPresenterSelector);
@@ -97,7 +109,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             initializePlayUrl();
             initializeLiveRoomInfo();
         } else {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
+            Intent intent = new Intent(activity, MainActivity.class);
             startActivity(intent);
         }
     }
@@ -108,7 +120,12 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             switch (msg.what){
                 case SUCCESS:
                     LiveRoomConvert.updateRoomInfo(mSelectedLiveRoom, (LargeInfo)msg.obj);
-                    LiveRoomHistoryHolder.addHistory(mSelectedLiveRoom, getContext());
+                    liveRoomViewModel
+                            .sync(mSelectedLiveRoom)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+                    BilibiliLiveChannel.sync(requireActivity(), mSelectedLiveRoom);
                     updateCardImage();
                     updateBackground();
                     liveStatusAction.setLabel2(mSelectedLiveRoom.getLiveStatusDesc(getResources()));

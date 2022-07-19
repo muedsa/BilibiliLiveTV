@@ -18,7 +18,7 @@ import androidx.tvprovider.media.tv.TvContractCompat;
 
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 import java.util.ArrayList;
 import java.util.List;

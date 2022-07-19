@@ -3,7 +3,6 @@ package com.muedsa.bilibililivetv.fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,11 +11,10 @@ import androidx.leanback.media.PlaybackGlue;
 
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.player.DanmakuDelegate;
 import com.muedsa.bilibililivetv.player.ExoPlayerDelegate;
 
-import master.flame.danmaku.controller.IDanmakuView;
 import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
 
 /**

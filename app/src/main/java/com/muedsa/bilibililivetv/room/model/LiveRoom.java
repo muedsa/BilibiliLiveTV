@@ -1,27 +1,63 @@
-package com.muedsa.bilibililivetv.model;
+package com.muedsa.bilibililivetv.room.model;
 
 import android.content.res.Resources;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.room.TypeConvertor;
 
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-public class LiveRoom implements Serializable {
 
+@Entity(tableName = "live_room", indices = {@Index(value = "update_at", orders = Index.Order.DESC)})
+public class LiveRoom extends BaseModel implements Serializable {
+
+    @Ignore
     public static final Pattern ID_PATTERN =  Pattern.compile("^\\d+$");
 
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     private long id;
+
+    @ColumnInfo(name = "short_id")
     private Long shortId;
+
+    @ColumnInfo(name = "title")
     private String title;
+
+    @ColumnInfo(name = "uname")
     private String uname;
+
+    @ColumnInfo(name = "description")
     private String description;
+
+    @ColumnInfo(name = "cover_image_url")
     private String coverImageUrl;
+
+    @ColumnInfo(name = "system_cover_image_url")
     private String systemCoverImageUrl;
+
+    @ColumnInfo(name = "background_image_url")
     private String backgroundImageUrl;
+
+    @ColumnInfo(name = "play_url_arr")
+    @TypeConverters(TypeConvertor.class)
     private String[] playUrlArr;
+
+    @ColumnInfo(name = "live_status")
     private int liveStatus;
+
+    @ColumnInfo(name = "online_num")
     private int onlineNum;
+
+    @ColumnInfo(name = "danmu_ws_token")
     private String danmuWsToken;
 
     public LiveRoom() {

@@ -17,7 +17,7 @@ public class TaskRunner {
     private static final TaskRunner instance = new TaskRunner();
 
     private final Executor executor =  new ThreadPoolExecutor(5, 128, 1,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+            TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private final Handler handler = new Handler(Looper.getMainLooper());
 
 
@@ -40,12 +40,11 @@ public class TaskRunner {
             try {
                 result = callable.call();
             } catch (Exception e) {
+                result = Message.obtain(Message.MessageType.FAIL, e.getMessage());
                 Log.e(TAG, "executeAsync failure", e);
             } finally {
                 final Message finalResult = result == null? Message.obtain() : result;
-                handler.post(() -> {
-                    callback.onComplete(finalResult);
-                });
+                handler.post(() -> callback.onComplete(finalResult));
             }
         });
     }

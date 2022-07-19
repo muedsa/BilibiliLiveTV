@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 
 import java.util.HashMap;

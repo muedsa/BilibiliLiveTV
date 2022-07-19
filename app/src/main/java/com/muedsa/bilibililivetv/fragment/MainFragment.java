@@ -25,6 +25,7 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -35,19 +36,26 @@ import android.widget.Toast;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
-import com.muedsa.bilibililivetv.model.LiveRoom;
-import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
+import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = MainFragment.class.getSimpleName();
@@ -66,7 +74,10 @@ public class MainFragment extends BrowseSupportFragment {
     private String mBackgroundUri;
     private BackgroundManager mBackgroundManager;
 
+    private LiveRoomViewModel liveRoomViewModel;
+    private final CompositeDisposable disposable = new CompositeDisposable();
     private TaskRunner taskRunner;
+    private LiveRoomPresenter.CardLongClickListener liveRoomCardLongClickListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,8 +96,16 @@ public class MainFragment extends BrowseSupportFragment {
 
 
     private void initRows(){
-        taskRunner.executeAsync(
-                () -> LiveRoomHistoryHolder.loadFormFile(getContext()));
+        liveRoomViewModel = new ViewModelProvider(MainFragment.this,
+                new LiveRoomViewModel.Factory(((App) requireActivity().getApplication()).getDatabase().getLiveRoomDaoWrapper()))
+                .get(LiveRoomViewModel.class);
+        disposable.add(liveRoomViewModel.getLiveRooms()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(liveRooms -> {
+                    Log.i(TAG, "load liveRooms size: " + liveRooms.size());
+                    loadRows(liveRooms);
+                }));
     }
 
     @Override
@@ -101,14 +120,26 @@ public class MainFragment extends BrowseSupportFragment {
             Log.d(TAG, "onDestroy: " + mBackgroundTimer);
             mBackgroundTimer.cancel();
         }
-        LiveRoomHistoryHolder.removeUpdateStatusListener(this);
+        disposable.dispose();
     }
 
-    private void loadRows() {
-        List<LiveRoom> list = LiveRoomHistoryHolder.getList();
+    private void loadRows(List<LiveRoom> list) {
+        FragmentActivity activity = requireActivity();
 
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        LiveRoomPresenter liveRoomPresenter = new LiveRoomPresenter();
+        if(liveRoomCardLongClickListener == null) {
+            liveRoomCardLongClickListener = liveRoom -> new AlertDialog.Builder(activity)
+                    .setTitle(activity.getResources().getString(R.string.remove_history_alert))
+                    .setPositiveButton(activity.getResources().getString(R.string.alert_yes), (dialog, which) ->
+                            liveRoomViewModel.delete(liveRoom)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe())
+                    .setNegativeButton(activity.getResources().getString(R.string.alert_no), (dialog, which) -> {})
+                    .create()
+                    .show();
+        }
+        LiveRoomPresenter liveRoomPresenter = new LiveRoomPresenter(liveRoomCardLongClickListener);
 
         HeaderItem historyRecordHeader = new HeaderItem(HEAD_TITLE_HISTORY,
                 getResources().getString(R.string.head_title_history));
@@ -175,9 +206,6 @@ public class MainFragment extends BrowseSupportFragment {
 
         setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
-
-        LiveRoomHistoryHolder.addUpdateStatusListener(MainFragment.this, () ->
-                mHandler.post(MainFragment.this::loadRows));
     }
 
     private void updateBackground(String uri) {
@@ -233,8 +261,11 @@ public class MainFragment extends BrowseSupportFragment {
                 if(desc.contains(getString(R.string.clear_history))){
                     new AlertDialog.Builder(getContext())
                             .setTitle(getString(R.string.clear_history_alert))
-                            .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> taskRunner.executeAsync(()
-                                    -> LiveRoomHistoryHolder.clearHistory(getContext())))
+                            .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> liveRoomViewModel
+                                    .clear()
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe())
                             .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
                             .create()
                             .show();

@@ -1,8 +1,8 @@
 package com.muedsa.bilibililivetv.presenter;
 
-import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.Nullable;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 import androidx.core.content.ContextCompat;
@@ -12,9 +12,7 @@ import android.view.ViewGroup;
 
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.model.LiveRoom;
-import com.muedsa.bilibililivetv.model.LiveRoomHistoryHolder;
-import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
@@ -28,6 +26,12 @@ public class LiveRoomPresenter extends Presenter {
     private static int sSelectedBackgroundColor;
     private static int sDefaultBackgroundColor;
     private Drawable mDefaultCardImage;
+
+    private CardLongClickListener cardLongClickListener;
+
+    public LiveRoomPresenter(@Nullable CardLongClickListener cardLongClickListener) {
+        this.cardLongClickListener = cardLongClickListener;
+    }
 
     private static void updateCardBackgroundColor(ImageCardView view, boolean selected) {
         int color = selected ? sSelectedBackgroundColor : sDefaultBackgroundColor;
@@ -77,22 +81,19 @@ public class LiveRoomPresenter extends Presenter {
             cardView.setTitleText(liveRoom.getTitle());
             cardView.setContentText(liveRoom.getUname());
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
+            if(cardLongClickListener != null) {
+                cardView.setOnLongClickListener(v -> {
+                    if(cardLongClickListener != null) {
+                        cardLongClickListener.onLongClick(liveRoom);
+                    }
+                    return true;
+                });
+            }
             GlideApp.with(viewHolder.view.getContext())
                     .load(liveRoom.getCoverImageUrl())
                     .centerCrop()
                     .error(mDefaultCardImage)
                     .into(cardView.getMainImageView());
-            cardView.setOnLongClickListener(v -> {
-                new AlertDialog.Builder(v.getContext())
-                        .setTitle(v.getResources().getString(R.string.remove_history_alert))
-                        .setPositiveButton(v.getResources().getString(R.string.alert_yes), (dialog, which) ->
-                                TaskRunner.getInstance().executeAsync(() ->
-                                        LiveRoomHistoryHolder.removeHistory(liveRoom, v.getContext())))
-                        .setNegativeButton(v.getResources().getString(R.string.alert_no), (dialog, which) -> {})
-                        .create()
-                        .show();
-                return true;
-            });
         }
     }
 
@@ -103,5 +104,10 @@ public class LiveRoomPresenter extends Presenter {
         // Remove references to images so that the garbage collector can free up memory
         cardView.setBadgeImage(null);
         cardView.setMainImage(null);
+        cardLongClickListener = null;
+    }
+
+    public interface CardLongClickListener {
+        void onLongClick(LiveRoom liveRoom);
     }
 }

@@ -3,7 +3,7 @@ package com.muedsa.bilibililivetv.presenter;
 import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.annotation.JSONField;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class LiveRoom {
 
@@ -28,7 +29,7 @@ public class LiveRoom {
     @JSONField(name = "live_status")
     private Integer liveStatus;
 
-    @JSONField(name = "live_time", format = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(name = "live_time", format = "yyyy-MM-dd HH:mm:ss", locale = "zh_CN")
     private Date liveTime;
 
     @JSONField(name = "online")

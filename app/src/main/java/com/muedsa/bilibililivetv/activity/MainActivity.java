@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.model.LiveRoom;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.fragment.MainFragment;
 

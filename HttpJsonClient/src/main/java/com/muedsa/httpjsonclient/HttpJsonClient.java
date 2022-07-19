@@ -24,6 +24,7 @@ public class HttpJsonClient {
         URLConnection urlConnection = urlObj.openConnection();
         urlConnection.setRequestProperty("User-Agent", UserAgent);
         String result = convertStreamToString(urlConnection.getInputStream());
+        result = beforeJsonParse(result);
         return JSON.parseObject(result, type);
     }
 
@@ -47,6 +48,7 @@ public class HttpJsonClient {
         urlConnection.setDoOutput(true);
         urlConnection.getOutputStream().write(postData.toString().getBytes(StandardCharsets.UTF_8));
         String result = convertStreamToString(urlConnection.getInputStream());
+        result = beforeJsonParse(result);
         return JSON.parseObject(result, type);
     }
 
@@ -73,5 +75,9 @@ public class HttpJsonClient {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String beforeJsonParse(String json) {
+        return SpecialJsonUtil.fixDateTime(json);
     }
 }
