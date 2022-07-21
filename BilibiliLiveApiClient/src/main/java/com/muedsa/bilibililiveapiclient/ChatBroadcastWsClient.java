@@ -60,6 +60,22 @@ public class ChatBroadcastWsClient {
                                     boolean textShadowTransparent = "true".equalsIgnoreCase(propertyJsonArray.getString(11));
                                     String text = infoJsonArray.getString(1);
                                     callBack.onReceiveDanmu(text, textSize, textColor, textShadowTransparent);
+                                }else if(ChatBroadcast.CMD_SUPER_CHAT_MESSAGE.equals(cmd)){
+                                    JSONObject dataJsonData = jsonObject.getJSONObject("data");
+                                    String message = dataJsonData.getString("message");
+                                    String messageFontColor = dataJsonData.getString("message_font_color");
+                                    JSONObject userInfoJsonObject = dataJsonData.getJSONObject("user_info");
+                                    String uname = userInfoJsonObject.getString("uname");
+                                    callBack.onReceiveSuperChatMessage(message, messageFontColor, uname);
+                                }else if(ChatBroadcast.CMD_SEND_GIFT.equals(cmd)){
+                                    JSONObject dataJsonData = jsonObject.getJSONObject("data");
+                                    String action = dataJsonData.getString("action");
+                                    String giftName = dataJsonData.getString("giftName");
+                                    Integer num = dataJsonData.getInteger("num");
+                                    String uname = dataJsonData.getString("uname");
+                                    callBack.onReceiveSendGift(action, giftName, num, uname);
+                                }else{
+                                    callBack.onReceiveOtherMessage(msg);
                                 }
                             }
                             catch (Exception e){
@@ -137,6 +153,12 @@ public class ChatBroadcastWsClient {
 
         void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent);
 
+        void onReceiveSuperChatMessage(String message, String messageFontColor, String uname);
+
+        void onReceiveSendGift(String action, String giftName, Integer num, String uname);
+
+        void onReceiveOtherMessage(String message);
+
         void onClose(int code, String reason, boolean remote);
     }
 
@@ -154,7 +176,24 @@ public class ChatBroadcastWsClient {
 
             @Override
             public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent) {
-                String message = String.format(Locale.CHINA, "text:%s, textSize:%f, textColor:%d, textShadowTransparent:%b", text, textSize, textColor, textShadowTransparent);
+                //String message = String.format(Locale.CHINA, "text:%s, textSize:%f, textColor:%d, textShadowTransparent:%b", text, textSize, textColor, textShadowTransparent);
+                //System.out.println(message);
+            }
+
+            @Override
+            public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname) {
+                //String m = String.format(Locale.CHINA, "[SC]%s:%s, textColor:%s", uname, message, messageFontColor);
+                //System.out.println(m);
+            }
+
+            @Override
+            public void onReceiveSendGift(String action, String giftName, Integer num, String uname) {
+                String m = String.format(Locale.CHINA, "[礼物]%s%s%sX%d", uname, action, giftName, num);
+                System.out.println(m);
+            }
+
+            @Override
+            public void onReceiveOtherMessage(String message) {
                 System.out.println(message);
             }
 

@@ -36,6 +36,10 @@ public class DanmakuDelegate {
     private BaseDanmakuParser danmakuParser;
     private ChatBroadcastWsClient chatBroadcastWsClient;
 
+    private int giftDanmakuType = 0;
+    private int scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
+
+
     public DanmakuDelegate(@NonNull PlaybackVideoFragment fragment, IDanmakuView danmakuView, @NonNull LiveRoom liveRoom){
         this.fragment = fragment;
         this.danmakuView = danmakuView;
@@ -45,13 +49,14 @@ public class DanmakuDelegate {
     public void init(){
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5); // 滚动弹幕最大显示5行
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5);
+        maxLinesPair.put(BaseDanmaku.TYPE_FIX_TOP, 5);
+        maxLinesPair.put(BaseDanmaku.TYPE_FIX_BOTTOM, 5);
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
         overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
-
-        //danmakuView = fragment.requireActivity().findViewById(R.id.sv_danmaku);
+        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_BOTTOM, true);
 
         danmakuContext = DanmakuContext.create();
         danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
@@ -114,6 +119,34 @@ public class DanmakuDelegate {
             }
 
             @Override
+            public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname) {
+                if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
+                        || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
+                        || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
+                        || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
+                        || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
+                    String text = "[SC]" + uname + ":" + message;
+                    addDanmaku(text, 25, Color.parseColor(messageFontColor), false, scDanmakuType);
+                }
+            }
+
+            @Override
+            public void onReceiveSendGift(String action, String giftName, Integer num, String uname) {
+                if(giftDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
+                        || giftDanmakuType == BaseDanmaku.TYPE_FIX_TOP
+                        || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
+                        || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
+                        || giftDanmakuType == BaseDanmaku.TYPE_SPECIAL){
+                    String text = uname + action + giftName + "X" + num;
+                    addDanmaku(text, 10, Color.WHITE, false, giftDanmakuType);
+                }
+            }
+
+            @Override
+            public void onReceiveOtherMessage(String message) {
+            }
+
+            @Override
             public void onClose(int code, String reason, boolean remote) {
                 FragmentActivity activity = fragment.requireActivity();
                 Toast.makeText(activity,
@@ -144,9 +177,13 @@ public class DanmakuDelegate {
         }
     }
 
-    private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent){
+    private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent) {
+        addDanmaku(content, textSize, textColor, textShadowTransparent, BaseDanmaku.TYPE_SCROLL_RL);
+    }
+
+    private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent, int type){
         if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
-            BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
+            BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
             if (danmaku != null) {
                 danmaku.text = content;
                 danmaku.padding = 0;
@@ -187,6 +224,14 @@ public class DanmakuDelegate {
         }
     }
 
+    public void setGiftDanmakuType(int giftDanmakuType) {
+        this.giftDanmakuType = giftDanmakuType;
+    }
+
+    public void setScDanmakuType(int scDanmakuType) {
+        this.scDanmakuType = scDanmakuType;
+    }
+
     public void danmakuReleaseSwitch(){
         FragmentActivity activity = fragment.requireActivity();
         if(danmakuView != null){
@@ -205,8 +250,13 @@ public class DanmakuDelegate {
     }
 
     public void release(){
+        if(chatBroadcastWsClient != null){
+            chatBroadcastWsClient.close();
+            chatBroadcastWsClient = null;
+        }
         if(danmakuView != null){
             danmakuView.hide();
+            danmakuView.removeAllDanmakus(true);
             danmakuView.release();
             danmakuView = null;
         }
@@ -215,10 +265,6 @@ public class DanmakuDelegate {
         }
         if(danmakuParser != null){
             danmakuParser = null;
-        }
-        if(chatBroadcastWsClient != null){
-            chatBroadcastWsClient.close();
-            chatBroadcastWsClient = null;
         }
     }
 }

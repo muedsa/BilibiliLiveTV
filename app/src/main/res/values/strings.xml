@@ -2,7 +2,7 @@
     <string name="app_name">BilibiliLiveTV</string>
     <string name="host_name">bilibilitv.muedsa.com</string>
     <string name="browse_title">Bilibili Live</string>
-    <string name="related_movies">相关推荐</string>
+    <string name="danmaku_test">弹幕测试</string>
     <string name="clear_history">清除历史记录</string>
     <string name="clear_history_alert">确定清除历史记录?</string>
     <string name="alert_yes">确定</string>

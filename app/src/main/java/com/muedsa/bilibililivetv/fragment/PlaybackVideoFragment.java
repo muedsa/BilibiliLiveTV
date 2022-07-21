@@ -77,14 +77,6 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         danmakuDelegate.resume();
     }
 
-//    @Override
-//    public void onStop() {
-//        Log.d(TAG, "onStop");
-//        super.onStop();
-//        exoPlayerDelegate.release();
-//        //danmakuDelegate.release();
-//    }
-
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView");

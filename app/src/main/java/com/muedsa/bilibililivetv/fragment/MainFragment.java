@@ -37,8 +37,10 @@ import android.widget.Toast;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililivetv.App;
+import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
@@ -171,6 +173,11 @@ public class MainFragment extends BrowseSupportFragment {
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
         gridRowAdapter.add(getResources().getString(R.string.clear_history));
         gridRowAdapter.add(getResources().getString(R.string.clear_channel));
+
+        if(BuildConfig.DEBUG){
+            gridRowAdapter.add(getResources().getString(R.string.danmaku_test));
+        }
+
         rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
 
         setAdapter(rowsAdapter);
@@ -279,6 +286,9 @@ public class MainFragment extends BrowseSupportFragment {
                             .create()
                             .show();
 
+                } else if(desc.contains(getString(R.string.danmaku_test))) {
+                    Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(getActivity(), desc, Toast.LENGTH_SHORT).show();
                 }
