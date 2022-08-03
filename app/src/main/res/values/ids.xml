@@ -1,4 +1,5 @@
 <resources>
-    <item type="id" name="playback_controls_danmu_play_stop" />
+    <item type="id" name="playback_controls_danmaku_play_toggle" />
     <item type="id" name="playback_controls_change_play_url"/>
+    <item type="id" name="playback_controls_super_chat_toggle" />
 </resources>

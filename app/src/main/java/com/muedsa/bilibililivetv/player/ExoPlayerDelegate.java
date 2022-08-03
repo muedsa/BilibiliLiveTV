@@ -92,6 +92,12 @@ public class ExoPlayerDelegate {
                                 Toast.LENGTH_SHORT)
                         .show();
             }
+
+            @Override
+            public void onSuperChatToggle(PlaybackGlue glue) {
+                super.onSuperChatToggle(glue);
+                if(listener != null) listener.onDanmakuSuperChatToggle(glue);
+            }
         });
         mediaItemList = new ArrayList<>();
         if(liveRoom.getPlayUrlArr() != null){
@@ -155,5 +161,6 @@ public class ExoPlayerDelegate {
     public interface Listener {
         void onPlayStateChanged(PlaybackGlue glue);
         void onDanmuStatusChange(PlaybackGlue glue);
+        void onDanmakuSuperChatToggle(PlaybackGlue glue);
     }
 }

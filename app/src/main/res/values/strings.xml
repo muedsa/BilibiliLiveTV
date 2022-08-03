@@ -25,6 +25,8 @@
     <string name="live_danmu_ws_token_failure">获取弹幕Token失败</string>
     <string name="playback_controls_danmu_play">弹幕开</string>
     <string name="playback_controls_danmu_stop">弹幕关</string>
+    <string name="playback_controls_sc_play">SC开</string>
+    <string name="playback_controls_sc_stop">SC关</string>
     <string name="playback_controls_change_play_url">切换线路</string>
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
@@ -42,5 +44,7 @@
     <string name="toast_msg_danmu_connect_success">连接到弹幕服务器</string>
     <string name="toast_msg_danmu_connect_error">连接弹幕服务器失败: %s</string>
     <string name="toast_msg_danmu_open">弹幕开启</string>
-    <string name="toast_msg_danmu_stop">弹幕开启关闭</string>
+    <string name="toast_msg_danmu_stop">弹幕关闭</string>
+    <string name="toast_msg_sc_open">SC开启</string>
+    <string name="toast_msg_sc_stop">SC关闭</string>
 </resources>

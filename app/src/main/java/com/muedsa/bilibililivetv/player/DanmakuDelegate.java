@@ -51,7 +51,7 @@ public class DanmakuDelegate {
         HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
         maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5);
         maxLinesPair.put(BaseDanmaku.TYPE_FIX_TOP, 5);
-        maxLinesPair.put(BaseDanmaku.TYPE_FIX_BOTTOM, 5);
+        maxLinesPair.put(BaseDanmaku.TYPE_FIX_BOTTOM, 8);
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
@@ -193,6 +193,15 @@ public class DanmakuDelegate {
                 danmaku.textSize = textSize * (danmakuParser.getDisplayer().getDensity() - 0.6f);
                 danmaku.textColor = textColor;
                 danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
+                if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
+                    int maxSize = (int) (danmakuContext.getDisplayer().getWidth() / danmaku.textSize) - 12;
+                    int textLength = content.length();
+                    if(textLength > maxSize){
+                        danmaku.text = content.substring(0, maxSize);
+                        String nextContent = content.substring(maxSize - 1, textLength - 1);
+                        addDanmaku(nextContent, textSize, textColor, textShadowTransparent, type);
+                    }
+                }
                 danmakuView.addDanmaku(danmaku);
             }
         }
@@ -244,6 +253,27 @@ public class DanmakuDelegate {
             init();
             Toast.makeText(activity,
                             activity.getString(R.string.toast_msg_danmu_stop),
+                            Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    public void danmakuSuperChatToggle(){
+        FragmentActivity activity = fragment.requireActivity();
+        if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
+                || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
+                || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
+                || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
+                || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
+            scDanmakuType = 0;
+            Toast.makeText(activity,
+                            activity.getString(R.string.toast_msg_sc_stop),
+                            Toast.LENGTH_SHORT)
+                    .show();
+        }else{
+            scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
+            Toast.makeText(activity,
+                            activity.getString(R.string.toast_msg_sc_open),
                             Toast.LENGTH_SHORT)
                     .show();
         }

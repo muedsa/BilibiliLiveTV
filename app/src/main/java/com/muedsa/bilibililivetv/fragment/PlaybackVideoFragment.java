@@ -48,6 +48,11 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             public void onDanmuStatusChange(PlaybackGlue glue) {
                 danmakuDelegate.danmakuReleaseSwitch();
             }
+
+            @Override
+            public void onDanmakuSuperChatToggle(PlaybackGlue glue) {
+                danmakuDelegate.danmakuSuperChatToggle();
+            }
         };
         exoPlayerDelegate = new ExoPlayerDelegate(this, listener, liveRoom);
         exoPlayerDelegate.init();

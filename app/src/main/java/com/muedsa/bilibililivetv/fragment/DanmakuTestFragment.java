@@ -53,7 +53,7 @@ public class DanmakuTestFragment extends Fragment {
         HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
         maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5);
         maxLinesPair.put(BaseDanmaku.TYPE_FIX_TOP, 5);
-        maxLinesPair.put(BaseDanmaku.TYPE_FIX_BOTTOM, 5);
+        maxLinesPair.put(BaseDanmaku.TYPE_FIX_BOTTOM, 10);
         // 设置是否禁止重叠
         HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
@@ -68,6 +68,7 @@ public class DanmakuTestFragment extends Fragment {
                 .setMaximumLines(maxLinesPair)
                 .preventOverlapping(overlappingEnablePair)
                 .setDanmakuTransparency(0.85f)
+                .alignBottom(true)
                 .setDanmakuMargin(5);
 
         danmakuParser = new BaseDanmakuParser() {
@@ -103,6 +104,7 @@ public class DanmakuTestFragment extends Fragment {
 
     private void addDanmaku(String content, int textColor, boolean textShadowTransparent, int type){
         if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
+
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
             if (danmaku != null) {
                 danmaku.text = content;
@@ -113,15 +115,23 @@ public class DanmakuTestFragment extends Fragment {
                 danmaku.textSize = (float) 25.0 * (danmakuParser.getDisplayer().getDensity() - 0.6f);
                 danmaku.textColor = textColor;
                 danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
-                danmaku.duration = new Duration(DanmakuFactory.COMMON_DANMAKU_DURATION);
-                //danmakuContext.getDisplayer().getWidth();
                 if(type == BaseDanmaku.TYPE_SPECIAL) {
                     danmaku.duration = new Duration(1000);
+                    danmakuContext.mDanmakuFactory.fillTranslationData(danmaku,
+                            5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT, 5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 30, 1500, 0,
+                            1, 1f);
+                    //DanmakuFactory.fillLinePathData(danmaku, new float[][]{{5, danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 100}}, 0, 0);
+                }else if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
+                    int width = danmakuContext.getDisplayer().getWidth();
+                    float textSize = danmaku.textSize;
+                    int maxSize = (int) (width / textSize) - 12;
+                    int textLength = content.length();
+                    if(textLength > maxSize){
+                        danmaku.text = content.substring(0, maxSize);
+                        String nextContent = content.substring(maxSize - 1, textLength - 1);
+                        addDanmaku(nextContent, textColor, textShadowTransparent, type);
+                    }
                 }
-                danmakuContext.mDanmakuFactory.fillTranslationData(danmaku,
-                        5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT, 5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 30, 1500, 0,
-                        1, 1f);
-                //DanmakuFactory.fillLinePathData(danmaku, new float[][]{{5, danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 100}}, 0, 0);
                 danmakuView.addDanmaku(danmaku);
             }
         }
@@ -132,10 +142,11 @@ public class DanmakuTestFragment extends Fragment {
         timer1.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                addDanmaku("这是一条弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SCROLL_RL);
+                //addDanmaku("这是一条弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SCROLL_RL);
+                //addDanmaku("这是一条SPECIAL弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SPECIAL);
+                addDanmaku("这是一条超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级长的SC弹幕", Color.WHITE, false, BaseDanmaku.TYPE_FIX_BOTTOM);
             }
-        }, 0, 1000);
-        addDanmaku("这是一条SPECIAL弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SPECIAL);
+        }, 0, 3000);
     }
 
 
