@@ -60,7 +60,7 @@ public class ChatBroadcastWsClient {
                                     boolean textShadowTransparent = "true".equalsIgnoreCase(propertyJsonArray.getString(11));
                                     String text = infoJsonArray.getString(1);
                                     callBack.onReceiveDanmu(text, textSize, textColor, textShadowTransparent);
-                                }else if(ChatBroadcast.CMD_SUPER_CHAT_MESSAGE.equals(cmd)){
+                                }else if(ChatBroadcast.CMD_SUPER_CHAT_MESSAGE.equals(cmd) || ChatBroadcast.CMD_SUPER_CHAT_MESSAGE_JPN.equals(cmd)){
                                     JSONObject dataJsonData = jsonObject.getJSONObject("data");
                                     String message = dataJsonData.getString("message");
                                     String messageFontColor = dataJsonData.getString("message_font_color");
@@ -188,8 +188,8 @@ public class ChatBroadcastWsClient {
 
             @Override
             public void onReceiveSendGift(String action, String giftName, Integer num, String uname) {
-                String m = String.format(Locale.CHINA, "[礼物]%s%s%sX%d", uname, action, giftName, num);
-                System.out.println(m);
+//                String m = String.format(Locale.CHINA, "[礼物]%s%s%sX%d", uname, action, giftName, num);
+//                System.out.println(m);
             }
 
             @Override
