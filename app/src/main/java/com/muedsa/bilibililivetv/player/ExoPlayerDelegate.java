@@ -76,9 +76,9 @@ public class ExoPlayerDelegate {
             }
 
             @Override
-            public void onDanmuStatusChange(PlaybackGlue glue) {
-                super.onDanmuStatusChange(glue);
-                if(listener != null) listener.onDanmuStatusChange(glue);
+            public void onDanmakuToggle(boolean enabled) {
+                super.onDanmakuToggle(enabled);
+                if(listener != null) listener.onDanmuToggle(enabled);
             }
 
             @Override
@@ -94,9 +94,9 @@ public class ExoPlayerDelegate {
             }
 
             @Override
-            public void onSuperChatToggle(PlaybackGlue glue) {
-                super.onSuperChatToggle(glue);
-                if(listener != null) listener.onDanmakuSuperChatToggle(glue);
+            public void onSuperChatToggle(boolean enable) {
+                super.onSuperChatToggle(enable);
+                if(listener != null) listener.onDanmakuSuperChatToggle(enable);
             }
         });
         mediaItemList = new ArrayList<>();
@@ -160,7 +160,7 @@ public class ExoPlayerDelegate {
 
     public interface Listener {
         void onPlayStateChanged(PlaybackGlue glue);
-        void onDanmuStatusChange(PlaybackGlue glue);
-        void onDanmakuSuperChatToggle(PlaybackGlue glue);
+        void onDanmuToggle(boolean on);
+        void onDanmakuSuperChatToggle(boolean on);
     }
 }

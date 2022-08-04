@@ -182,7 +182,7 @@ public class DanmakuDelegate {
     }
 
     private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent, int type){
-        if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
+        if(danmakuContext != null && danmakuParser !=null && danmakuView.isPrepared()){
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
             if (danmaku != null) {
                 textSize = textSize * (danmakuParser.getDisplayer().getDensity() - 0.6f);
@@ -211,13 +211,13 @@ public class DanmakuDelegate {
     }
 
     public void pause(){
-        if(danmakuView != null && !danmakuView.isPaused()){
+        if(danmakuContext != null && !danmakuView.isPaused()){
             danmakuView.pause();
         }
     }
 
     public void resume(){
-        if (danmakuView != null) {
+        if (danmakuContext != null) {
             if(danmakuView.isPrepared() && danmakuView.isPaused()){
                 danmakuView.resume();
             }
@@ -228,7 +228,7 @@ public class DanmakuDelegate {
 
     public void setPlayer(boolean isPlaying){
         if(isPlaying){
-            if(danmakuView != null && danmakuView.isPaused()){
+            if(danmakuContext != null && danmakuView.isPaused()){
                 danmakuView.resume();
             }
         }else{
@@ -236,39 +236,45 @@ public class DanmakuDelegate {
         }
     }
 
-    public void danmakuReleaseSwitch(){
+    public void danmakuReleaseToggle(boolean enable){
         FragmentActivity activity = fragment.requireActivity();
-        if(danmakuView != null){
-            release();
+        if(enable) {
+            if(danmakuContext == null){
+                init();
+            }
             Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_danmu_open),
+                            activity.getString(R.string.toast_msg_danmu_on),
                             Toast.LENGTH_SHORT)
                     .show();
-        }else{
-            init();
+        } else {
+            if(danmakuContext != null){
+                release();
+            }
             Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_danmu_stop),
+                            activity.getString(R.string.toast_msg_danmu_off),
                             Toast.LENGTH_SHORT)
                     .show();
         }
     }
 
-    public void danmakuSuperChatToggle(){
+    public void danmakuSuperChatToggle(boolean enable){
         FragmentActivity activity = fragment.requireActivity();
-        if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
-                || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
-                || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
-                || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
-                || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
-            scDanmakuType = 0;
+        if(enable) {
+            scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
             Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_sc_stop),
+                            activity.getString(R.string.toast_msg_sc_on),
                             Toast.LENGTH_SHORT)
                     .show();
         }else{
-            scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
+            if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
+                    || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
+                    || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
+                    || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
+                    || scDanmakuType == BaseDanmaku.TYPE_SPECIAL){
+                scDanmakuType = 0;
+            }
             Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_sc_open),
+                            activity.getString(R.string.toast_msg_sc_off),
                             Toast.LENGTH_SHORT)
                     .show();
         }
@@ -279,11 +285,10 @@ public class DanmakuDelegate {
             chatBroadcastWsClient.close();
             chatBroadcastWsClient = null;
         }
-        if(danmakuView != null){
+        if(danmakuView.isPrepared()){
             danmakuView.hide();
             danmakuView.removeAllDanmakus(true);
             danmakuView.release();
-            danmakuView = null;
         }
         if(danmakuContext != null){
             danmakuContext = null;

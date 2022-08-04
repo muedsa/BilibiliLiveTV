@@ -45,26 +45,19 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             }
 
             @Override
-            public void onDanmuStatusChange(PlaybackGlue glue) {
-                danmakuDelegate.danmakuReleaseSwitch();
+            public void onDanmuToggle(boolean enable) {
+                danmakuDelegate.danmakuReleaseToggle(enable);
             }
 
             @Override
-            public void onDanmakuSuperChatToggle(PlaybackGlue glue) {
-                danmakuDelegate.danmakuSuperChatToggle();
+            public void onDanmakuSuperChatToggle(boolean enable) {
+                danmakuDelegate.danmakuSuperChatToggle(enable);
             }
         };
         exoPlayerDelegate = new ExoPlayerDelegate(this, listener, liveRoom);
         exoPlayerDelegate.init();
         return root;
     }
-
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        Log.d(TAG, "onCreate");
-//        super.onCreate(savedInstanceState);
-//
-//    }
 
     @Override
     public void onPause() {

@@ -48,27 +48,28 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         super.onCreatePrimaryActions(primaryActionsAdapter);
         Context context = getContext();
         danmakuPlayToggleAction = new DanmakuPlayToggleAction(context);
-        danmakuPlayToggleAction.setIndex(DanmakuPlayToggleAction.INDEX_STOP);
+        danmakuPlayToggleAction.setIndex(DanmakuPlayToggleAction.INDEX_OFF);
         primaryActionsAdapter.add(danmakuPlayToggleAction);
 
         changePlayUrlAction = new ChangePlayUrlAction(context);
         primaryActionsAdapter.add(changePlayUrlAction);
 
         superChatToggleAction = new SuperChatToggleAction(context);
+        superChatToggleAction.setIndex(SuperChatToggleAction.INDEX_OFF);
         primaryActionsAdapter.add(superChatToggleAction);
     }
 
     @Override
     public void onActionClicked(Action action) {
         if (action instanceof DanmakuPlayToggleAction) {
-            danmuStatusChange(action);
+            dispatchActionCallback(action);
             ((DanmakuPlayToggleAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
                     action);
         } else if(action instanceof ChangePlayUrlAction) {
-            danmuStatusChange(action);
+            dispatchActionCallback(action);
         }else if(action instanceof SuperChatToggleAction) {
-            danmuStatusChange(action);
+            dispatchActionCallback(action);
             ((SuperChatToggleAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
                     action);
@@ -77,18 +78,18 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         }
     }
 
-    private void danmuStatusChange(Action action){
+    private void dispatchActionCallback(Action action){
         List<PlayerCallback> callbacks = getPlayerCallbacks();
         if (callbacks != null) {
             for (int i = 0, size = callbacks.size(); i < size; i++) {
                 if(callbacks.get(i) instanceof LiveRoomPlayerCallback){
                     LiveRoomPlayerCallback callback = (LiveRoomPlayerCallback) callbacks.get(i);
                     if (action instanceof DanmakuPlayToggleAction) {
-                        callback.onDanmuStatusChange(this);
+                        callback.onDanmakuToggle(((DanmakuPlayToggleAction) action).getIndex() == DanmakuPlayToggleAction.INDEX_ON);
                     } else if(action instanceof ChangePlayUrlAction){
                         callback.onLiveUrlChange(this);
                     } else if(action instanceof SuperChatToggleAction){
-                        callback.onSuperChatToggle(this);
+                        callback.onSuperChatToggle(((SuperChatToggleAction) action).getIndex() == SuperChatToggleAction.INDEX_ON);
                     }
                 }
             }
@@ -98,19 +99,19 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
 
     static class DanmakuPlayToggleAction extends PlaybackControlsRow.MultiAction {
 
-        public static final int INDEX_PLAY = 0;
-        public static final int INDEX_STOP = 1;
+        public static final int INDEX_ON = 0;
+        public static final int INDEX_OFF = 1;
 
         public DanmakuPlayToggleAction(Context context) {
             super(R.id.playback_controls_danmaku_play_toggle);
             Drawable[] drawables = new Drawable[2];
-            drawables[INDEX_PLAY] = getWhiteDrawable(context, R.drawable.ic_danmaku_enable);
-            drawables[INDEX_STOP] = getWhiteDrawable(context, R.drawable.ic_danmaku_disable);
+            drawables[INDEX_ON] = getWhiteDrawable(context, R.drawable.ic_danmaku_enable);
+            drawables[INDEX_OFF] = getWhiteDrawable(context, R.drawable.ic_danmaku_disable);
 
             setDrawables(drawables);
             String[] labels = new String[drawables.length];
-            labels[INDEX_PLAY] = context.getString(R.string.playback_controls_danmu_play);
-            labels[INDEX_STOP] = context.getString(R.string.playback_controls_danmu_stop);
+            labels[INDEX_ON] = context.getString(R.string.playback_controls_danmu_play);
+            labels[INDEX_OFF] = context.getString(R.string.playback_controls_danmu_stop);
             setLabels(labels);
         }
     }
@@ -126,19 +127,19 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
 
     static class SuperChatToggleAction extends PlaybackControlsRow.MultiAction {
 
-        public static final int INDEX_PLAY = 0;
-        public static final int INDEX_STOP = 1;
+        public static final int INDEX_ON = 0;
+        public static final int INDEX_OFF = 1;
 
         public SuperChatToggleAction(Context context) {
             super(R.id.playback_controls_super_chat_toggle);
             Drawable[] drawables = new Drawable[2];
-            drawables[INDEX_PLAY] = getWhiteDrawable(context, R.drawable.ic_sc_enable);
-            drawables[INDEX_STOP] = getWhiteDrawable(context, R.drawable.ic_sc_disable);
+            drawables[INDEX_ON] = getWhiteDrawable(context, R.drawable.ic_sc_enable);
+            drawables[INDEX_OFF] = getWhiteDrawable(context, R.drawable.ic_sc_disable);
 
             setDrawables(drawables);
             String[] labels = new String[drawables.length];
-            labels[INDEX_PLAY] = context.getString(R.string.playback_controls_sc_play);
-            labels[INDEX_STOP] = context.getString(R.string.playback_controls_sc_stop);
+            labels[INDEX_ON] = context.getString(R.string.playback_controls_sc_play);
+            labels[INDEX_OFF] = context.getString(R.string.playback_controls_sc_stop);
             setLabels(labels);
         }
     }
@@ -151,9 +152,9 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
     }
 
     public abstract static class LiveRoomPlayerCallback extends PlayerCallback {
-        public void onDanmuStatusChange(PlaybackGlue glue) {}
+        public void onDanmakuToggle(boolean enable) {}
         public void onLiveUrlChange(PlaybackGlue glue) {}
-        public void onSuperChatToggle(PlaybackGlue glue) {}
+        public void onSuperChatToggle(boolean enable) {}
     }
 
 }
