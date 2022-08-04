@@ -185,23 +185,26 @@ public class DanmakuDelegate {
         if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
             if (danmaku != null) {
+                textSize = textSize * (danmakuParser.getDisplayer().getDensity() - 0.6f);
                 danmaku.text = content;
+                if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
+                    int width = danmakuContext.getDisplayer().getWidth();
+                    int maxSize = (int) (width / textSize) - 10;
+                    int textLength = content.length();
+                    int lineLength = (textLength + maxSize - 1) / maxSize;
+                    String[] lines = new String[lineLength];
+                    for(int i = 0; i < lineLength; i++){
+                        lines[i] = content.substring(i * maxSize, Math.min(i * maxSize + maxSize, textLength));
+                    }
+                    danmaku.lines = lines;
+                }
                 danmaku.padding = 0;
                 danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
                 danmaku.isLive = true;
                 danmaku.setTime(danmakuView.getCurrentTime() + 500);
-                danmaku.textSize = textSize * (danmakuParser.getDisplayer().getDensity() - 0.6f);
+                danmaku.textSize = textSize;
                 danmaku.textColor = textColor;
                 danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
-                if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
-                    int maxSize = (int) (danmakuContext.getDisplayer().getWidth() / danmaku.textSize) - 12;
-                    int textLength = content.length();
-                    if(textLength > maxSize){
-                        danmaku.text = content.substring(0, maxSize);
-                        String nextContent = content.substring(maxSize - 1, textLength - 1);
-                        addDanmaku(nextContent, textSize, textColor, textShadowTransparent, type);
-                    }
-                }
                 danmakuView.addDanmaku(danmaku);
             }
         }
@@ -231,14 +234,6 @@ public class DanmakuDelegate {
         }else{
             pause();
         }
-    }
-
-    public void setGiftDanmakuType(int giftDanmakuType) {
-        this.giftDanmakuType = giftDanmakuType;
-    }
-
-    public void setScDanmakuType(int scDanmakuType) {
-        this.scDanmakuType = scDanmakuType;
     }
 
     public void danmakuReleaseSwitch(){

@@ -12,12 +12,16 @@ import androidx.fragment.app.Fragment;
 
 import com.muedsa.bilibililivetv.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
+import master.flame.danmaku.danmaku.model.Danmaku;
 import master.flame.danmaku.danmaku.model.DanmakuTimer;
 import master.flame.danmaku.danmaku.model.Duration;
 import master.flame.danmaku.danmaku.model.IDanmakus;
@@ -68,7 +72,6 @@ public class DanmakuTestFragment extends Fragment {
                 .setMaximumLines(maxLinesPair)
                 .preventOverlapping(overlappingEnablePair)
                 .setDanmakuTransparency(0.85f)
-                .alignBottom(true)
                 .setDanmakuMargin(5);
 
         danmakuParser = new BaseDanmakuParser() {
@@ -78,7 +81,7 @@ public class DanmakuTestFragment extends Fragment {
             }
         };
         danmakuView.enableDanmakuDrawingCache(true);
-        danmakuView.showFPS(true);
+        //danmakuView.showFPS(true);
         danmakuView.show();
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override
@@ -104,15 +107,26 @@ public class DanmakuTestFragment extends Fragment {
 
     private void addDanmaku(String content, int textColor, boolean textShadowTransparent, int type){
         if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
-
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
             if (danmaku != null) {
+                float textSize = (float) DanmakuFactory.DANMAKU_MEDIUM_TEXTSIZE * (danmakuParser.getDisplayer().getDensity() - 0.6f);
                 danmaku.text = content;
+                if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
+                    int width = danmakuContext.getDisplayer().getWidth();
+                    int maxSize = (int) (width / textSize) - 10;
+                    int textLength = content.length();
+                    int lineLength = (textLength + maxSize - 1) / maxSize;
+                    String[] lines = new String[lineLength];
+                    for(int i = 0; i < lineLength; i++){
+                        lines[i] = content.substring(i * maxSize, Math.min(i * maxSize + maxSize, textLength));
+                    }
+                    danmaku.lines = lines;
+                }
                 danmaku.padding = 0;
                 danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
                 danmaku.isLive = true;
                 danmaku.setTime(danmakuView.getCurrentTime() + 500);
-                danmaku.textSize = (float) 25.0 * (danmakuParser.getDisplayer().getDensity() - 0.6f);
+                danmaku.textSize = textSize;
                 danmaku.textColor = textColor;
                 danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
                 if(type == BaseDanmaku.TYPE_SPECIAL) {
@@ -121,16 +135,6 @@ public class DanmakuTestFragment extends Fragment {
                             5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT, 5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 30, 1500, 0,
                             1, 1f);
                     //DanmakuFactory.fillLinePathData(danmaku, new float[][]{{5, danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 100}}, 0, 0);
-                }else if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
-                    int width = danmakuContext.getDisplayer().getWidth();
-                    float textSize = danmaku.textSize;
-                    int maxSize = (int) (width / textSize) - 12;
-                    int textLength = content.length();
-                    if(textLength > maxSize){
-                        danmaku.text = content.substring(0, maxSize);
-                        String nextContent = content.substring(maxSize - 1, textLength - 1);
-                        addDanmaku(nextContent, textColor, textShadowTransparent, type);
-                    }
                 }
                 danmakuView.addDanmaku(danmaku);
             }
@@ -139,14 +143,20 @@ public class DanmakuTestFragment extends Fragment {
 
     private void timer1(){
         timer1 = new Timer();
+        Random random = new Random();
+
         timer1.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 //addDanmaku("这是一条弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SCROLL_RL);
                 //addDanmaku("这是一条SPECIAL弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SPECIAL);
-                addDanmaku("这是一条超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级超级长的SC弹幕", Color.WHITE, false, BaseDanmaku.TYPE_FIX_BOTTOM);
+                String text = "这是一条超级长的SC弹幕" + System.currentTimeMillis()
+                        + random.nextLong()
+                        + random.nextLong()
+                        + random.nextLong();
+                addDanmaku(text, Color.WHITE, false, BaseDanmaku.TYPE_FIX_BOTTOM);
             }
-        }, 0, 3000);
+        }, 0, 2000);
     }
 
 
