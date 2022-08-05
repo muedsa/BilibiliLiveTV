@@ -104,8 +104,7 @@ public class DanmakuDelegate {
             @Override
             public void onStart() {
                 if(BuildConfig.DEBUG){
-                    fragment.toast(fragment.getString(R.string.toast_msg_danmu_connect_success),
-                            Toast.LENGTH_SHORT);
+                    fragment.toast(fragment.getString(R.string.toast_msg_danmu_connect_success), Toast.LENGTH_SHORT);
                 }
             }
 
@@ -144,8 +143,9 @@ public class DanmakuDelegate {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                fragment.toast(String.format(fragment.getString(R.string.toast_msg_danmu_connect_error), reason),
-                        Toast.LENGTH_LONG);
+                if(BuildConfig.DEBUG){
+                    fragment.toast(String.format(fragment.getString(R.string.toast_msg_danmu_connect_error), reason), Toast.LENGTH_LONG);
+                }
             }
         });
         startChatBroadcastWsClient();

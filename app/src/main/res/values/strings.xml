@@ -42,7 +42,7 @@
     <string name="head_title_search_result_live_room">直播间</string>
     <string name="total_msg_change_play_url">切换到线路%d</string>
     <string name="toast_msg_danmu_connect_success">连接到弹幕服务器</string>
-    <string name="toast_msg_danmu_connect_error">连接弹幕服务器失败: %s</string>
+    <string name="toast_msg_danmu_connect_error">弹幕服务器连接关闭: %s</string>
     <string name="toast_msg_danmu_on">弹幕开启</string>
     <string name="toast_msg_danmu_off">弹幕关闭</string>
     <string name="toast_msg_sc_on">SuperChat开启</string>
