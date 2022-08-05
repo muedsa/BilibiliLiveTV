@@ -71,16 +71,16 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        exoPlayerDelegate.resume();
         danmakuDelegate.resume();
+        exoPlayerDelegate.resume();
     }
 
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView");
         super.onDestroyView();
-        danmakuDelegate.release();
         exoPlayerDelegate.release();
+        danmakuDelegate.release();
     }
 
     public boolean isPlaying() {
