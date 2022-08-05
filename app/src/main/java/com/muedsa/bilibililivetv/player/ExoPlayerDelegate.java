@@ -1,10 +1,8 @@
 package com.muedsa.bilibililivetv.player;
 
-import android.content.Context;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
 import androidx.leanback.media.PlaybackGlue;
 
@@ -17,6 +15,7 @@ import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,21 +42,21 @@ public class ExoPlayerDelegate {
         VideoSupportFragmentGlueHost glueHost =
                 new VideoSupportFragmentGlueHost(fragment);
 
-        Context context = fragment.requireContext();
-        exoPlayer = new ExoPlayer.Builder(context)
+        FragmentActivity activity = fragment.requireActivity();
+        exoPlayer = new ExoPlayer.Builder(activity)
                 .setMediaSourceFactory(
-                        new DefaultMediaSourceFactory(context).setLiveTargetOffsetMs(5000))
+                        new DefaultMediaSourceFactory(activity).setLiveTargetOffsetMs(5000))
                 .build();
 
         exoPlayer.addListener(new Player.Listener() {
             @Override
             public void onPlayerError(@NonNull PlaybackException error) {
                 Player.Listener.super.onPlayerError(error);
-                fragment.toast(error.getMessage(), Toast.LENGTH_LONG);
+                ToastUtil.showLongToast(activity, error.getMessage());
             }
         });
-        playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
-        playbackTransportControlGlue = new PlaybackTransportControlGlue(context, playerAdapter);
+        playerAdapter = new LeanbackPlayerAdapter(activity, exoPlayer, 50);
+        playbackTransportControlGlue = new PlaybackTransportControlGlue(activity, playerAdapter);
         playbackTransportControlGlue.setHost(glueHost);
         playbackTransportControlGlue.setTitle(liveRoom.getTitle());
         playbackTransportControlGlue.setSubtitle(liveRoom.getUname());
@@ -83,9 +82,10 @@ public class ExoPlayerDelegate {
             public void onLiveUrlChange(PlaybackGlue glue) {
                 super.onLiveUrlChange(glue);
                 exoPlayer.seekToNextMediaItem();
-                fragment.toast(String.format(fragment.getString(R.string.total_msg_change_play_url),
-                                exoPlayer.getCurrentMediaItemIndex() + 1),
-                        Toast.LENGTH_SHORT);
+                FragmentActivity activity = fragment.requireActivity();
+                ToastUtil.showShortToast(activity,
+                        String.format(activity.getString(R.string.total_msg_change_play_url),
+                                exoPlayer.getCurrentMediaItemIndex() + 1));
             }
 
             @Override
@@ -111,8 +111,7 @@ public class ExoPlayerDelegate {
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
             playbackTransportControlGlue.play();
         }else{
-            fragment.toast(fragment.getString(R.string.live_play_failure),
-                    Toast.LENGTH_SHORT);
+            ToastUtil.showLongToast(activity, activity.getString(R.string.live_play_failure));
         }
     }
 

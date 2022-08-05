@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -48,6 +47,7 @@ import com.muedsa.bilibililivetv.task.RequestDanmuInfoTask;
 import com.muedsa.bilibililivetv.task.RequestLiveRoomInfoTask;
 import com.muedsa.bilibililivetv.task.RequestPlayUrlTask;
 import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -133,8 +133,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     break;
                 case FAIL:
                 default:
-                    String errorMsg =  getResources().getString(R.string.live_room_info_failure) + (msg.obj instanceof String ? ":" + msg.obj : "");
-                    Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG).show();
+                    String errorMsg =  requireActivity().getString(R.string.live_room_info_failure)
+                            + (msg.obj instanceof String ? ":" + msg.obj : "");
+                    ToastUtil.showLongToast(requireActivity(), errorMsg);
                     break;
             }
         });
@@ -146,8 +147,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     break;
                 case FAIL:
                 default:
-                    String errorMsg = getResources().getString(R.string.live_danmu_ws_token_failure) + (msg.obj instanceof String ? ":" + msg.obj : "");
-                    Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_LONG).show();
+                    String errorMsg = requireActivity().getString(R.string.live_danmu_ws_token_failure)
+                            + (msg.obj instanceof String ? ":" + msg.obj : "");
+                    ToastUtil.showLongToast(requireActivity(), errorMsg);
                     break;
             }
         });
@@ -163,8 +165,9 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     break;
                 case FAIL:
                 default:
-                    Toast.makeText(getActivity(), getResources().getString(R.string.live_play_failure), Toast.LENGTH_LONG)
-                            .show();
+                    ToastUtil.showLongToast(requireActivity(),
+                            requireActivity().getString(R.string.live_play_failure));
+                    break;
             }
         });
     }
@@ -256,11 +259,12 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         detailsPresenter.setParticipatingEntranceTransition(true);
 
         detailsPresenter.setOnActionClickedListener(action -> {
+            FragmentActivity activity = requireActivity();
             if (action.getId() == ACTION_WATCH_TRAILER) {
                 if(mSelectedLiveRoom.getPlayUrlArr() == null || mSelectedLiveRoom.getPlayUrlArr().length == 0){
-                    Toast.makeText(getActivity(), getResources().getString(R.string.live_play_failure), Toast.LENGTH_SHORT).show();
+                    ToastUtil.showLongToast(activity, activity.getString(R.string.live_play_failure));
                 }else{
-                    Intent intent = new Intent(getActivity(), PlaybackActivity.class);
+                    Intent intent = new Intent(activity, PlaybackActivity.class);
                     intent.putExtra(DetailsActivity.LIVE_ROOM, mSelectedLiveRoom);
                     startActivity(intent);
                 }

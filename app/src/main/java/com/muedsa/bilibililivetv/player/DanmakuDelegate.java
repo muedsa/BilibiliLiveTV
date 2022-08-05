@@ -2,15 +2,16 @@ package com.muedsa.bilibililivetv.player;
 
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.HashMap;
 
@@ -104,7 +105,9 @@ public class DanmakuDelegate {
             @Override
             public void onStart() {
                 if(BuildConfig.DEBUG){
-                    fragment.toast(fragment.getString(R.string.toast_msg_danmu_connect_success), Toast.LENGTH_SHORT);
+                    FragmentActivity activity = fragment.requireActivity();
+                    ToastUtil.showLongToast(activity,
+                            activity.getString(R.string.toast_msg_danmu_connect_success));
                 }
             }
 
@@ -144,7 +147,11 @@ public class DanmakuDelegate {
             @Override
             public void onClose(int code, String reason, boolean remote) {
                 if(BuildConfig.DEBUG){
-                    fragment.toast(String.format(fragment.getString(R.string.toast_msg_danmu_connect_error), reason), Toast.LENGTH_LONG);
+                    FragmentActivity activity = fragment.requireActivity();
+                    ToastUtil.showLongToast(
+                            activity,
+                            String.format(activity.getString(R.string.toast_msg_danmu_connect_error),
+                                    reason));
                 }
             }
         });
@@ -158,9 +165,11 @@ public class DanmakuDelegate {
             }
             catch (Exception error){
                 Log.d(TAG, "startChatBroadcastWsClient: ", error);
-                fragment.toast(String.format(fragment.getString(R.string.toast_msg_danmu_connect_error),
-                        error.getLocalizedMessage()), Toast.LENGTH_LONG);
-
+                FragmentActivity activity = fragment.requireActivity();
+                ToastUtil.showShortToast(
+                        activity,
+                        String.format(activity.getString(R.string.toast_msg_danmu_connect_error),
+                                error.getLocalizedMessage()));
             }
         }
     }
@@ -225,23 +234,25 @@ public class DanmakuDelegate {
     }
 
     public void danmakuReleaseToggle(boolean enable){
+        FragmentActivity activity = fragment.requireActivity();
         if(enable) {
             if(danmakuContext == null){
                 init();
             }
-            fragment.toast(fragment.getString(R.string.toast_msg_danmu_on), Toast.LENGTH_SHORT);
+            ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_danmu_on));
         } else {
             if(danmakuContext != null){
                 release();
             }
-            fragment.toast(fragment.getString(R.string.toast_msg_danmu_off), Toast.LENGTH_SHORT);
+            ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_danmu_off));
         }
     }
 
     public void danmakuSuperChatToggle(boolean enable){
+        FragmentActivity activity = fragment.requireActivity();
         if(enable) {
             scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
-            fragment.toast(fragment.getString(R.string.toast_msg_sc_on), Toast.LENGTH_SHORT);
+            ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_sc_on));
         }else{
             if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
                     || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
@@ -250,7 +261,7 @@ public class DanmakuDelegate {
                     || scDanmakuType == BaseDanmaku.TYPE_SPECIAL){
                 scDanmakuType = 0;
             }
-            fragment.toast(fragment.getString(R.string.toast_msg_sc_off), Toast.LENGTH_SHORT);
+            ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_sc_off));
         }
     }
 

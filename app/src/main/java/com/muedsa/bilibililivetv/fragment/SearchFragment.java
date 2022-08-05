@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +40,7 @@ import com.muedsa.bilibililivetv.presenter.LiveUserPresenter;
 import com.muedsa.bilibililivetv.task.Message;
 import com.muedsa.bilibililivetv.task.RequestBilibiliSearchTask;
 import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
 import java.util.Timer;
@@ -165,7 +165,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
                 loadLiveUserSearchData(searchResult.getLiveUser());
                 loadLiveRoomSearchData(searchResult.getLiveRoom());
             }else if(result.what == Message.MessageType.FAIL){
-                Toast.makeText(requireActivity(), (String) result.obj, Toast.LENGTH_SHORT).show();
+                ToastUtil.showLongToast(requireActivity(), (String) result.obj);
             }
         });
         return true;

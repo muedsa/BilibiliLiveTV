@@ -48,6 +48,7 @@ import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
 import java.util.Timer;
@@ -290,7 +291,7 @@ public class MainFragment extends BrowseSupportFragment {
                     Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(getActivity(), desc, Toast.LENGTH_SHORT).show();
+                    ToastUtil.showLongToast(getActivity(), desc);
                 }
             }
         }
