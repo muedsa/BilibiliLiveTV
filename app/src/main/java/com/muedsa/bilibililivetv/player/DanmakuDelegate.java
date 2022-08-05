@@ -5,7 +5,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
@@ -105,11 +104,8 @@ public class DanmakuDelegate {
             @Override
             public void onStart() {
                 if(BuildConfig.DEBUG){
-                    FragmentActivity activity = fragment.requireActivity();
-                    Toast.makeText(activity,
-                                    activity.getString(R.string.toast_msg_danmu_connect_success),
-                                    Toast.LENGTH_SHORT)
-                            .show();
+                    fragment.toast(fragment.getString(R.string.toast_msg_danmu_connect_success),
+                            Toast.LENGTH_SHORT);
                 }
             }
 
@@ -148,14 +144,8 @@ public class DanmakuDelegate {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                FragmentActivity activity = fragment.requireActivity();
-                Toast.makeText(activity,
-                                String.format(activity.getString(R.string.toast_msg_danmu_connect_error), reason),
-                                Toast.LENGTH_LONG)
-                        .show();
-                if(fragment.isPlaying()){
-                    startChatBroadcastWsClient();
-                }
+                fragment.toast(String.format(fragment.getString(R.string.toast_msg_danmu_connect_error), reason),
+                        Toast.LENGTH_LONG);
             }
         });
         startChatBroadcastWsClient();
@@ -168,11 +158,9 @@ public class DanmakuDelegate {
             }
             catch (Exception error){
                 Log.d(TAG, "startChatBroadcastWsClient: ", error);
-                FragmentActivity activity = fragment.requireActivity();
-                Toast.makeText(activity,
-                                String.format(activity.getString(R.string.toast_msg_danmu_connect_error), error.getLocalizedMessage()),
-                                Toast.LENGTH_LONG)
-                        .show();
+                fragment.toast(String.format(fragment.getString(R.string.toast_msg_danmu_connect_error),
+                        error.getLocalizedMessage()), Toast.LENGTH_LONG);
+
             }
         }
     }
@@ -237,34 +225,23 @@ public class DanmakuDelegate {
     }
 
     public void danmakuReleaseToggle(boolean enable){
-        FragmentActivity activity = fragment.requireActivity();
         if(enable) {
             if(danmakuContext == null){
                 init();
             }
-            Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_danmu_on),
-                            Toast.LENGTH_SHORT)
-                    .show();
+            fragment.toast(fragment.getString(R.string.toast_msg_danmu_on), Toast.LENGTH_SHORT);
         } else {
             if(danmakuContext != null){
                 release();
             }
-            Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_danmu_off),
-                            Toast.LENGTH_SHORT)
-                    .show();
+            fragment.toast(fragment.getString(R.string.toast_msg_danmu_off), Toast.LENGTH_SHORT);
         }
     }
 
     public void danmakuSuperChatToggle(boolean enable){
-        FragmentActivity activity = fragment.requireActivity();
         if(enable) {
             scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
-            Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_sc_on),
-                            Toast.LENGTH_SHORT)
-                    .show();
+            fragment.toast(fragment.getString(R.string.toast_msg_sc_on), Toast.LENGTH_SHORT);
         }else{
             if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
                     || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
@@ -273,10 +250,7 @@ public class DanmakuDelegate {
                     || scDanmakuType == BaseDanmaku.TYPE_SPECIAL){
                 scDanmakuType = 0;
             }
-            Toast.makeText(activity,
-                            activity.getString(R.string.toast_msg_sc_off),
-                            Toast.LENGTH_SHORT)
-                    .show();
+            fragment.toast(fragment.getString(R.string.toast_msg_sc_off), Toast.LENGTH_SHORT);
         }
     }
 

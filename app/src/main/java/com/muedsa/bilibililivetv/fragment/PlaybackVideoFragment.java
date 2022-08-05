@@ -1,11 +1,14 @@
 package com.muedsa.bilibililivetv.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.media.PlaybackGlue;
 
@@ -89,5 +92,12 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
             flag = exoPlayerDelegate.isPlaying();
         }
         return flag;
+    }
+
+    public void toast(CharSequence text, int duration) {
+        FragmentActivity activity = getActivity();
+        if (activity != null) {
+            activity.runOnUiThread(() -> Toast.makeText(activity, text, duration).show());
+        }
     }
 }
