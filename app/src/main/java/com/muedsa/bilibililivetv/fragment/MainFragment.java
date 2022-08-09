@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -45,11 +46,16 @@ import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
+import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
+import com.muedsa.bilibililivetv.task.Message;
+import com.muedsa.bilibililivetv.task.RequestGithubLatestReleaseTask;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 import com.muedsa.bilibililivetv.util.ToastUtil;
+import com.muedsa.github.model.GithubReleaseTagInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,6 +75,7 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int MAX_NUM_COLS = 8;
     private static final int HEAD_TITLE_HISTORY = 1;
     private static final int HEAD_TITLE_OTHER = 2;
+    private static final int HEAD_TITLE_LATEST_VERSION = 3;
 
     private final Handler mHandler = new Handler();
     private Drawable mDefaultBackground;
@@ -81,6 +88,11 @@ public class MainFragment extends BrowseSupportFragment {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private TaskRunner taskRunner;
     private LiveRoomPresenter.CardLongClickListener liveRoomCardLongClickListener;
+
+
+    private List<ListRow> historyListRows;
+    private ListRow otherListRow;
+    private ListRow versionListRow;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,8 +119,11 @@ public class MainFragment extends BrowseSupportFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(liveRooms -> {
                     Log.i(TAG, "load liveRooms size: " + liveRooms.size());
-                    loadRows(liveRooms);
+                    loadHistoryRows(liveRooms);
+                    loadRows();
                 }));
+        runLatestVersionTask();
+        loadRows();
     }
 
     @Override
@@ -126,10 +141,39 @@ public class MainFragment extends BrowseSupportFragment {
         disposable.dispose();
     }
 
-    private void loadRows(List<LiveRoom> list) {
-        FragmentActivity activity = requireActivity();
-
+    private void loadRows(){
+        //历史记录
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+        if(null != historyListRows){
+            Log.i(TAG, "loadRows: historyListRows size: " + historyListRows.size());
+            rowsAdapter.addAll(0, historyListRows);
+        }
+
+        //其他
+        if(otherListRow == null) {
+            HeaderItem gridHeader = new HeaderItem(HEAD_TITLE_OTHER,
+                    getResources().getString(R.string.head_title_other));
+            GridItemPresenter mGridPresenter = new GridItemPresenter();
+            ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+            gridRowAdapter.add(getResources().getString(R.string.clear_history));
+            gridRowAdapter.add(getResources().getString(R.string.clear_channel));
+            if(BuildConfig.DEBUG){
+                gridRowAdapter.add(getResources().getString(R.string.danmaku_test));
+            }
+            otherListRow = new ListRow(gridHeader, gridRowAdapter);
+        }
+        rowsAdapter.add(otherListRow);
+
+        //版本更新
+        if(versionListRow != null){
+            rowsAdapter.add(versionListRow);
+        }
+
+        setAdapter(rowsAdapter);
+    }
+
+    private void loadHistoryRows(List<LiveRoom> list) {
+        FragmentActivity activity = requireActivity();
         if(liveRoomCardLongClickListener == null) {
             liveRoomCardLongClickListener = liveRoom -> new AlertDialog.Builder(activity)
                     .setTitle(activity.getResources().getString(R.string.remove_history_alert))
@@ -151,6 +195,7 @@ public class MainFragment extends BrowseSupportFragment {
         if(mod > 0){
             row++;
         }
+        historyListRows = new ArrayList<>(row);
         for(int rowIndex = 0; rowIndex < row; rowIndex++){
             ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(liveRoomPresenter);
             int max_num_cols = MAX_NUM_COLS;
@@ -162,26 +207,27 @@ public class MainFragment extends BrowseSupportFragment {
                 listRowAdapter.add(list.get(listIndex));
             }
             if(rowIndex == 0){
-                rowsAdapter.add(new ListRow(historyRecordHeader, listRowAdapter));
+                historyListRows.add(new ListRow(historyRecordHeader, listRowAdapter));
             }else{
-                rowsAdapter.add(new ListRow(listRowAdapter));
+                historyListRows.add(new ListRow(listRowAdapter));
             }
         }
+    }
 
-        HeaderItem gridHeader = new HeaderItem(HEAD_TITLE_OTHER,
-                getResources().getString(R.string.head_title_other));
-        GridItemPresenter mGridPresenter = new GridItemPresenter();
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-        gridRowAdapter.add(getResources().getString(R.string.clear_history));
-        gridRowAdapter.add(getResources().getString(R.string.clear_channel));
-
-        if(BuildConfig.DEBUG){
-            gridRowAdapter.add(getResources().getString(R.string.danmaku_test));
-        }
-
-        rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
-
-        setAdapter(rowsAdapter);
+    private void runLatestVersionTask(){
+        taskRunner.executeAsync(new RequestGithubLatestReleaseTask(), msg -> {
+            if (Message.MessageType.SUCCESS.equals(msg.what)){
+                HeaderItem headerItem = new HeaderItem(HEAD_TITLE_LATEST_VERSION,
+                        getResources().getString(R.string.head_title_latest_version));
+                GithubReleasePresenter mGithubReleasePresenter = new GithubReleasePresenter();
+                ArrayObjectAdapter rowAdapter = new ArrayObjectAdapter(mGithubReleasePresenter);
+                rowAdapter.add(msg.obj);
+                versionListRow = new ListRow(headerItem, rowAdapter);
+                loadRows();
+            }else if(Message.MessageType.FAIL.equals(msg.what)){
+                ToastUtil.showLongToast(getActivity(), msg.obj.toString());
+            }
+        });
     }
 
     private void prepareBackgroundManager() {
@@ -264,6 +310,8 @@ public class MainFragment extends BrowseSupportFragment {
                         DetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
                 activity.startActivity(intent, bundle);
+            } else if(item instanceof GithubReleaseTagInfo){
+                jumpToUrl(getString(R.string.latest_version_download_url));
             } else if (item instanceof String) {
                 String desc = (String) item;
                 if(desc.contains(getString(R.string.clear_history))){
@@ -343,4 +391,16 @@ public class MainFragment extends BrowseSupportFragment {
         }
     }
 
+    private void jumpToUrl(String url){
+        try{
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            intent.setData(Uri.parse(url));
+            startActivity(intent);
+        }
+        catch (Exception e){
+            Log.e(TAG, "jumpToUrl: " + url, e);
+            ToastUtil.showLongToast(getActivity(), String.format(getString(R.string.toast_msg_jump_url_error), url));
+        }
+    }
 }

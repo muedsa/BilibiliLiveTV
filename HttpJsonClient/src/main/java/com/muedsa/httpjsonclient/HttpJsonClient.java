@@ -13,22 +13,32 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
 
 public class HttpJsonClient {
 
-    public static final String UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36";
+    public static final String UserAgentKey = "User-Agent";
+    public static final String UserAgentValue = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36";
 
     public <T> T GetJson(String url, TypeReference<T> type) throws IOException {
+        return GetJson(url, type, Collections.singletonMap(UserAgentKey, UserAgentValue));
+    }
+
+    public <T> T GetJson(String url, TypeReference<T> type, Map<String, String> headers) throws IOException {
         URL urlObj = new URL(url);
         URLConnection urlConnection = urlObj.openConnection();
-        urlConnection.setRequestProperty("User-Agent", UserAgent);
+        if(headers != null) headers.forEach(urlConnection::setRequestProperty);
         String result = convertStreamToString(urlConnection.getInputStream());
         result = beforeJsonParse(result);
         return JSON.parseObject(result, type);
     }
 
     public <T> T PostJson(String url, Map<String, Object> params, TypeReference<T> type) throws IOException {
+        return PostJson(url, params, type, Collections.singletonMap(UserAgentKey, UserAgentValue));
+    }
+
+    public <T> T PostJson(String url, Map<String, Object> params, TypeReference<T> type, Map<String, String> headers) throws IOException {
         StringBuilder postData = new StringBuilder();
         if(params != null){
             for (Map.Entry<String, Object> param : params.entrySet()) {
@@ -41,8 +51,8 @@ public class HttpJsonClient {
             }
         }
         URL urlObj = new URL(url);
-        URLConnection urlConnection = (HttpURLConnection) urlObj.openConnection();
-        urlConnection.setRequestProperty("User-Agent", UserAgent);
+        URLConnection urlConnection = urlObj.openConnection();
+        if(headers != null) headers.forEach(urlConnection::setRequestProperty);
         urlConnection.setConnectTimeout(2000);
         urlConnection.setReadTimeout(5000);
         urlConnection.setDoOutput(true);

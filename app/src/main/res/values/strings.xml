@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">BilibiliLiveTV</string>
     <string name="host_name">bilibilitv.muedsa.com</string>
+    <string name="latest_version_download_url">https://github.com/MUedsa/BilibiliLiveTV/releases</string>
     <string name="browse_title">Bilibili Live</string>
     <string name="danmaku_test">弹幕测试</string>
     <string name="clear_history">清除历史记录</string>
@@ -38,6 +39,7 @@
     <string name="tv_uir_path_program">BilibiliLive</string>
     <string name="head_title_history">历史记录</string>
     <string name="head_title_other">其他</string>
+    <string name="head_title_latest_version">最新版本</string>
     <string name="head_title_search_result_live_user">主播</string>
     <string name="head_title_search_result_live_room">直播间</string>
     <string name="total_msg_change_play_url">切换到线路%d</string>
@@ -47,4 +49,5 @@
     <string name="toast_msg_danmu_off">弹幕关闭</string>
     <string name="toast_msg_sc_on">SuperChat开启</string>
     <string name="toast_msg_sc_off">SuperChat关闭</string>
+    <string name="toast_msg_jump_url_error">无法打开浏览器, %s</string>
 </resources>
