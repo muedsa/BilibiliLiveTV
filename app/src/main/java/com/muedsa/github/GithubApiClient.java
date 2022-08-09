@@ -17,7 +17,7 @@ public class GithubApiClient {
     }
 
     public BaseResponse<GithubReleaseTagInfo> getLatestReleaseInfo(String user, String repo) throws IOException {
-        String url = ApiUtil.fillUrl(GithubApiUrlContainer.RELEASE_LATEST_INFO, user, repo);
+        String url = ApiUtil.fillUrl(GithubApiUrlContainer.LATEST_RELEASE_TAG_INFO, user, repo);
         return httpJsonClient.GetJson(url, new TypeReference<BaseResponse<GithubReleaseTagInfo>>(){});
     }
 }
