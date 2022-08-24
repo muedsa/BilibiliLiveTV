@@ -22,6 +22,7 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
     DanmakuPlayToggleAction danmakuPlayToggleAction;
     ChangePlayUrlAction changePlayUrlAction;
     SuperChatToggleAction superChatToggleAction;
+    GiftToggleAction giftToggleAction;
 
     public PlaybackTransportControlGlue(Context context, LeanbackPlayerAdapter impl) {
         super(context, impl);
@@ -57,6 +58,11 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         superChatToggleAction = new SuperChatToggleAction(context);
         superChatToggleAction.setIndex(SuperChatToggleAction.INDEX_OFF);
         primaryActionsAdapter.add(superChatToggleAction);
+
+        giftToggleAction = new GiftToggleAction(context);
+        giftToggleAction.setIndex(SuperChatToggleAction.INDEX_ON);
+        primaryActionsAdapter.add(superChatToggleAction);
+
     }
 
     @Override
@@ -71,6 +77,11 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         }else if(action instanceof SuperChatToggleAction) {
             dispatchActionCallback(action);
             ((SuperChatToggleAction) action).nextIndex();
+            notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
+                    action);
+        } else if(action instanceof GiftToggleAction)  {
+            dispatchActionCallback(action);
+            ((GiftToggleAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
                     action);
         } else {
@@ -90,6 +101,8 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
                         callback.onLiveUrlChange(this);
                     } else if(action instanceof SuperChatToggleAction){
                         callback.onSuperChatToggle(((SuperChatToggleAction) action).getIndex() == SuperChatToggleAction.INDEX_ON);
+                    } else if(action instanceof GiftToggleAction){
+                        callback.onGiftToggle(((GiftToggleAction) action).getIndex() == GiftToggleAction.INDEX_ON);
                     }
                 }
             }
@@ -144,6 +157,25 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         }
     }
 
+    static class GiftToggleAction extends PlaybackControlsRow.MultiAction {
+
+        public static final int INDEX_ON = 0;
+        public static final int INDEX_OFF = 1;
+
+        public GiftToggleAction(Context context) {
+            super(R.id.playback_controls_super_chat_toggle);
+            Drawable[] drawables = new Drawable[2];
+            drawables[INDEX_ON] = getWhiteDrawable(context, R.drawable.ic_gift_enable);
+            drawables[INDEX_OFF] = getWhiteDrawable(context, R.drawable.ic_gift_disable);
+
+            setDrawables(drawables);
+            String[] labels = new String[drawables.length];
+            labels[INDEX_ON] = context.getString(R.string.playback_controls_gift_play);
+            labels[INDEX_OFF] = context.getString(R.string.playback_controls_gift_stop);
+            setLabels(labels);
+        }
+    }
+
     static Drawable getWhiteDrawable(Context context, int drawableId) {
         Drawable drawable = context.getDrawable(drawableId);
         Drawable whiteDrawable = DrawableCompat.wrap(drawable);
@@ -155,6 +187,7 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         public void onDanmakuToggle(boolean enable) {}
         public void onLiveUrlChange(PlaybackGlue glue) {}
         public void onSuperChatToggle(boolean enable) {}
+        public void onGiftToggle(boolean enable) {}
     }
 
 }

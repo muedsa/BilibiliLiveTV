@@ -28,6 +28,8 @@
     <string name="playback_controls_danmu_stop">弹幕关</string>
     <string name="playback_controls_sc_play">SuperChat开</string>
     <string name="playback_controls_sc_stop">SuperChat关</string>
+    <string name="playback_controls_gift_play">礼物弹幕开</string>
+    <string name="playback_controls_gift_stop">礼物弹幕关</string>
     <string name="playback_controls_change_play_url">切换线路</string>
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
@@ -49,5 +51,7 @@
     <string name="toast_msg_danmu_off">弹幕关闭</string>
     <string name="toast_msg_sc_on">SuperChat开启</string>
     <string name="toast_msg_sc_off">SuperChat关闭</string>
+    <string name="toast_msg_gift_on">礼物弹幕开启</string>
+    <string name="toast_msg_gift_off">礼物弹幕关闭</string>
     <string name="toast_msg_jump_url_error">无法打开浏览器, %s</string>
 </resources>

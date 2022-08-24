@@ -121,7 +121,7 @@ public class DanmakuTestFragment extends Fragment {
     }
 
     private void initChatBroadcast(){
-        chatBroadcastWsClient = new ChatBroadcastWsClient(545068, "null");
+        chatBroadcastWsClient = new ChatBroadcastWsClient(8864977, "null");
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
             public void onStart() {
@@ -213,6 +213,9 @@ public class DanmakuTestFragment extends Fragment {
         if(timer1 != null){
             timer1.cancel();
             timer1 = null;
+        }
+        if(chatBroadcastWsClient != null){
+            chatBroadcastWsClient.close();
         }
     }
 }

@@ -93,6 +93,12 @@ public class ExoPlayerDelegate {
                 super.onSuperChatToggle(enable);
                 if(listener != null) listener.onDanmakuSuperChatToggle(enable);
             }
+
+            @Override
+            public void onGiftToggle(boolean enable) {
+                super.onGiftToggle(enable);
+                if(listener != null) listener.onDanmakuGiftToggle(enable);
+            }
         });
         mediaItemList = new ArrayList<>();
         if(liveRoom.getPlayUrlArr() != null){
@@ -151,7 +157,8 @@ public class ExoPlayerDelegate {
 
     public interface Listener {
         void onPlayStateChanged(PlaybackGlue glue);
-        void onDanmuToggle(boolean on);
-        void onDanmakuSuperChatToggle(boolean on);
+        void onDanmuToggle(boolean enable);
+        void onDanmakuSuperChatToggle(boolean enable);
+        void onDanmakuGiftToggle(boolean enable);
     }
 }

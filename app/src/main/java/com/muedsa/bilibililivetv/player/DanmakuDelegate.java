@@ -264,6 +264,14 @@ public class DanmakuDelegate {
         }
     }
 
+    public void danmakuGiftToggle(boolean enable){
+        FragmentActivity activity = fragment.requireActivity();
+        giftDanmakuEnable = enable;
+        String toastMsg = enable ? activity.getString(R.string.toast_msg_sc_on):
+                activity.getString(R.string.toast_msg_sc_off);
+        ToastUtil.showShortToast(activity, toastMsg);
+    }
+
     public void release(){
         if(chatBroadcastWsClient != null){
             chatBroadcastWsClient.close();
