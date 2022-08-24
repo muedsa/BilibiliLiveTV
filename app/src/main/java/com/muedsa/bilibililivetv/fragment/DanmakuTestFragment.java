@@ -1,7 +1,6 @@
 package com.muedsa.bilibililivetv.fragment;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,25 +8,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
+import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
+import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.player.danmaku.GiftDanmakuManager;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
-import master.flame.danmaku.danmaku.model.Danmaku;
 import master.flame.danmaku.danmaku.model.DanmakuTimer;
-import master.flame.danmaku.danmaku.model.Duration;
 import master.flame.danmaku.danmaku.model.IDanmakus;
 import master.flame.danmaku.danmaku.model.IDisplayer;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
-import master.flame.danmaku.danmaku.model.android.DanmakuFactory;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
@@ -38,6 +37,9 @@ public class DanmakuTestFragment extends Fragment {
     private DanmakuSurfaceView danmakuView;
     private DanmakuContext danmakuContext;
     private BaseDanmakuParser danmakuParser;
+    private GiftDanmakuManager giftDanmakuManager;
+
+    private ChatBroadcastWsClient chatBroadcastWsClient;
 
     private Timer timer1;
 
@@ -86,8 +88,11 @@ public class DanmakuTestFragment extends Fragment {
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override
             public void prepared() {
+                giftDanmakuManager = new GiftDanmakuManager(danmakuView);
                 danmakuView.start();
-                timer1();
+                giftDanmakuManager.prepare();
+                //timer1();
+                initChatBroadcast();
             }
 
             @Override
@@ -105,58 +110,75 @@ public class DanmakuTestFragment extends Fragment {
         danmakuView.prepare(danmakuParser, danmakuContext);
     }
 
-    private void addDanmaku(String content, int textColor, boolean textShadowTransparent, int type){
-        if(danmakuContext != null && danmakuView != null && danmakuParser !=null){
-            BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
-            if (danmaku != null) {
-                float textSize = (float) DanmakuFactory.DANMAKU_MEDIUM_TEXTSIZE * (danmakuParser.getDisplayer().getDensity() - 0.6f);
-                danmaku.text = content;
-                if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
-                    int width = danmakuContext.getDisplayer().getWidth();
-                    int maxSize = (int) (width / textSize) - 10;
-                    int textLength = content.length();
-                    int lineLength = (textLength + maxSize - 1) / maxSize;
-                    String[] lines = new String[lineLength];
-                    for(int i = 0; i < lineLength; i++){
-                        lines[i] = content.substring(i * maxSize, Math.min(i * maxSize + maxSize, textLength));
-                    }
-                    danmaku.lines = lines;
-                }
-                danmaku.padding = 0;
-                danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
-                danmaku.isLive = true;
-                danmaku.setTime(danmakuView.getCurrentTime() + 500);
-                danmaku.textSize = textSize;
-                danmaku.textColor = textColor;
-                danmaku.textShadowColor = textShadowTransparent ? Color.TRANSPARENT : Color.BLACK;
-                if(type == BaseDanmaku.TYPE_SPECIAL) {
-                    danmaku.duration = new Duration(1000);
-                    danmakuContext.mDanmakuFactory.fillTranslationData(danmaku,
-                            5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT, 5, (float) danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 30, 1500, 0,
-                            1, 1f);
-                    //DanmakuFactory.fillLinePathData(danmaku, new float[][]{{5, danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - 100}}, 0, 0);
-                }
-                danmakuView.addDanmaku(danmaku);
-            }
-        }
-    }
-
     private void timer1(){
         timer1 = new Timer();
-        Random random = new Random();
-
         timer1.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                //addDanmaku("这是一条弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SCROLL_RL);
-                //addDanmaku("这是一条SPECIAL弹幕", Color.WHITE, false, BaseDanmaku.TYPE_SPECIAL);
-                String text = "这是一条超级长的SC弹幕" + System.currentTimeMillis()
-                        + random.nextLong()
-                        + random.nextLong()
-                        + random.nextLong();
-                addDanmaku(text, Color.WHITE, false, BaseDanmaku.TYPE_FIX_BOTTOM);
+                giftDanmakuManager.add(randStr(5) + "投喂" + randStr(4) + "X3");
             }
-        }, 0, 2000);
+        }, 1000, 200);
+    }
+
+    private void initChatBroadcast(){
+        chatBroadcastWsClient = new ChatBroadcastWsClient(545068, "null");
+        chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
+            @Override
+            public void onStart() {
+                if(BuildConfig.DEBUG){
+                    FragmentActivity activity = requireActivity();
+                    ToastUtil.showLongToast(activity,
+                            activity.getString(R.string.toast_msg_danmu_connect_success));
+                }
+            }
+
+            @Override
+            public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent, String msg) {
+                Log.d(TAG, "onReceiveDanmu: " + text);
+            }
+
+            @Override
+            public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname, String msg) {
+
+            }
+
+            @Override
+            public void onReceiveSendGift(String action, String giftName, Integer num, String uname, String msg) {
+                if(giftDanmakuManager != null) giftDanmakuManager.add(uname + action + giftName + "X" + num);
+            }
+
+            @Override
+            public void onReceiveOtherMessage(String message) {
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+                Log.d(TAG, "ChatBroadcast close");
+            }
+        });
+        try {
+            chatBroadcastWsClient.start();
+        }
+        catch (Exception error){
+            Log.d(TAG, "startChatBroadcastWsClient: ", error);
+            FragmentActivity activity = requireActivity();
+            ToastUtil.showShortToast(
+                    activity,
+                    String.format(activity.getString(R.string.toast_msg_danmu_connect_error),
+                            error.getLocalizedMessage()));
+        }
+    }
+
+    static final String CC = "zxcvbnmlkjhgfdsaqwertyuiopQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+    static final int CC_LENGTH = CC.length();
+    static final Random random = new Random();
+    private static String randStr(int length) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CC_LENGTH);
+            sb.append(CC.charAt(index));
+        }
+        return sb.toString();
     }
 
 

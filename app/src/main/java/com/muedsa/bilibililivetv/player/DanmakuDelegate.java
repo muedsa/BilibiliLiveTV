@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.player.danmaku.GiftDanmakuManager;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 import com.muedsa.bilibililivetv.util.ToastUtil;
@@ -34,9 +35,10 @@ public class DanmakuDelegate {
     private IDanmakuView danmakuView;
     private DanmakuContext danmakuContext;
     private BaseDanmakuParser danmakuParser;
+    private GiftDanmakuManager giftDanmakuManager;
     private ChatBroadcastWsClient chatBroadcastWsClient;
 
-    private int giftDanmakuType = 0;
+    private boolean giftDanmakuEnable = false;
     private int scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
 
 
@@ -80,7 +82,9 @@ public class DanmakuDelegate {
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override
             public void prepared() {
+                giftDanmakuManager = new GiftDanmakuManager(danmakuView);
                 danmakuView.start();
+                giftDanmakuManager.prepare();
                 initChatBroadcast();
             }
 
@@ -112,16 +116,16 @@ public class DanmakuDelegate {
             }
 
             @Override
-            public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent) {
+            public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent, String msg) {
                 addDanmaku(text, textSize, textColor, textShadowTransparent);
             }
 
             @Override
-            public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname) {
+            public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname, String msg) {
                 if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
                         || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
                         || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
-                        || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
+                        || scDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
                         || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
                     String text = "[SC]" + uname + ":" + message;
                     addDanmaku(text, 25, Color.parseColor(messageFontColor), false, scDanmakuType);
@@ -129,14 +133,9 @@ public class DanmakuDelegate {
             }
 
             @Override
-            public void onReceiveSendGift(String action, String giftName, Integer num, String uname) {
-                if(giftDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
-                        || giftDanmakuType == BaseDanmaku.TYPE_FIX_TOP
-                        || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
-                        || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
-                        || giftDanmakuType == BaseDanmaku.TYPE_SPECIAL){
-                    String text = uname + action + giftName + "X" + num;
-                    addDanmaku(text, 10, Color.WHITE, false, giftDanmakuType);
+            public void onReceiveSendGift(String action, String giftName, Integer num, String uname, String msg) {
+                if(giftDanmakuEnable && giftDanmakuManager != null){
+                    giftDanmakuManager.add(uname + action + giftName + "X" + num);
                 }
             }
 
@@ -257,7 +256,7 @@ public class DanmakuDelegate {
             if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
                     || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
                     || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
-                    || giftDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
+                    || scDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
                     || scDanmakuType == BaseDanmaku.TYPE_SPECIAL){
                 scDanmakuType = 0;
             }
