@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.player;
+package com.muedsa.bilibililivetv.player.danmaku;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.player.danmaku.GiftDanmakuManager;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 import com.muedsa.bilibililivetv.util.ToastUtil;
@@ -267,8 +266,8 @@ public class DanmakuDelegate {
     public void danmakuGiftToggle(boolean enable){
         FragmentActivity activity = fragment.requireActivity();
         giftDanmakuEnable = enable;
-        String toastMsg = enable ? activity.getString(R.string.toast_msg_sc_on):
-                activity.getString(R.string.toast_msg_sc_off);
+        String toastMsg = enable ? activity.getString(R.string.toast_msg_gift_on):
+                activity.getString(R.string.toast_msg_gift_off);
         ToastUtil.showShortToast(activity, toastMsg);
     }
 

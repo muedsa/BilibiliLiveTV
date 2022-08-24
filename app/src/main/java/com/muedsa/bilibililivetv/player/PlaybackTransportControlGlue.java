@@ -60,8 +60,8 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         primaryActionsAdapter.add(superChatToggleAction);
 
         giftToggleAction = new GiftToggleAction(context);
-        giftToggleAction.setIndex(SuperChatToggleAction.INDEX_ON);
-        primaryActionsAdapter.add(superChatToggleAction);
+        giftToggleAction.setIndex(GiftToggleAction.INDEX_ON);
+        primaryActionsAdapter.add(giftToggleAction);
 
     }
 

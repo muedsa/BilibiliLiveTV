@@ -12,7 +12,7 @@ import androidx.leanback.media.PlaybackGlue;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
-import com.muedsa.bilibililivetv.player.DanmakuDelegate;
+import com.muedsa.bilibililivetv.player.danmaku.DanmakuDelegate;
 import com.muedsa.bilibililivetv.player.ExoPlayerDelegate;
 
 import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
