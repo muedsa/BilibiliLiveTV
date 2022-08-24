@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -27,9 +28,7 @@ public class HttpJsonClient {
     }
 
     public <T> T GetJson(String url, TypeReference<T> type, Map<String, String> headers) throws IOException {
-        URL urlObj = new URL(url);
-        URLConnection urlConnection = urlObj.openConnection();
-        if(headers != null) headers.forEach(urlConnection::setRequestProperty);
+        URLConnection urlConnection = connect(url, headers);
         String result = convertStreamToString(urlConnection.getInputStream());
         result = beforeJsonParse(result);
         return JSON.parseObject(result, type);
@@ -51,16 +50,21 @@ public class HttpJsonClient {
                         .append(URLEncoder.encode(String.valueOf(param.getValue()), "utf-8"));
             }
         }
-        URL urlObj = new URL(url);
-        URLConnection urlConnection = urlObj.openConnection();
-        if(headers != null) headers.forEach(urlConnection::setRequestProperty);
-        urlConnection.setConnectTimeout(2000);
-        urlConnection.setReadTimeout(5000);
+        URLConnection urlConnection = connect(url, headers);
         urlConnection.setDoOutput(true);
         urlConnection.getOutputStream().write(postData.toString().getBytes(StandardCharsets.UTF_8));
         String result = convertStreamToString(urlConnection.getInputStream());
         result = beforeJsonParse(result);
         return JSON.parseObject(result, type);
+    }
+
+    private URLConnection connect(String url, Map<String, String> headers) throws IOException {
+        URL urlObj = new URL(url);
+        URLConnection urlConnection = urlObj.openConnection();
+        if(headers != null) headers.forEach(urlConnection::setRequestProperty);
+        urlConnection.setConnectTimeout(2000);
+        urlConnection.setReadTimeout(3000);
+        return urlConnection;
     }
 
     private String convertStreamToString(InputStream inputStream) throws IOException {
