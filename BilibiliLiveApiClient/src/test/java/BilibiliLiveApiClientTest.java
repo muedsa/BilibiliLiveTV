@@ -4,8 +4,8 @@ import com.muedsa.bilibililiveapiclient.model.AnchorBaseInfo;
 import com.muedsa.bilibililiveapiclient.model.AnchorInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
-import com.muedsa.bilibililiveapiclient.model.DanmuHostInfo;
-import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
+import com.muedsa.bilibililiveapiclient.model.DanmakuHostInfo;
+import com.muedsa.bilibililiveapiclient.model.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
@@ -79,28 +79,28 @@ public class BilibiliLiveApiClientTest {
     @Test
     public void getDanmuInfoTest() throws IOException {
         getLargeInfo();
-        BilibiliResponse<DanmuInfo> response = client.getDanmuInfo(roomId);
+        BilibiliResponse<DanmakuInfo> response = client.getDanmuInfo(roomId);
         Assertions.assertEquals(0L, response.getCode());
-        DanmuInfo danmuInfo = response.getData();
-        Assertions.assertNotNull(danmuInfo);
-        Assertions.assertNotNull(danmuInfo.getToken());
-        Assertions.assertNotNull(danmuInfo.getHostList());
-        String message = String.format("roomId:%d, token:%s", roomId, danmuInfo.getToken());
+        DanmakuInfo danmakuInfo = response.getData();
+        Assertions.assertNotNull(danmakuInfo);
+        Assertions.assertNotNull(danmakuInfo.getToken());
+        Assertions.assertNotNull(danmakuInfo.getHostList());
+        String message = String.format("roomId:%d, token:%s", roomId, danmakuInfo.getToken());
         logger.info(message);
-        for (DanmuHostInfo danmuHostInfo : danmuInfo.getHostList()) {
-            message = String.format("host:%s, wsPort:%d", danmuHostInfo.getHost(), danmuHostInfo.getWsPort());
+        for (DanmakuHostInfo danmakuHostInfo : danmakuInfo.getHostList()) {
+            message = String.format("host:%s, wsPort:%d", danmakuHostInfo.getHost(), danmakuHostInfo.getWsPort());
             logger.info(message);
         }
     }
 
     @Test
     public void wsTest() throws IOException, InterruptedException {
-        BilibiliResponse<DanmuInfo> response = client.getDanmuInfo(roomId);
+        BilibiliResponse<DanmakuInfo> response = client.getDanmuInfo(roomId);
         Assertions.assertEquals(0L, response.getCode());
-        DanmuInfo danmuInfo = response.getData();
-        Assertions.assertNotNull(danmuInfo);
-        Assertions.assertNotNull(danmuInfo.getToken());
-        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, danmuInfo.getToken());
+        DanmakuInfo danmakuInfo = response.getData();
+        Assertions.assertNotNull(danmakuInfo);
+        Assertions.assertNotNull(danmakuInfo.getToken());
+        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, danmakuInfo.getToken());
         client.start();
         Assertions.assertTrue(client.isOpen());
     }

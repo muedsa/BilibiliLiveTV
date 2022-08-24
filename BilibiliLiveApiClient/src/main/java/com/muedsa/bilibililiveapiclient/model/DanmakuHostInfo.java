@@ -2,7 +2,7 @@ package com.muedsa.bilibililiveapiclient.model;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
-public class DanmuHostInfo {
+public class DanmakuHostInfo {
     @JSONField(name = "host")
     private String host;
 

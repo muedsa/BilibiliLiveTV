@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.annotation.JSONField;
 
 import java.util.List;
 
-public class DanmuInfo {
+public class DanmakuInfo {
 
     @JSONField(name = "group")
     private String group;
@@ -24,8 +24,8 @@ public class DanmuInfo {
     @JSONField(name = "token")
     private String token;
 
-    @JSONField(name = "hostList")
-    private List<DanmuHostInfo> hostList;
+    @JSONField(name = "host_list")
+    private List<DanmakuHostInfo> hostList;
 
     public String getGroup() {
         return group;
@@ -75,11 +75,11 @@ public class DanmuInfo {
         this.token = token;
     }
 
-    public List<DanmuHostInfo> getHostList() {
+    public List<DanmakuHostInfo> getHostList() {
         return hostList;
     }
 
-    public void setHostList(List<DanmuHostInfo> hostList) {
+    public void setHostList(List<DanmakuHostInfo> hostList) {
         this.hostList = hostList;
     }
 }

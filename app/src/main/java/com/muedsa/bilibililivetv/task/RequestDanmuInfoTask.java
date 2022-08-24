@@ -3,7 +3,7 @@ package com.muedsa.bilibililivetv.task;
 import android.util.Log;
 
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
-import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
+import com.muedsa.bilibililiveapiclient.model.DanmakuInfo;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 
 public class RequestDanmuInfoTask implements TaskRunner.Callable {
@@ -19,7 +19,7 @@ public class RequestDanmuInfoTask implements TaskRunner.Callable {
     public Message call() throws Exception {
         Message msg = Message.obtain();
 
-        BilibiliResponse<DanmuInfo> response = BilibiliLiveApi.client().getDanmuInfo(roomId);
+        BilibiliResponse<DanmakuInfo> response = BilibiliLiveApi.client().getDanmuInfo(roomId);
         if(response != null){
             if(response.getCode() == 0){
                 if(response.getData() != null){

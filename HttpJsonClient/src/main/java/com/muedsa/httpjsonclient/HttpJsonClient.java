@@ -8,7 +8,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -18,11 +17,13 @@ import java.util.Map;
 
 public class HttpJsonClient {
 
-    public static final String UserAgentKey = "User-Agent";
-    public static final String UserAgentValue = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36";
+    public static final String HEADER_KEY_USER_AGENT = "User-Agent";
+    public static final String HEADER_KEY_COOKIE = "Cookie";
+
+    public static final String HEADER_VALUE_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36";
 
     public <T> T GetJson(String url, TypeReference<T> type) throws IOException {
-        return GetJson(url, type, Collections.singletonMap(UserAgentKey, UserAgentValue));
+        return GetJson(url, type, Collections.singletonMap(HEADER_KEY_USER_AGENT, HEADER_VALUE_USER_AGENT));
     }
 
     public <T> T GetJson(String url, TypeReference<T> type, Map<String, String> headers) throws IOException {
@@ -35,7 +36,7 @@ public class HttpJsonClient {
     }
 
     public <T> T PostJson(String url, Map<String, Object> params, TypeReference<T> type) throws IOException {
-        return PostJson(url, params, type, Collections.singletonMap(UserAgentKey, UserAgentValue));
+        return PostJson(url, params, type, Collections.singletonMap(HEADER_KEY_USER_AGENT, HEADER_VALUE_USER_AGENT));
     }
 
     public <T> T PostJson(String url, Map<String, Object> params, TypeReference<T> type, Map<String, String> headers) throws IOException {

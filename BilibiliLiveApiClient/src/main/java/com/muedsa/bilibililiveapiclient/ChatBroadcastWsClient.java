@@ -4,10 +4,9 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
-import com.muedsa.bilibililiveapiclient.model.DanmuInfo;
+import com.muedsa.bilibililiveapiclient.model.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.chat.ChatBroadcast;
 import com.muedsa.bilibililiveapiclient.uitl.ChatBroadcastPacketUtil;
-import com.muedsa.httpjsonclient.HttpJsonClient;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Callable;
 
 public class ChatBroadcastWsClient {
 
@@ -165,7 +163,7 @@ public class ChatBroadcastWsClient {
     public static void main(String[] args) throws IOException, InterruptedException {
         long roomId = 1440094;
         BilibiliLiveApiClient httpClient = new BilibiliLiveApiClient();
-        BilibiliResponse<DanmuInfo> response = httpClient.getDanmuInfo(roomId);
+        BilibiliResponse<DanmakuInfo> response = httpClient.getDanmuInfo(roomId);
         ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, response.getData().getToken());
         client.start();
         client.setCallBack(new CallBack() {
