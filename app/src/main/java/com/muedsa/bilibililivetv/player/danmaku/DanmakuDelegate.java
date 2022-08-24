@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
@@ -126,8 +127,14 @@ public class DanmakuDelegate {
                         || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
                         || scDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
                         || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
-                    String text = "[SC]" + uname + ":" + message;
-                    addDanmaku(text, 25, Color.parseColor(messageFontColor), false, scDanmakuType);
+                    String text = uname + ":" + message;
+                    int color;
+                    if(Strings.isNullOrEmpty(message)){
+                        color = Color.WHITE;
+                    }else{
+                        color = Color.parseColor(messageFontColor);
+                    }
+                    addDanmaku(text, 25, color, false, scDanmakuType);
                 }
             }
 
