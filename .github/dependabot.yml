@@ -1,4 +1,8 @@
 version: 2
+registries:
+  google:
+    type: maven-registry
+    url: dl.google.com/dl/android/maven2
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
