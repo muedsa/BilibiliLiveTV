@@ -1,4 +1,10 @@
 version: 2
+registries:
+  google:
+    type: maven-repository
+    url: maven.google.com
+    username: ''
+    password: ''
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
