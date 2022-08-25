@@ -3,6 +3,8 @@ registries:
   google:
     type: maven-repository
     url: dl.google.com/dl/android/maven2
+    username:
+    password:
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
