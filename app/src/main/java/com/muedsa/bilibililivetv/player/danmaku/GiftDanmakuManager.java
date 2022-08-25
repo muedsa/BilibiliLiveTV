@@ -108,7 +108,7 @@ public class GiftDanmakuManager {
                 danmaku.setTime(time);
                 danmaku.textSize = textSize;
                 danmaku.textColor = Color.WHITE;
-                danmaku.textShadowColor = Color.TRANSPARENT;
+                danmaku.textShadowColor = Color.BLACK;
                 danmaku.duration = new Duration(duration);
             }
         }
