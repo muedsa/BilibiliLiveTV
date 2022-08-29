@@ -12,4 +12,3 @@ updates:
       - maven-google
     schedule:
       interval: "daily"
-      
