@@ -5,7 +5,7 @@
 [![GitHub Releases](https://img.shields.io/github/downloads/MUedsa/BilibiliLiveTV/total?logo=github)](https://github.com/MUedsa/BilibiliLiveTV/releases)  
 [Leanback](https://developer.android.google.cn/training/tv/start/start#tv-libraries) + [ExoPlayer](https://github.com/google/ExoPlayer) + [DanmakuFlameMaster](https://github.com/bilibili/DanmakuFlameMaster)
 ## Usage
-![](screenshot/record.webm)
+![](screenshot/record.webp)
 ![](screenshot/Screenshot_20220704_154226.png)
 ![](screenshot/Screenshot_20220704_154248.png)
 ![](screenshot/Screenshot_20220704_154258.png)
