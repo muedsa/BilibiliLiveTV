@@ -8,5 +8,5 @@ java {
 }
 
 dependencies {
-    api 'com.alibaba.fastjson2:fastjson2:2.0.12.android'
+    api 'com.alibaba.fastjson2:fastjson2:2.0.13.android'
 }
