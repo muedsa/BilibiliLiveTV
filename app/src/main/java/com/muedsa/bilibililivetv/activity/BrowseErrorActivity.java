@@ -2,6 +2,7 @@ package com.muedsa.bilibililivetv.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +10,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.ErrorFragment;
 import com.muedsa.bilibililivetv.fragment.MainFragment;
+
+import java.util.Objects;
 
 public class BrowseErrorActivity extends FragmentActivity {
     private static final int TIMER_DELAY = 3000;
@@ -52,23 +56,21 @@ public class BrowseErrorActivity extends FragmentActivity {
                 .add(R.id.main_browse_fragment, mSpinnerFragment)
                 .commit();
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .remove(mSpinnerFragment)
-                        .commit();
-                mErrorFragment.setErrorContent();
-            }
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(() -> {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(mSpinnerFragment)
+                    .commit();
+            mErrorFragment.setErrorContent();
         }, TIMER_DELAY);
     }
 
     public static class SpinnerFragment extends Fragment {
         @Override
-        public View onCreateView(
-                LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            Objects.requireNonNull(container);
             ProgressBar progressBar = new ProgressBar(container.getContext());
             if (container instanceof FrameLayout) {
                 FrameLayout.LayoutParams layoutParams =

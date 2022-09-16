@@ -1,10 +1,17 @@
 package com.muedsa.bilibililivetv.fragment;
 
 import android.content.Intent;
+import android.graphics.Insets;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,10 +63,11 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
 
     private ArrayObjectAdapter mRowsAdapter;
 
-    private final Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private Drawable mDefaultBackground;
-    private DisplayMetrics mMetrics;
+    private int defaultWidth;
+    private int defaultHeight;
     private Timer mBackgroundTimer;
     private String mBackgroundUri;
     private BackgroundManager mBackgroundManager;
@@ -81,11 +89,18 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         FragmentActivity activity = requireActivity();
         mBackgroundManager = BackgroundManager.getInstance(activity);
         mBackgroundManager.attach(activity.getWindow());
-        mMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-        if(mBackgroundManager.getDrawable() != null) {
-            mDefaultBackground = mBackgroundManager.getDrawable();
-            setBlurBackground(mDefaultBackground);
+        WindowManager windowManager = activity.getWindowManager();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            Rect bounds = windowMetrics.getBounds();
+            Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
+            defaultWidth = bounds.width() - insets.left - insets.right;
+            defaultHeight = bounds.height()- insets.top - insets.bottom;
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+            defaultWidth = displayMetrics.widthPixels;
+            defaultHeight = displayMetrics.heightPixels;
         }
     }
 
@@ -109,8 +124,8 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     }
 
     private void updateBackground(String uri) {
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
+        int width = defaultWidth;
+        int height = defaultHeight;
         GlideApp.with(requireActivity())
                 .load(uri)
                 .transform(new FitCenter(), new BlurTransformation(25, 3))

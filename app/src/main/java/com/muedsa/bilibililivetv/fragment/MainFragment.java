@@ -4,8 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Insets;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -28,12 +31,15 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -62,8 +68,6 @@ import java.util.TimerTask;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainFragment extends BrowseSupportFragment {
@@ -77,9 +81,10 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int HEAD_TITLE_OTHER = 2;
     private static final int HEAD_TITLE_LATEST_VERSION = 3;
 
-    private final Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private Drawable mDefaultBackground;
-    private DisplayMetrics mMetrics;
+    private int defaultWidth;
+    private int defaultHeight;
     private Timer mBackgroundTimer;
     private String mBackgroundUri;
     private BackgroundManager mBackgroundManager;
@@ -236,8 +241,19 @@ public class MainFragment extends BrowseSupportFragment {
         mBackgroundManager.attach(activity.getWindow());
 
         mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
-        mMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        WindowManager windowManager = activity.getWindowManager();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            Rect bounds = windowMetrics.getBounds();
+            Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
+            defaultWidth = bounds.width() - insets.left - insets.right;
+            defaultHeight = bounds.height()- insets.top - insets.bottom;
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+            defaultWidth = displayMetrics.widthPixels;
+            defaultHeight = displayMetrics.heightPixels;
+        }
     }
 
     private void setupUIElements() {
@@ -263,8 +279,8 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateBackground(String uri) {
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
+        int width = defaultWidth;
+        int height = defaultHeight;
         GlideApp.with(requireActivity())
                 .load(uri)
                 .centerCrop()
