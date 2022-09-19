@@ -55,8 +55,7 @@ import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
-import com.muedsa.bilibililivetv.task.Message;
-import com.muedsa.bilibililivetv.task.RequestGithubLatestReleaseTask;
+import com.muedsa.bilibililivetv.task.RxRequestFactory;
 import com.muedsa.bilibililivetv.task.TaskRunner;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
@@ -220,19 +219,18 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void runLatestVersionTask(){
-        taskRunner.executeAsync(new RequestGithubLatestReleaseTask(), msg -> {
-            if (Message.MessageType.SUCCESS.equals(msg.what)){
-                HeaderItem headerItem = new HeaderItem(HEAD_TITLE_LATEST_VERSION,
-                        getResources().getString(R.string.head_title_latest_version));
-                GithubReleasePresenter mGithubReleasePresenter = new GithubReleasePresenter();
-                ArrayObjectAdapter rowAdapter = new ArrayObjectAdapter(mGithubReleasePresenter);
-                rowAdapter.add(msg.obj);
-                versionListRow = new ListRow(headerItem, rowAdapter);
-                loadRows();
-            }else if(Message.MessageType.FAIL.equals(msg.what)){
-                ToastUtil.showLongToast(getActivity(), msg.obj.toString());
-            }
-        });
+        RxRequestFactory.githubLatestRelease()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(githubReleaseTagInfo -> {
+                    HeaderItem headerItem = new HeaderItem(HEAD_TITLE_LATEST_VERSION,
+                            getResources().getString(R.string.head_title_latest_version));
+                    GithubReleasePresenter mGithubReleasePresenter = new GithubReleasePresenter();
+                    ArrayObjectAdapter rowAdapter = new ArrayObjectAdapter(mGithubReleasePresenter);
+                    rowAdapter.add(githubReleaseTagInfo);
+                    versionListRow = new ListRow(headerItem, rowAdapter);
+                    loadRows();
+                }, throwable -> ToastUtil.showLongToast(getActivity(), throwable.getMessage()), disposable);
     }
 
     private void prepareBackgroundManager() {

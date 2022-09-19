@@ -31,7 +31,7 @@ import android.util.Log;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
-import com.muedsa.bilibililiveapiclient.model.LargeInfo;
+import com.muedsa.bilibililiveapiclient.model.Durl;
 import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
@@ -43,13 +43,11 @@ import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
-import com.muedsa.bilibililivetv.task.RequestDanmuInfoTask;
-import com.muedsa.bilibililivetv.task.RequestLiveRoomInfoTask;
-import com.muedsa.bilibililivetv.task.RequestPlayUrlTask;
-import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.task.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VideoDetailsFragment extends DetailsSupportFragment {
@@ -73,7 +71,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
     private DetailsSupportFragmentBackgroundController mDetailsBackground;
 
-    private TaskRunner taskRunner;
+    private ListCompositeDisposable listCompositeDisposable;
 
     private LiveRoomViewModel liveRoomViewModel;
 
@@ -89,8 +87,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 .getSerializableExtra(DetailsActivity.LIVE_ROOM);
 
         if (mSelectedLiveRoom != null && mSelectedLiveRoom.getId() > 0) {
-
-            taskRunner = TaskRunner.getInstance();
+            listCompositeDisposable = new ListCompositeDisposable();
             liveRoomViewModel = new ViewModelProvider(VideoDetailsFragment.this,
                     new LiveRoomViewModel.Factory(((App) activity.getApplication()).getDatabase().getLiveRoomDaoWrapper()))
                     .get(LiveRoomViewModel.class);
@@ -114,62 +111,65 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
     private void initializeLiveRoomInfo(){
-        taskRunner.executeAsync(new RequestLiveRoomInfoTask(mSelectedLiveRoom.getId()), msg -> {
-            switch (msg.what){
-                case SUCCESS:
-                    LiveRoomConvert.updateRoomInfo(mSelectedLiveRoom, (LargeInfo)msg.obj);
-                    liveRoomViewModel
-                            .sync(mSelectedLiveRoom)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe();
-                    BilibiliLiveChannel.sync(requireActivity(), mSelectedLiveRoom);
-                    updateCardImage();
-                    updateBackground();
-                    liveStatusAction.setLabel2(mSelectedLiveRoom.getLiveStatusDesc(getResources()));
-                    onlineNumAction.setLabel2(String.valueOf(mSelectedLiveRoom.getOnlineNum()));
-                    break;
-                case FAIL:
-                default:
-                    String errorMsg =  requireActivity().getString(R.string.live_room_info_failure)
-                            + (msg.obj instanceof String ? ":" + msg.obj : "");
-                    ToastUtil.showLongToast(requireActivity(), errorMsg);
-                    break;
-            }
-        });
+        RxRequestFactory.bilibiliDanmuRoomInfo(mSelectedLiveRoom.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(largeRoomInfo -> {
+                            LiveRoomConvert.updateRoomInfo(mSelectedLiveRoom, largeRoomInfo);
+                            liveRoomViewModel
+                                    .sync(mSelectedLiveRoom)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe();
+                            BilibiliLiveChannel.sync(requireActivity(), mSelectedLiveRoom);
+                            updateCardImage();
+                            updateBackground();
+                            liveStatusAction.setLabel2(mSelectedLiveRoom.getLiveStatusDesc(getResources()));
+                            onlineNumAction.setLabel2(String.valueOf(mSelectedLiveRoom.getOnlineNum()));
+                        },
+                        throwable -> {
+                            FragmentActivity activity = requireActivity();
+                            String errorMsg =  String.format(activity.getString(R.string.live_room_info_failure),
+                                    throwable.getMessage());
+                            ToastUtil.showLongToast(activity, errorMsg);
+                        },
+                        listCompositeDisposable);
 
-        taskRunner.executeAsync(new RequestDanmuInfoTask(mSelectedLiveRoom.getId()), msg -> {
-            switch (msg.what){
-                case SUCCESS:
-                    mSelectedLiveRoom.setDanmuWsToken((String)msg.obj);
-                    break;
-                case FAIL:
-                default:
-                    String errorMsg = requireActivity().getString(R.string.live_danmu_ws_token_failure)
-                            + (msg.obj instanceof String ? ":" + msg.obj : "");
-                    ToastUtil.showLongToast(requireActivity(), errorMsg);
-                    break;
-            }
-        });
+        RxRequestFactory.bilibiliDanmuToken(mSelectedLiveRoom.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(token -> mSelectedLiveRoom.setDanmuWsToken(token),
+                        throwable -> {
+                            FragmentActivity activity = requireActivity();
+                            String errorMsg =  String.format(activity.getString(R.string.live_danmu_ws_token_failure),
+                                    throwable.getMessage());
+                            ToastUtil.showLongToast(activity, errorMsg);
+                        },
+                        listCompositeDisposable);
     }
 
     private void initializePlayUrl(){
         playAction.setLabel2(getResources().getString(R.string.watch_trailer_loading));
-        taskRunner.executeAsync(new RequestPlayUrlTask(mSelectedLiveRoom.getId()), msg -> {
-            switch (msg.what){
-                case SUCCESS:
-                    mSelectedLiveRoom.setPlayUrlArr(((String[]) msg.obj));
-                    playAction.setLabel2(getResources().getString(R.string.watch_trailer_play));
-                    break;
-                case FAIL:
-                default:
-                    ToastUtil.showLongToast(requireActivity(),
-                            requireActivity().getString(R.string.live_play_failure));
-                    break;
-            }
-        });
+        RxRequestFactory.bilibiliPlayUrlMessage(mSelectedLiveRoom.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(playUrlData -> {
+                            mSelectedLiveRoom.setPlayUrlArr(playUrlData.getDurl().stream().map(Durl::getUrl).toArray(String[]::new));
+                            playAction.setLabel2(getResources().getString(R.string.watch_trailer_play));
+                        },
+                        throwable -> {
+                            FragmentActivity activity = requireActivity();
+                            String errorMsg =  String.format(activity.getString(R.string.live_play_failure),
+                                    throwable.getMessage());
+                            ToastUtil.showLongToast(activity, errorMsg);
+                        },
+                        listCompositeDisposable);
     }
 
     private void initializeBackground() {

@@ -16,6 +16,7 @@ import android.view.WindowMetrics;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.SearchSupportFragment;
@@ -34,7 +35,6 @@ import androidx.leanback.widget.RowPresenter;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
@@ -44,15 +44,16 @@ import com.muedsa.bilibililivetv.model.LiveUser;
 import com.muedsa.bilibililivetv.model.LiveUserConvert;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.presenter.LiveUserPresenter;
-import com.muedsa.bilibililivetv.task.Message;
-import com.muedsa.bilibililivetv.task.RequestBilibiliSearchTask;
-import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.task.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class SearchFragment extends SearchSupportFragment implements SearchSupportFragment.SearchResultProvider {
@@ -71,8 +72,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     private Timer mBackgroundTimer;
     private String mBackgroundUri;
     private BackgroundManager mBackgroundManager;
-
-    private TaskRunner taskRunner;
+    private ListCompositeDisposable listCompositeDisposable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,10 +82,17 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         setSearchResultProvider(this);
-        taskRunner = TaskRunner.getInstance();
+        listCompositeDisposable = new ListCompositeDisposable();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        listCompositeDisposable.dispose();
     }
 
     private void prepareBackgroundManager() {
+        mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
         FragmentActivity activity = requireActivity();
         mBackgroundManager = BackgroundManager.getInstance(activity);
         mBackgroundManager.attach(activity.getWindow());
@@ -102,25 +109,6 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
             defaultWidth = displayMetrics.widthPixels;
             defaultHeight = displayMetrics.heightPixels;
         }
-    }
-
-    private void setBlurBackground(Drawable drawable) {
-        GlideApp.with(requireActivity())
-                .load(drawable)
-                .transform(new BlurTransformation(25, 3))
-                .error(mDefaultBackground)
-                .into(new CustomTarget<Drawable>() {
-                    @Override
-                    public void onResourceReady(@NonNull Drawable drawable,
-                                                @Nullable Transition<? super Drawable> transition) {
-                        mBackgroundManager.setDrawable(drawable);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
     }
 
     private void updateBackground(String uri) {
@@ -173,16 +161,17 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        taskRunner.executeAsync(new RequestBilibiliSearchTask(query), result -> {
-            if(result.what == Message.MessageType.SUCCESS){
-                SearchResult searchResult = (SearchResult) result.obj;
-                mRowsAdapter.clear();
-                loadLiveUserSearchData(searchResult.getLiveUser());
-                loadLiveRoomSearchData(searchResult.getLiveRoom());
-            }else if(result.what == Message.MessageType.FAIL){
-                ToastUtil.showLongToast(requireActivity(), (String) result.obj);
-            }
-        });
+        listCompositeDisposable.clear();
+        RxRequestFactory.bilibiliSearchLive(query)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(searchResult -> {
+                            mRowsAdapter.clear();
+                            loadLiveUserSearchData(searchResult.getLiveUser());
+                            loadLiveRoomSearchData(searchResult.getLiveRoom());
+                        },
+                        throwable -> ToastUtil.showLongToast(requireActivity(), throwable.getMessage()),
+                        listCompositeDisposable);
         return true;
     }
 
