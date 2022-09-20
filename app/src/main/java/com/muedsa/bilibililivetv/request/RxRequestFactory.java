@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.task;
+package com.muedsa.bilibililivetv.request;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
@@ -95,11 +95,9 @@ public class RxRequestFactory {
         });
     }
 
-    private static final String GITHUB_USER = "MUedsa";
-    private static final String GITHUB_REPO = "BilibiliLiveTV";
     public static Single<GithubReleaseTagInfo> githubLatestRelease() {
         return Single.create(emitter -> {
-            BaseResponse<GithubReleaseTagInfo> response = GithubApi.client().getLatestReleaseInfo(GITHUB_USER, GITHUB_REPO);
+            BaseResponse<GithubReleaseTagInfo> response = GithubApi.client().getLatestReleaseInfo(GithubApi.GITHUB_USER, GithubApi.GITHUB_REPO);
             if(response != null){
                 if(response.getCode() == 0) {
                     emitter.onSuccess(response.getData());

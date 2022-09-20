@@ -55,8 +55,7 @@ import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
-import com.muedsa.bilibililivetv.task.RxRequestFactory;
-import com.muedsa.bilibililivetv.task.TaskRunner;
+import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
@@ -66,6 +65,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -90,7 +90,6 @@ public class MainFragment extends BrowseSupportFragment {
 
     private LiveRoomViewModel liveRoomViewModel;
     private final CompositeDisposable disposable = new CompositeDisposable();
-    private TaskRunner taskRunner;
     private LiveRoomPresenter.CardLongClickListener liveRoomCardLongClickListener;
 
 
@@ -100,9 +99,8 @@ public class MainFragment extends BrowseSupportFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreated");
+        Log.d(TAG, "onCreated");
         super.onCreate(savedInstanceState);
-        taskRunner = TaskRunner.getInstance();
 
         prepareBackgroundManager();
 
@@ -122,7 +120,7 @@ public class MainFragment extends BrowseSupportFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(liveRooms -> {
-                    Log.i(TAG, "load liveRooms size: " + liveRooms.size());
+                    Log.d(TAG, "load liveRooms size: " + liveRooms.size());
                     loadHistoryRows(liveRooms);
                     loadRows();
                 }));
@@ -149,7 +147,7 @@ public class MainFragment extends BrowseSupportFragment {
         //历史记录
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         if(null != historyListRows){
-            Log.i(TAG, "loadRows: historyListRows size: " + historyListRows.size());
+            Log.d(TAG, "loadRows: historyListRows size: " + historyListRows.size());
             rowsAdapter.addAll(0, historyListRows);
         }
 
@@ -230,7 +228,10 @@ public class MainFragment extends BrowseSupportFragment {
                     rowAdapter.add(githubReleaseTagInfo);
                     versionListRow = new ListRow(headerItem, rowAdapter);
                     loadRows();
-                }, throwable -> ToastUtil.showLongToast(getActivity(), throwable.getMessage()), disposable);
+                }, throwable -> {
+                    ToastUtil.showLongToast(getActivity(), throwable.getMessage());
+                    Log.e(TAG, "githubLatestRelease error", throwable);
+                }, disposable);
     }
 
     private void prepareBackgroundManager() {
@@ -339,16 +340,17 @@ public class MainFragment extends BrowseSupportFragment {
                             .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
                             .create()
                             .show();
-
                 }else if(desc.contains(getString(R.string.clear_channel))){
                     new AlertDialog.Builder(getContext())
                             .setTitle(getString(R.string.clear_channel_alert))
-                            .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> taskRunner.executeAsync(()
-                                    -> BilibiliLiveChannel.clear(getContext())))
+                            .setPositiveButton(getString(R.string.alert_yes), (dialog, which) ->
+                                    Completable.create(emitter -> {
+                                        BilibiliLiveChannel.clear(getContext());
+                                        emitter.onComplete();
+                                    }).subscribeOn(Schedulers.io()).subscribe())
                             .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
                             .create()
                             .show();
-
                 } else if(desc.contains(getString(R.string.danmaku_test))) {
                     Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
                     startActivity(intent);

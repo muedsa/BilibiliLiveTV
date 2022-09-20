@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
@@ -44,7 +45,7 @@ import com.muedsa.bilibililivetv.model.LiveUser;
 import com.muedsa.bilibililivetv.model.LiveUserConvert;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.presenter.LiveUserPresenter;
-import com.muedsa.bilibililivetv.task.RxRequestFactory;
+import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
@@ -170,7 +171,10 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
                             loadLiveUserSearchData(searchResult.getLiveUser());
                             loadLiveRoomSearchData(searchResult.getLiveRoom());
                         },
-                        throwable -> ToastUtil.showLongToast(requireActivity(), throwable.getMessage()),
+                        throwable -> {
+                            ToastUtil.showLongToast(requireActivity(), throwable.getMessage());
+                            Log.e(TAG, "bilibiliSearchLive error", throwable);
+                        },
                         listCompositeDisposable);
         return true;
     }

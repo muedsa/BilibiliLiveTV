@@ -43,7 +43,7 @@ import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
-import com.muedsa.bilibililivetv.task.RxRequestFactory;
+import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -138,6 +138,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                             String errorMsg =  String.format(activity.getString(R.string.live_room_info_failure),
                                     throwable.getMessage());
                             ToastUtil.showLongToast(activity, errorMsg);
+                            Log.e(TAG, errorMsg, throwable);
                         },
                         listCompositeDisposable);
 
@@ -150,6 +151,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                             String errorMsg =  String.format(activity.getString(R.string.live_danmu_ws_token_failure),
                                     throwable.getMessage());
                             ToastUtil.showLongToast(activity, errorMsg);
+                            Log.e(TAG, errorMsg, throwable);
                         },
                         listCompositeDisposable);
     }
@@ -168,6 +170,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                             String errorMsg =  String.format(activity.getString(R.string.live_play_failure),
                                     throwable.getMessage());
                             ToastUtil.showLongToast(activity, errorMsg);
+                            Log.e(TAG, errorMsg, throwable);
                         },
                         listCompositeDisposable);
     }

@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.task;
+package com.muedsa.bilibililivetv.request;
 
 public class HttpRequestException extends RuntimeException {
 
