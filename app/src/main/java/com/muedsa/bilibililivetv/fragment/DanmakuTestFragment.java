@@ -125,11 +125,8 @@ public class DanmakuTestFragment extends Fragment {
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
             public void onStart() {
-                if(BuildConfig.DEBUG){
-                    FragmentActivity activity = requireActivity();
-                    ToastUtil.showLongToast(activity,
-                            activity.getString(R.string.toast_msg_danmu_connect_success));
-                }
+                FragmentActivity activity = requireActivity();
+                ToastUtil.debug(activity, activity.getString(R.string.toast_msg_danmu_connect_success));
             }
 
             @Override

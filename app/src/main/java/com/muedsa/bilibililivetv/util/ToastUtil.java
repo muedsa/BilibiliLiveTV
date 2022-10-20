@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.muedsa.bilibililivetv.BuildConfig;
+
 public class ToastUtil {
     private final static String TAG = ToastUtil.class.getSimpleName();
 
@@ -20,6 +22,12 @@ public class ToastUtil {
 
     public static void showLongToast(@Nullable Context context, CharSequence text) {
         showToast(context, text, Toast.LENGTH_LONG);
+    }
+
+    public static void debug(@Nullable Context context, CharSequence text) {
+        if(BuildConfig.DEBUG){
+            showLongToast(context, text);
+        }
     }
 
     private static void showToast(Context context, CharSequence text, int duration) {

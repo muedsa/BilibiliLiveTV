@@ -108,11 +108,10 @@ public class DanmakuDelegate {
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
             public void onStart() {
-                if(BuildConfig.DEBUG){
-                    FragmentActivity activity = fragment.requireActivity();
-                    ToastUtil.showLongToast(activity,
-                            activity.getString(R.string.toast_msg_danmu_connect_success));
-                }
+                FragmentActivity activity = fragment.requireActivity();
+                String message = activity.getString(R.string.toast_msg_danmu_connect_success);
+                Log.d(TAG, message);
+                ToastUtil.showShortToast(activity, message);
             }
 
             @Override
@@ -151,13 +150,10 @@ public class DanmakuDelegate {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                if(BuildConfig.DEBUG){
-                    FragmentActivity activity = fragment.requireActivity();
-                    ToastUtil.showLongToast(
-                            activity,
-                            String.format(activity.getString(R.string.toast_msg_danmu_connect_error),
-                                    reason));
-                }
+                FragmentActivity activity = fragment.requireActivity();
+                String message = String.format(activity.getString(R.string.toast_msg_danmu_connect_error), reason);
+                Log.d(TAG, message);
+                ToastUtil.debug(fragment.requireActivity(), message);
             }
         });
         startChatBroadcastWsClient();
