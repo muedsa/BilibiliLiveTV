@@ -17,7 +17,7 @@ public class ToastUtil {
     private final static Handler handler = new Handler(Looper.getMainLooper());
 
     public static void showShortToast(@Nullable Context context, CharSequence text) {
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        showToast(context, text, Toast.LENGTH_SHORT);
     }
 
     public static void showLongToast(@Nullable Context context, CharSequence text) {
