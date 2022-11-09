@@ -4,6 +4,7 @@
     <string name="latest_version_download_url">https://github.com/MUedsa/BilibiliLiveTV/releases</string>
     <string name="browse_title">Bilibili Live</string>
     <string name="danmaku_test">弹幕测试</string>
+    <string name="video_test">视频测试</string>
     <string name="clear_history">清除历史记录</string>
     <string name="clear_history_alert">确定清除历史记录?</string>
     <string name="alert_yes">确定</string>
@@ -54,4 +55,6 @@
     <string name="toast_msg_gift_on">礼物弹幕开启</string>
     <string name="toast_msg_gift_off">礼物弹幕关闭</string>
     <string name="toast_msg_jump_url_error">无法打开浏览器, %s</string>
+    <string name="bilibili_scan_qr_code_login">BiliBili扫码登录</string>
+    <string name="loading">加载中…</string>
 </resources>

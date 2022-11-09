@@ -14,26 +14,27 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:usesCleartextTraffic="true"
-        android:icon="@mipmap/ic_launcher"
-        android:logo="@mipmap/ic_launcher"
         android:banner="@mipmap/ic_banner"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:logo="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BilibiliLiveTV">
+        android:theme="@style/Theme.BilibiliLiveTV"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".activity.MainActivity"
+            android:banner="@mipmap/ic_banner"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:logo="@mipmap/ic_launcher"
-            android:banner="@mipmap/ic_banner"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
+
                 <!-- Used to launch our content directly from home screen launcher or Assistant -->
                 <action android:name="android.intent.action.VIEW" />
                 <!-- Allows our app to be launched from a URL, not just via explicit intent -->
@@ -61,7 +62,13 @@
             android:name=".activity.SearchActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.DanmakuTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.VideoTestActivity"
             android:exported="false" />
     </application>
 

@@ -8,9 +8,12 @@ import com.muedsa.bilibililiveapiclient.model.DanmakuHostInfo;
 import com.muedsa.bilibililiveapiclient.model.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
+import com.muedsa.bilibililiveapiclient.model.LoginResponse;
+import com.muedsa.bilibililiveapiclient.model.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.Qn;
 import com.muedsa.bilibililiveapiclient.model.RoomInfo;
+import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
 
@@ -125,5 +128,33 @@ public class BilibiliLiveApiClientTest {
                 logger.info(message);
             });
         }
+    }
+
+    @Test
+    public LoginUrl getLoginUrlTest() throws IOException {
+        BilibiliResponse<LoginUrl> response = client.getLoginUrl();
+        Assertions.assertEquals(0L, response.getCode());
+        LoginUrl loginUrl = response.getData();
+        Assertions.assertNotNull(loginUrl);
+        Assertions.assertNotNull(loginUrl.getUrl());
+        Assertions.assertNotNull(loginUrl.getOauthKey());
+        return loginUrl;
+    }
+
+    @Test
+    public void getLoginInfoTest() throws IOException {
+        LoginUrl loginUrl = getLoginUrlTest();
+        LoginResponse loginResponse = client.getLoginInfo(loginUrl.getOauthKey());
+        Assertions.assertNotNull(loginResponse);
+        Assertions.assertNotNull(loginResponse.getData());
+        String message = String.format("oauthKey:%s, message:%s", loginUrl.getOauthKey(), loginResponse.getMessage());
+        logger.info(message);
+    }
+
+    @Test
+    public void navTest() throws IOException {
+        BilibiliResponse<UserNav> response = client.nav();
+        Assertions.assertNotNull(response);
+        logger.info(response.getMessage());
     }
 }

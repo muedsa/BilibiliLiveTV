@@ -14,4 +14,10 @@ public class ApiUrlContainer {
     public static String WS_CHAT = "wss://broadcastlv.chat.bilibili.com:443/sub";
 
     public static String SEARCH_LIVE = "https://api.bilibili.com/x/web-interface/search/type?page=%d&page_size=%d&order=online&platform=android&keyword=%s&search_type=live";
+
+    public static String USER_NAV = "https://api.bilibili.com/x/web-interface/nav";
+
+    public static String GET_LOGIN_URL = "http://passport.bilibili.com/qrcode/getLoginUrl";
+
+    public static String GET_LOGIN_INFO = "http://passport.bilibili.com/qrcode/getLoginInfo";
 }

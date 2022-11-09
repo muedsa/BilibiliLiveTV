@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.fragment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -49,7 +50,9 @@ import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
 import com.muedsa.bilibililivetv.activity.DetailsActivity;
+import com.muedsa.bilibililivetv.activity.LoginActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
+import com.muedsa.bilibililivetv.activity.VideoTestActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
@@ -153,14 +156,17 @@ public class MainFragment extends BrowseSupportFragment {
 
         //其他
         if(otherListRow == null) {
+            Resources resources = getResources();
             HeaderItem gridHeader = new HeaderItem(HEAD_TITLE_OTHER,
-                    getResources().getString(R.string.head_title_other));
+                    resources.getString(R.string.head_title_other));
             GridItemPresenter mGridPresenter = new GridItemPresenter();
             ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-            gridRowAdapter.add(getResources().getString(R.string.clear_history));
-            gridRowAdapter.add(getResources().getString(R.string.clear_channel));
+            gridRowAdapter.add(resources.getString(R.string.clear_history));
+            gridRowAdapter.add(resources.getString(R.string.clear_channel));
+            gridRowAdapter.add(resources.getString(R.string.bilibili_scan_qr_code_login));
             if(BuildConfig.DEBUG){
-                gridRowAdapter.add(getResources().getString(R.string.danmaku_test));
+                gridRowAdapter.add(resources.getString(R.string.danmaku_test));
+                gridRowAdapter.add(resources.getString(R.string.video_test));
             }
             otherListRow = new ListRow(gridHeader, gridRowAdapter);
         }
@@ -353,6 +359,12 @@ public class MainFragment extends BrowseSupportFragment {
                             .show();
                 } else if(desc.contains(getString(R.string.danmaku_test))) {
                     Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
+                    startActivity(intent);
+                } else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                } else if(desc.contains(getString(R.string.video_test))) {
+                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
                     startActivity(intent);
                 } else {
                     ToastUtil.showLongToast(getActivity(), desc);
