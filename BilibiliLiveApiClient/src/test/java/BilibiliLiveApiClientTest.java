@@ -6,6 +6,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
+import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
@@ -186,25 +187,32 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertNotNull(videoInfo);
         VideoData videoData = videoInfo.getVideoData();
         Assertions.assertNotNull(videoData);
-        PlayInfo playInfo = videoDetail.getPlayInfo();
-        Assertions.assertNotNull(playInfo);
-        PlayDash dash = playInfo.getDash();
-        Assertions.assertNotNull(dash);
-        List<PlayDashInfo> videoList = dash.getVideo();
-        List<PlayDashInfo> audioList = dash.getAudio();
-        Assertions.assertNotNull(videoList);
-        Assertions.assertFalse(videoList.isEmpty());
-        Assertions.assertNotNull(audioList);
-        Assertions.assertFalse(audioList.isEmpty());
-        String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvId(), videoData.getTitle(), videoData.getDesc());
-        logger.info(videoDataMessage);
-        for (PlayDashInfo video : videoList) {
-            String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", video.getMimeType(), video.getCodecs(), video.getId(), video.getBaseUrl());
-            logger.info(message);
-        }
-        for (PlayDashInfo audio : audioList) {
-            String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", audio.getMimeType(), audio.getCodecs(), audio.getId(), audio.getBaseUrl());
-            logger.info(message);
+        BilibiliResponse<PlayInfo> playInfoResponse = videoDetail.getPlayInfoResponse();
+        Assertions.assertNotNull(playInfoResponse);
+        Assertions.assertNotNull(playInfoResponse.getCode());
+        if (ErrorCode.SUCCESS == playInfoResponse.getCode()) {
+            PlayInfo playInfo = playInfoResponse.getData();
+            Assertions.assertNotNull(playInfo);
+            PlayDash dash = playInfo.getDash();
+            Assertions.assertNotNull(dash);
+            List<PlayDashInfo> videoList = dash.getVideo();
+            List<PlayDashInfo> audioList = dash.getAudio();
+            Assertions.assertNotNull(videoList);
+            Assertions.assertFalse(videoList.isEmpty());
+            Assertions.assertNotNull(audioList);
+            Assertions.assertFalse(audioList.isEmpty());
+            String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvId(), videoData.getTitle(), videoData.getDesc());
+            logger.info(videoDataMessage);
+            for (PlayDashInfo video : videoList) {
+                String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", video.getMimeType(), video.getCodecs(), video.getId(), video.getBaseUrl());
+                logger.info(message);
+            }
+            for (PlayDashInfo audio : audioList) {
+                String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", audio.getMimeType(), audio.getCodecs(), audio.getId(), audio.getBaseUrl());
+                logger.info(message);
+            }
+        } else {
+            logger.info("get play info fail:" + playInfoResponse.getMessage());
         }
     }
 

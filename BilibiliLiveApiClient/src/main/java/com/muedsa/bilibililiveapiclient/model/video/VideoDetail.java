@@ -1,6 +1,7 @@
 package com.muedsa.bilibililiveapiclient.model.video;
 
 import com.alibaba.fastjson2.annotation.JSONField;
+import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 
 public class VideoDetail {
 
@@ -11,7 +12,7 @@ public class VideoDetail {
     private VideoInfo videoInfo;
 
     @JSONField(name = "playInfo")
-    private PlayInfo playInfo;
+    private BilibiliResponse<PlayInfo> playInfoResponse;
 
     public String getUrl() {
         return url;
@@ -29,11 +30,11 @@ public class VideoDetail {
         this.videoInfo = videoInfo;
     }
 
-    public PlayInfo getPlayInfo() {
-        return playInfo;
+    public BilibiliResponse<PlayInfo> getPlayInfoResponse() {
+        return playInfoResponse;
     }
 
-    public void setPlayInfo(PlayInfo playInfo) {
-        this.playInfo = playInfo;
+    public void setPlayInfoResponse(BilibiliResponse<PlayInfo> playInfoResponse) {
+        this.playInfoResponse = playInfoResponse;
     }
 }

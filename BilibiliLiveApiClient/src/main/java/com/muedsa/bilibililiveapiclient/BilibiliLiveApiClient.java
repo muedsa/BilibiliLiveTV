@@ -120,7 +120,7 @@ public class BilibiliLiveApiClient {
         BilibiliResponse<PlayInfo> playInfo = parsePlayInfo(html);
         VideoDetail videoDetail = new VideoDetail();
         videoDetail.setVideoInfo(videoInfo);
-        videoDetail.setPlayInfo(Objects.nonNull(playInfo) && Objects.nonNull(playInfo.getData()) ? playInfo.getData() : null);
+        videoDetail.setPlayInfoResponse(playInfo);
         videoDetail.setUrl(url);
         return videoDetail;
     }
