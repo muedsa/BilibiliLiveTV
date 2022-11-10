@@ -208,7 +208,7 @@ public class BilibiliLiveApiClientTest {
         }
     }
 
-    @Test
+    //@Test
     public void getVideDetailWithLogin() throws IOException, WriterException, InterruptedException {
         LoginUrl loginUrl = getLoginUrlTest();
         printQRCode(loginUrl.getUrl());

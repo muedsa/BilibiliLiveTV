@@ -28,10 +28,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BilibiliLiveApiClient {
+    private static final Logger logger = Logger.getGlobal();
 
     private final HttpJsonClient httpJsonClient;
 
@@ -131,6 +133,9 @@ public class BilibiliLiveApiClient {
         if (matcher.matches()) {
             videoInfo = JSON.parseObject(matcher.group(1), new TypeReference<VideoInfo>() {
             });
+        } else {
+            logger.warning("parseVideoInfo fail");
+            logger.warning("\n" + html);
         }
         return videoInfo;
     }
@@ -143,6 +148,13 @@ public class BilibiliLiveApiClient {
         if (matcher.matches()) {
             playInfo = JSON.parseObject(matcher.group(1), new TypeReference<BilibiliResponse<PlayInfo>>() {
             });
+            if (Objects.isNull(playInfo.getData())) {
+                logger.warning("parsePlayInfo fail, data is null");
+                logger.warning("\n" + html);
+            }
+        } else {
+            logger.warning("parsePlayInfo fail");
+            logger.warning("\n" + html);
         }
         return playInfo;
     }
