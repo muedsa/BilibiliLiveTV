@@ -16,7 +16,7 @@ public class VideoInfo {
     @JSONField(name = "episode")
     private String episode;
 
-    @JSONField(name = "VideoData")
+    @JSONField(name = "videoData")
     private VideoData videoData;
 
     // todo more field
