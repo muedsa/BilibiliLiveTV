@@ -20,14 +20,14 @@ public class SimpleHttpClient {
 
     public String get(String url, Map<String, String> headers) throws IOException {
         URLConnection connect = connect(url, headers);
-        return IOUtil.convertStreamToString(connect.getInputStream());
+        return IOUtil.convertStreamToString(connect.getInputStream(), connect.getHeaderField(Container.HEADER_KEY_CONTENT_ENCODING), StandardCharsets.UTF_8.name());
     }
 
     public String post(String url, byte[] data, Map<String, String> headers) throws IOException {
         URLConnection connect = connect(url, headers);
         connect.setDoOutput(true);
         connect.getOutputStream().write(data);
-        return IOUtil.convertStreamToString(connect.getInputStream());
+        return IOUtil.convertStreamToString(connect.getInputStream(), connect.getHeaderField(Container.HEADER_KEY_CONTENT_ENCODING), StandardCharsets.UTF_8.name());
     }
 
     public String post(String url, Map<String, Object> params, Map<String, String> headers) throws IOException {

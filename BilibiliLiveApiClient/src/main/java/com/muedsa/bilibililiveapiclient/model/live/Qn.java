@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.model;
+package com.muedsa.bilibililiveapiclient.model.live;
 
 public enum Qn {
     VIP_4k(40000),

@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.model;
+package com.muedsa.bilibililiveapiclient.model.live;
 
 public class Durl {
     private String url;

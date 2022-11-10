@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.model;
+package com.muedsa.bilibililiveapiclient.model.live;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 

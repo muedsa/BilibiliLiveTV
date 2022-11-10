@@ -5,16 +5,19 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
-import com.muedsa.bilibililiveapiclient.model.DanmakuInfo;
-import com.muedsa.bilibililiveapiclient.model.LargeInfo;
-import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
-import com.muedsa.bilibililiveapiclient.model.LoginInfo;
-import com.muedsa.bilibililiveapiclient.model.LoginResponse;
-import com.muedsa.bilibililiveapiclient.model.LoginUrl;
-import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
-import com.muedsa.bilibililiveapiclient.model.Qn;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
+import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
+import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
+import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
+import com.muedsa.bilibililiveapiclient.model.live.Qn;
+import com.muedsa.bilibililiveapiclient.model.passport.LoginInfo;
+import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
+import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
+import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
+import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
 import com.muedsa.httpjsonclient.Container;
 import com.muedsa.httpjsonclient.HttpJsonClient;
@@ -24,6 +27,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BilibiliLiveApiClient {
 
@@ -36,6 +42,7 @@ public class BilibiliLiveApiClient {
     public BilibiliLiveApiClient(){
         httpJsonClient = new HttpJsonClient();
         putHeader(Container.HEADER_KEY_USER_AGENT, Container.HEADER_VALUE_USER_AGENT);
+        putHeader(Container.HEADER_KEY_ACCEPT_ENCODING, Container.HEADER_VALUE_PART_ENCODING_IDENTITY);
         putCookie(Container.COOKIE_KEY_BUVID3, Container.COOKIE_VALUE_BUVID3);
     }
 
@@ -93,13 +100,51 @@ public class BilibiliLiveApiClient {
         LoginResponse response = jsonObject.to(new TypeReference<LoginResponse>(){});
         if(response.getStatus()){
             response.setData(jsonObject.getObject("data", LoginInfo.class));
-        }else{
+        } else {
             response.setIntData(jsonObject.getIntValue("data"));
         }
         return response;
     }
 
     public BilibiliResponse<UserNav> nav() throws IOException {
-        return httpJsonClient.getJson(ApiUrlContainer.USER_NAV, new TypeReference<BilibiliResponse<UserNav>>(){}, requestHeader);
+        return httpJsonClient.getJson(ApiUrlContainer.USER_NAV, new TypeReference<BilibiliResponse<UserNav>>() {
+        }, requestHeader);
     }
+
+    public VideoDetail getVideoDetail(String bv) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.VIDEO_URL, bv);
+        String html = httpJsonClient.get(url, requestHeader);
+        VideoInfo videoInfo = parseVideoInfo(html);
+        BilibiliResponse<PlayInfo> playInfo = parsePlayInfo(html);
+        VideoDetail videoDetail = new VideoDetail();
+        videoDetail.setVideoInfo(videoInfo);
+        videoDetail.setPlayInfo(Objects.nonNull(playInfo) && Objects.nonNull(playInfo.getData()) ? playInfo.getData() : null);
+        videoDetail.setUrl(url);
+        return videoDetail;
+    }
+
+    private static final Pattern VIDEO_INFO_PATTERN = Pattern.compile("[\\s\\S]*?<script>window\\.__INITIAL_STATE__=([\\s\\S]*?);\\(function\\(\\)[\\s\\S]*?</script>[\\s\\S]*?", Pattern.MULTILINE);
+
+    public static VideoInfo parseVideoInfo(String html) {
+        VideoInfo videoInfo = null;
+        Matcher matcher = VIDEO_INFO_PATTERN.matcher(html);
+        if (matcher.matches()) {
+            videoInfo = JSON.parseObject(matcher.group(1), new TypeReference<VideoInfo>() {
+            });
+        }
+        return videoInfo;
+    }
+
+    private static final Pattern PLAY_INFO_PATTERN = Pattern.compile("[\\s\\S]*?<script>window\\.__playinfo__=([\\s\\S]*?)</script>[\\s\\S]*?", Pattern.MULTILINE);
+
+    public static BilibiliResponse<PlayInfo> parsePlayInfo(String html) {
+        BilibiliResponse<PlayInfo> playInfo = null;
+        Matcher matcher = PLAY_INFO_PATTERN.matcher(html);
+        if (matcher.matches()) {
+            playInfo = JSON.parseObject(matcher.group(1), new TypeReference<BilibiliResponse<PlayInfo>>() {
+            });
+        }
+        return playInfo;
+    }
+
 }

@@ -1,20 +1,26 @@
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
-import com.muedsa.bilibililiveapiclient.model.AnchorBaseInfo;
-import com.muedsa.bilibililiveapiclient.model.AnchorInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
-import com.muedsa.bilibililiveapiclient.model.DanmakuHostInfo;
-import com.muedsa.bilibililiveapiclient.model.DanmakuInfo;
-import com.muedsa.bilibililiveapiclient.model.LargeInfo;
-import com.muedsa.bilibililiveapiclient.model.LiveRoomInfo;
-import com.muedsa.bilibililiveapiclient.model.LoginResponse;
-import com.muedsa.bilibililiveapiclient.model.LoginUrl;
-import com.muedsa.bilibililiveapiclient.model.PlayUrlData;
-import com.muedsa.bilibililiveapiclient.model.Qn;
-import com.muedsa.bilibililiveapiclient.model.RoomInfo;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.live.AnchorBaseInfo;
+import com.muedsa.bilibililiveapiclient.model.live.AnchorInfo;
+import com.muedsa.bilibililiveapiclient.model.live.DanmakuHostInfo;
+import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
+import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
+import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
+import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
+import com.muedsa.bilibililiveapiclient.model.live.Qn;
+import com.muedsa.bilibililiveapiclient.model.live.RoomInfo;
+import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
+import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
+import com.muedsa.bilibililiveapiclient.model.video.PlayDash;
+import com.muedsa.bilibililiveapiclient.model.video.PlayDashInfo;
+import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
+import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
+import com.muedsa.bilibililiveapiclient.model.video.videoData;
 import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
 
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class BilibiliLiveApiClientTest {
@@ -157,4 +164,35 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertNotNull(response);
         logger.info(response.getMessage());
     }
+
+    @Test
+    public void getVideDetailTest() throws IOException {
+        VideoDetail videoDetail = client.getVideoDetail("BV1WY411Z7Cj");
+        Assertions.assertNotNull(videoDetail);
+        VideoInfo videoInfo = videoDetail.getVideoInfo();
+        Assertions.assertNotNull(videoInfo);
+        videoData videoData = videoInfo.getVideoData();
+        Assertions.assertNotNull(videoData);
+        PlayInfo playInfo = videoDetail.getPlayInfo();
+        Assertions.assertNotNull(playInfo);
+        PlayDash dash = playInfo.getDash();
+        Assertions.assertNotNull(dash);
+        List<PlayDashInfo> videoList = dash.getVideo();
+        List<PlayDashInfo> audioList = dash.getAudio();
+        Assertions.assertNotNull(videoList);
+        Assertions.assertFalse(videoList.isEmpty());
+        Assertions.assertNotNull(audioList);
+        Assertions.assertFalse(audioList.isEmpty());
+        String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvId(), videoData.getTitle(), videoData.getDesc());
+        logger.info(videoDataMessage);
+        for (PlayDashInfo video : videoList) {
+            String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", video.getMimeType(), video.getCodecs(), video.getId(), video.getBaseUrl());
+            logger.info(message);
+        }
+        for (PlayDashInfo audio : audioList) {
+            String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", audio.getMimeType(), audio.getCodecs(), audio.getId(), audio.getBaseUrl());
+            logger.info(message);
+        }
+    }
+
 }

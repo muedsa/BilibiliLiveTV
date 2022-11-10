@@ -3,11 +3,14 @@ package com.muedsa.bilibililivetv.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.DetailsSupportFragment;
 import androidx.leanback.app.DetailsSupportFragmentBackgroundController;
@@ -22,16 +25,12 @@ import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.util.Log;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
-import com.muedsa.bilibililiveapiclient.model.Durl;
+import com.muedsa.bilibililiveapiclient.model.live.Durl;
 import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
@@ -39,11 +38,11 @@ import com.muedsa.bilibililivetv.activity.DetailsActivity;
 import com.muedsa.bilibililivetv.activity.MainActivity;
 import com.muedsa.bilibililivetv.activity.PlaybackActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
-import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
-import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
+import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
