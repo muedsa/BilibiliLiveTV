@@ -10,9 +10,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: set up JDK 11
@@ -27,6 +25,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Upload a Build Artifact
+      if: always()
       uses: actions/upload-artifact@v3.1.0
       with:
         name: build-test-outputs
