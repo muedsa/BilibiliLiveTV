@@ -1,5 +1,7 @@
 package com.muedsa.bilibililivetv.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Insets;
@@ -7,12 +9,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +21,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.zxing.BarcodeFormat;
@@ -32,6 +33,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
+import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
@@ -99,10 +101,8 @@ public class LoginFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userNav -> {
-                    Log.d(TAG, "checkLogin: result");
-                    if(userNav.isLogin()){
-                        prepareLogin();
-                    }else{
+                    if (Objects.nonNull(userNav.getIsLogin()) && userNav.isLogin()) {
+                        Log.d(TAG, "checkLogin: isLogin");
                         textView.setText(userNav.getUname());
                         GlideApp.with(requireActivity())
                                 .load(userNav.getFace())
@@ -113,9 +113,13 @@ public class LoginFragment extends Fragment {
                                                                 @Nullable Transition<? super Drawable> transition) {
                                         imageView.setImageDrawable(drawable);
                                     }
+
                                     @Override
-                                    public void onLoadCleared(@Nullable Drawable placeholder) {}
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    }
                                 });
+                    } else {
+                        prepareLogin();
                     }
                 }, throwable -> {
                     //todo handler throwable
@@ -176,7 +180,10 @@ public class LoginFragment extends Fragment {
                                 Log.d(TAG, "login success: " + loginInfo.getData().getUrl());
                                 releaseTimer();
                                 listCompositeDisposable.clear();
-                                BilibiliLiveApi.client().putCookie(Container.COOKIE_KEY_SESSDATA, getSessData(loginInfo.getData().getUrl()));
+                                String sessData = getSessData(loginInfo.getData().getUrl());
+                                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(App.SP_NAME, Context.MODE_PRIVATE);
+                                sharedPreferences.edit().putString(Container.COOKIE_KEY_SESSDATA, sessData).apply();
+                                BilibiliLiveApi.client().putCookie(Container.COOKIE_KEY_SESSDATA, sessData);
                                 checkLogin();
                             }
                         }, throwable -> {
