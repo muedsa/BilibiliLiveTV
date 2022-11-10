@@ -16,8 +16,8 @@ public class VideoInfo {
     @JSONField(name = "episode")
     private String episode;
 
-    @JSONField(name = "videoData")
-    private videoData videoData;
+    @JSONField(name = "VideoData")
+    private VideoData videoData;
 
     // todo more field
 
@@ -54,11 +54,11 @@ public class VideoInfo {
         this.episode = episode;
     }
 
-    public com.muedsa.bilibililiveapiclient.model.video.videoData getVideoData() {
+    public VideoData getVideoData() {
         return videoData;
     }
 
-    public void setVideoData(com.muedsa.bilibililiveapiclient.model.video.videoData videoData) {
+    public void setVideoData(VideoData videoData) {
         this.videoData = videoData;
     }
 }

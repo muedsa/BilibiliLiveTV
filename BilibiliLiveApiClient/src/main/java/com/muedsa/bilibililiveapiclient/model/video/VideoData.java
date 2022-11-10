@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.annotation.JSONField;
 
 import java.util.List;
 
-public class videoData {
+public class VideoData {
 
     @JSONField(name = "bvid")
     private String bvId;

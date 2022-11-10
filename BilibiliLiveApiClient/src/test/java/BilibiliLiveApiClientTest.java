@@ -18,9 +18,9 @@ import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDash;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDashInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
-import com.muedsa.bilibililiveapiclient.model.video.videoData;
 import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
 
 import org.junit.jupiter.api.Assertions;
@@ -171,7 +171,7 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertNotNull(videoDetail);
         VideoInfo videoInfo = videoDetail.getVideoInfo();
         Assertions.assertNotNull(videoInfo);
-        videoData videoData = videoInfo.getVideoData();
+        VideoData videoData = videoInfo.getVideoData();
         Assertions.assertNotNull(videoData);
         PlayInfo playInfo = videoDetail.getPlayInfo();
         Assertions.assertNotNull(playInfo);
