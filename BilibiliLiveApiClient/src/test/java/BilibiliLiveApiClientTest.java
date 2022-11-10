@@ -1,3 +1,9 @@
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
@@ -22,14 +28,21 @@ import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
+import com.muedsa.httpjsonclient.Container;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BilibiliLiveApiClientTest {
 
@@ -195,4 +208,56 @@ public class BilibiliLiveApiClientTest {
         }
     }
 
+    @Test
+    public void getVideDetailWithLogin() throws IOException, WriterException, InterruptedException {
+        LoginUrl loginUrl = getLoginUrlTest();
+        printQRCode(loginUrl.getUrl());
+        for (int i = 0; i < 60; i++) {
+            Thread.sleep(1500);
+            LoginResponse loginResponse = client.getLoginInfo(loginUrl.getOauthKey());
+            if (Objects.nonNull(loginResponse)
+                    && Objects.nonNull(loginResponse.getStatus())
+                    && loginResponse.getStatus()) {
+                logger.info("登录成功!");
+                String sessData = getSessData(loginResponse.getData().getUrl());
+                client.putCookie(Container.COOKIE_KEY_SESSDATA, sessData);
+                getVideDetailTest();
+                break;
+            }
+        }
+    }
+
+    private static void printQRCode(String content) throws WriterException {
+        Map<EncodeHintType, Object> hintMap = new HashMap<>();
+        hintMap.put(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8.name());
+        hintMap.put(EncodeHintType.MARGIN, 0);
+        hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+        QRCodeWriter writer = new QRCodeWriter();
+        BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 16, 16, hintMap);
+        int width = bitMatrix.getWidth();
+        int height = bitMatrix.getHeight();
+        StringBuilder stringQRCodeBuild = new StringBuilder("\n");
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (bitMatrix.get(x, y)) {
+                    stringQRCodeBuild.append("██");
+                } else {
+                    stringQRCodeBuild.append("  ");
+                }
+            }
+            stringQRCodeBuild.append("\n");
+        }
+        logger.info("请扫码~~" + stringQRCodeBuild);
+    }
+
+    private static final Pattern regex = Pattern.compile("\\S*SESSDATA=(\\S*)&bili_jct\\S*");
+
+    private static String getSessData(String loginUrl) {
+        String sessData = "";
+        Matcher matcher = regex.matcher(loginUrl);
+        if (matcher.matches()) {
+            sessData = matcher.group(1);
+        }
+        return sessData;
+    }
 }
