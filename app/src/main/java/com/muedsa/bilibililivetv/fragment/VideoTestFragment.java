@@ -22,15 +22,12 @@ import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.Container;
-import com.muedsa.httpjsonclient.HttpJsonClient;
 
-import java.net.CookieManager;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +64,6 @@ public class VideoTestFragment extends VideoSupportFragment {
         playbackTransportControlGlue.setHost(glueHost);
         playbackTransportControlGlue.setTitle("TEST");
         playbackTransportControlGlue.setSubtitle("test 233");
-//        CookieManager cookieManager = new CookieManager();
-//        cookieManager.setCookiePolicy();
         Map<String, String> headers = new HashMap<>();
         headers.put(Container.HEADER_KEY_COOKIE, "");
         headers.put(Container.HEADER_KEY_USER_AGENT, Container.HEADER_VALUE_USER_AGENT);
