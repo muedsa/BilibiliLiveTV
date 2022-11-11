@@ -22,4 +22,6 @@ public class ApiUrlContainer {
     public static String GET_LOGIN_INFO = "http://passport.bilibili.com/qrcode/getLoginInfo";
 
     public static String VIDEO_URL = "https://www.bilibili.com/video/%s?p=%d";
+
+    public static String HISTORY_LIST = "https://api.bilibili.com/x/web-interface/history/cursor?max=0&view_at=0&business=";
 }

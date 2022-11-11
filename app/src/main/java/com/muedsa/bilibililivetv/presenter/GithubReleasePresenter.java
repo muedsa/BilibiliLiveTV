@@ -14,7 +14,7 @@ import com.muedsa.bilibililivetv.R;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
 public class GithubReleasePresenter extends Presenter {
-    private static final String TAG = LiveRoomPresenter.class.getSimpleName();
+    private static final String TAG = GithubReleasePresenter.class.getSimpleName();
 
     private static final int CARD_SCALE = 2;
     private static int sSelectedBackgroundColor;

@@ -5,10 +5,10 @@ import com.alibaba.fastjson2.annotation.JSONField;
 public class VideoInfo {
 
     @JSONField(name = "aid")
-    private Long aId;
+    private Long aid;
 
     @JSONField(name = "bvid")
-    private String bvId;
+    private String bvid;
 
     @JSONField(name = "p")
     private Integer p;
@@ -22,20 +22,20 @@ public class VideoInfo {
     // todo more field
 
 
-    public Long getaId() {
-        return aId;
+    public Long getAid() {
+        return aid;
     }
 
-    public void setaId(Long aId) {
-        this.aId = aId;
+    public void setAid(Long aid) {
+        this.aid = aid;
     }
 
-    public String getBvId() {
-        return bvId;
+    public String getBvid() {
+        return bvid;
     }
 
-    public void setBvId(String bvId) {
-        this.bvId = bvId;
+    public void setBvid(String bvid) {
+        this.bvid = bvid;
     }
 
     public Integer getP() {

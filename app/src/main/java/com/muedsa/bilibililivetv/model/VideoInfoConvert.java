@@ -37,8 +37,8 @@ public class VideoInfoConvert {
         Map<Integer, String> qualityMap = buildQualityDescription(playInfo);
         return dash.getVideo().stream().map(video -> {
             VideoPlayInfo videoPlayInfo = new VideoPlayInfo();
-            videoPlayInfo.setBv(videoInfo.getBvId());
-            videoPlayInfo.setCid(videoInfo.getVideoData().getcId());
+            videoPlayInfo.setBv(videoInfo.getBvid());
+            videoPlayInfo.setCid(videoInfo.getVideoData().getCid());
             videoPlayInfo.setTitle(findTitle(videoInfo));
             videoPlayInfo.setSubTitle(Objects.nonNull(videoInfo.getVideoData().getOwner()) ? videoInfo.getVideoData().getOwner().getName() : "");
             videoPlayInfo.setQuality(video.getId());

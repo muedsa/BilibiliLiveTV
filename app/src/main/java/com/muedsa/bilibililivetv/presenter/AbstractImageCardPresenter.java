@@ -12,7 +12,7 @@ import androidx.leanback.widget.Presenter;
 import com.muedsa.bilibililivetv.R;
 
 public abstract class AbstractImageCardPresenter extends Presenter {
-    private static final String TAG = LiveRoomPresenter.class.getSimpleName();
+    private static final String TAG = AbstractImageCardPresenter.class.getSimpleName();
 
     private final int imageViewThemeId;
 

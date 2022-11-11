@@ -6,7 +6,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.chat.ChatBroadcast;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
-import com.muedsa.bilibililiveapiclient.uitl.ChatBroadcastPacketUtil;
+import com.muedsa.bilibililiveapiclient.util.ChatBroadcastPacketUtil;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;

@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.annotation.JSONField;
 public class VideoSubtitleAuthor {
 
     @JSONField(name = "mid")
-    private Long mId;
+    private Long mid;
 
     @JSONField(name = "name")
     private String name;
@@ -37,12 +37,12 @@ public class VideoSubtitleAuthor {
     @JSONField(name = "is_senior_member")
     private Integer isSeniorMember;
 
-    public Long getmId() {
-        return mId;
+    public Long getMid() {
+        return mid;
     }
 
-    public void setmId(Long mId) {
-        this.mId = mId;
+    public void setMid(Long mid) {
+        this.mid = mid;
     }
 
     public String getName() {

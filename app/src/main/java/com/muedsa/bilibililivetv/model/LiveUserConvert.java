@@ -1,6 +1,6 @@
 package com.muedsa.bilibililivetv.model;
 
-import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
+import com.muedsa.bilibililiveapiclient.util.ApiUtil;
 
 public class LiveUserConvert {
 

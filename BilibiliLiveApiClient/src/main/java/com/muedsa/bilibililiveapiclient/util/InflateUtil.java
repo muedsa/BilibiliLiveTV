@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.uitl;
+package com.muedsa.bilibililiveapiclient.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

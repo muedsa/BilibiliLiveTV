@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
@@ -18,7 +19,7 @@ import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
-import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
+import com.muedsa.bilibililiveapiclient.util.ApiUtil;
 import com.muedsa.httpjsonclient.Container;
 import com.muedsa.httpjsonclient.HttpJsonClient;
 
@@ -169,4 +170,8 @@ public class BilibiliLiveApiClient {
         return playInfo;
     }
 
+    public BilibiliResponse<HistoryTable> history() throws IOException {
+        return httpJsonClient.getJson(ApiUrlContainer.HISTORY_LIST, new TypeReference<BilibiliResponse<HistoryTable>>() {
+        }, requestHeader);
+    }
 }

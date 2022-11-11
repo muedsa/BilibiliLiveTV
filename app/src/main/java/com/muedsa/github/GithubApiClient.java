@@ -1,7 +1,7 @@
 package com.muedsa.github;
 
 import com.alibaba.fastjson2.TypeReference;
-import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
+import com.muedsa.bilibililiveapiclient.util.ApiUtil;
 import com.muedsa.github.model.BaseResponse;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 import com.muedsa.httpjsonclient.HttpJsonClient;

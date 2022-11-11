@@ -7,16 +7,16 @@ import java.util.List;
 public class VideoData {
 
     @JSONField(name = "bvid")
-    private String bvId;
+    private String bvid;
 
     @JSONField(name = "aid")
-    private Long aId;
+    private Long aid;
 
     @JSONField(name = "videos")
     private Integer videos;
 
     @JSONField(name = "tid")
-    private Integer tId;
+    private Integer tid;
 
     @JSONField(name = "tname")
     private String tName;
@@ -62,7 +62,7 @@ public class VideoData {
     private String dynamic;
 
     @JSONField(name = "cid")
-    private Long cId;
+    private Long cid;
 
     @JSONField(name = "dimension")
     private VideoDimension dimension;
@@ -102,20 +102,20 @@ public class VideoData {
     //embedPlayer
 
 
-    public String getBvId() {
-        return bvId;
+    public String getBvid() {
+        return bvid;
     }
 
-    public void setBvId(String bvId) {
-        this.bvId = bvId;
+    public void setBvid(String bvid) {
+        this.bvid = bvid;
     }
 
-    public Long getaId() {
-        return aId;
+    public Long getAid() {
+        return aid;
     }
 
-    public void setaId(Long aId) {
-        this.aId = aId;
+    public void setAid(Long aid) {
+        this.aid = aid;
     }
 
     public Integer getVideos() {
@@ -126,12 +126,12 @@ public class VideoData {
         this.videos = videos;
     }
 
-    public Integer gettId() {
-        return tId;
+    public Integer getTid() {
+        return tid;
     }
 
-    public void settId(Integer tId) {
-        this.tId = tId;
+    public void setTid(Integer tid) {
+        this.tid = tid;
     }
 
     public String gettName() {
@@ -238,12 +238,12 @@ public class VideoData {
         this.dynamic = dynamic;
     }
 
-    public Long getcId() {
-        return cId;
+    public Long getCid() {
+        return cid;
     }
 
-    public void setcId(Long cId) {
-        this.cId = cId;
+    public void setCid(Long cid) {
+        this.cid = cid;
     }
 
     public VideoDimension getDimension() {

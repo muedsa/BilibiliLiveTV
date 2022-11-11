@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
@@ -94,6 +95,13 @@ public class RxRequestFactory {
             } else {
                 emitter.onError(HttpRequestException.create("request videoDetail error"));
             }
+        });
+    }
+
+    public static Single<HistoryTable> bilibiliHistory() {
+        return Single.create(emitter -> {
+            BilibiliResponse<HistoryTable> response = BilibiliLiveApi.client().history();
+            handleResponse(response, emitter, Function.identity(), "BilibiliHistory", true, null);
         });
     }
 

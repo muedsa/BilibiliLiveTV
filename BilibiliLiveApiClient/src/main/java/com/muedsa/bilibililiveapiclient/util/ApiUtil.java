@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.uitl;
+package com.muedsa.bilibililiveapiclient.util;
 
 public class ApiUtil {
     public static String fillUrl(String url, Object... args){

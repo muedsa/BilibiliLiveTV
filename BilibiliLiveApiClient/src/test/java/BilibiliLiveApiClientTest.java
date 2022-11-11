@@ -28,7 +28,7 @@ import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
-import com.muedsa.bilibililiveapiclient.uitl.ApiUtil;
+import com.muedsa.bilibililiveapiclient.util.ApiUtil;
 import com.muedsa.httpjsonclient.Container;
 
 import org.junit.jupiter.api.Assertions;
@@ -201,7 +201,7 @@ public class BilibiliLiveApiClientTest {
             Assertions.assertFalse(videoList.isEmpty());
             Assertions.assertNotNull(audioList);
             Assertions.assertFalse(audioList.isEmpty());
-            String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvId(), videoData.getTitle(), videoData.getDesc());
+            String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvid(), videoData.getTitle(), videoData.getDesc());
             logger.info(videoDataMessage);
             for (PlayDashInfo video : videoList) {
                 String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", video.getMimeType(), video.getCodecs(), video.getId(), video.getBaseUrl());
