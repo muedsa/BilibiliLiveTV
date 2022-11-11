@@ -237,7 +237,7 @@ public class MainFragment extends BrowseSupportFragment {
     private void loadBilibiliHistoryRows(List<HistoryRecord> list) {
         VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
         HeaderItem headerItem = new HeaderItem(HEAD_TITLE_BILIBILI_HISTORY,
-                getResources().getString(R.string.head_title_history));
+                getResources().getString(R.string.head_title_video_history));
         ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
         listRowAdapter.addAll(0, list);
         bilibiliVideoHistoryListRow = new ListRow(headerItem, listRowAdapter);
