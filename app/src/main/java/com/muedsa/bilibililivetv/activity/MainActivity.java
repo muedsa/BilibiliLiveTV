@@ -7,9 +7,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.room.model.LiveRoom;
-import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.fragment.MainFragment;
+import com.muedsa.bilibililivetv.model.LiveRoomConvert;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 import java.util.List;
 
@@ -37,8 +37,8 @@ public class MainActivity extends FragmentActivity {
                         String roomId = pathSegments.get(pathSegments.size() - 1);
                         if (!Strings.isNullOrEmpty(roomId) && LiveRoom.ID_PATTERN.matcher(roomId).matches()) {
                             LiveRoom liveRoom = LiveRoomConvert.buildWithRoomId(Long.parseLong(roomId));
-                            Intent intent = new Intent(this, DetailsActivity.class);
-                            intent.putExtra(DetailsActivity.LIVE_ROOM, liveRoom);
+                            Intent intent = new Intent(this, LiveRoomDetailsActivity.class);
+                            intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, liveRoom);
                             startActivity(intent);
                         }
                     }

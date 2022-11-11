@@ -10,18 +10,18 @@ import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.media.PlaybackGlue;
 
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.activity.DetailsActivity;
+import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
+import com.muedsa.bilibililivetv.player.live.danmaku.DanmakuDelegate;
+import com.muedsa.bilibililivetv.player.live.danmaku.ExoPlayerDelegate;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
-import com.muedsa.bilibililivetv.player.danmaku.DanmakuDelegate;
-import com.muedsa.bilibililivetv.player.ExoPlayerDelegate;
 
 import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
 
 /**
  * Handles video playback with media controls.
  */
-public class PlaybackVideoFragment extends VideoSupportFragment {
-    private static final String TAG = PlaybackVideoFragment.class.getSimpleName();
+public class LiveStreamPlaybackFragment extends VideoSupportFragment {
+    private static final String TAG = LiveStreamPlaybackFragment.class.getSimpleName();
 
     private LiveRoom liveRoom;
     private DanmakuDelegate danmakuDelegate;
@@ -34,8 +34,8 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         ViewGroup root = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
         DanmakuSurfaceView danmakuView = (DanmakuSurfaceView) LayoutInflater.from(getContext()).inflate(
                 R.layout.danmaku_surface, root, false);
-        if(root != null) root.addView(danmakuView, 0);
-        liveRoom = (LiveRoom) requireActivity().getIntent().getSerializableExtra(DetailsActivity.LIVE_ROOM);
+        if (root != null) root.addView(danmakuView, 0);
+        liveRoom = (LiveRoom) requireActivity().getIntent().getSerializableExtra(LiveRoomDetailsActivity.LIVE_ROOM);
         danmakuDelegate = new DanmakuDelegate(this, danmakuView, liveRoom);
         danmakuDelegate.init();
         ExoPlayerDelegate.Listener listener = new ExoPlayerDelegate.Listener() {
@@ -90,7 +90,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
 
     public boolean isPlaying() {
         boolean flag = false;
-        if(exoPlayerDelegate != null){
+        if (exoPlayerDelegate != null) {
             flag = exoPlayerDelegate.isPlaying();
         }
         return flag;

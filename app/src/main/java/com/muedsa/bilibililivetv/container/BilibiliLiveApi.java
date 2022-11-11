@@ -12,7 +12,9 @@ public class BilibiliLiveApi {
         static final BilibiliLiveApiClient client = new BilibiliLiveApiClient();
     }
 
-    public static BilibiliLiveApiClient client(){
+    public static BilibiliLiveApiClient client() {
         return ClientHolder.client;
     }
+
+    public static final String VIDEO_BV_PREFIX = "BV";
 }

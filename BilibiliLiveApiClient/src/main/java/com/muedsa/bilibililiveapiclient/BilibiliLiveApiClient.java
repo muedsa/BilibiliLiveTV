@@ -56,7 +56,7 @@ public class BilibiliLiveApiClient {
         simpleCookie.put(k, v);
         Iterator<Map.Entry<String, String>> iterator = simpleCookie.entrySet().iterator();
         StringBuilder sb = new StringBuilder();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<String, String> entry = iterator.next();
             sb.append(entry.getKey())
                     .append("=")
@@ -66,14 +66,20 @@ public class BilibiliLiveApiClient {
         putHeader(Container.HEADER_KEY_COOKIE, sb.toString());
     }
 
+    public String getCookies() {
+        return requestHeader.getOrDefault(Container.HEADER_KEY_COOKIE, "");
+    }
+
     public BilibiliResponse<PlayUrlData> getPlayUrlMessage(Long roomId, Qn qn) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.ROOM_PLAY_URL, roomId, qn.getCode());
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<PlayUrlData>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<PlayUrlData>>() {
+        }, requestHeader);
     }
 
     public BilibiliResponse<BilibiliPageInfo<LiveRoomInfo>> pageOnlineLiveRoom(int page, int pageSize, int parentAreaId) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.GET_ROOM_LIST, page, pageSize, parentAreaId, "online");
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<BilibiliPageInfo<LiveRoomInfo>>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<BilibiliPageInfo<LiveRoomInfo>>>() {
+        }, requestHeader);
     }
 
     public BilibiliResponse<LargeInfo> getLargeInfo(Long roomId) throws IOException {
@@ -114,7 +120,11 @@ public class BilibiliLiveApiClient {
     }
 
     public VideoDetail getVideoDetail(String bv) throws IOException {
-        String url = ApiUtil.fillUrl(ApiUrlContainer.VIDEO_URL, bv);
+        return getVideoDetail(bv, 1);
+    }
+
+    public VideoDetail getVideoDetail(String bv, int page) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.VIDEO_URL, bv, page);
         String html = httpJsonClient.get(url, requestHeader);
         VideoInfo videoInfo = parseVideoInfo(html);
         BilibiliResponse<PlayInfo> playInfo = parsePlayInfo(html);

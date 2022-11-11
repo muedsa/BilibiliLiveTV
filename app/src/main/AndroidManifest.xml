@@ -50,10 +50,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.DetailsActivity"
+            android:name=".activity.LiveRoomDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.PlaybackActivity"
+            android:name=".activity.LiveStreamPlaybackActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.VideoDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.VideoPlaybackActivity"
             android:exported="false" />
         <activity
             android:name=".activity.BrowseErrorActivity"

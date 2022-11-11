@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.player.danmaku;
+package com.muedsa.bilibililivetv.player.live.danmaku;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -10,8 +10,8 @@ import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
-import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 public class DanmakuDelegate {
     private static final String TAG = DanmakuDelegate.class.getSimpleName();
 
-    private final PlaybackVideoFragment fragment;
+    private final LiveStreamPlaybackFragment fragment;
     private final LiveRoom liveRoom;
 
     private IDanmakuView danmakuView;
@@ -42,7 +42,7 @@ public class DanmakuDelegate {
     private int scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
 
 
-    public DanmakuDelegate(@NonNull PlaybackVideoFragment fragment, IDanmakuView danmakuView, @NonNull LiveRoom liveRoom){
+    public DanmakuDelegate(@NonNull LiveStreamPlaybackFragment fragment, IDanmakuView danmakuView, @NonNull LiveRoom liveRoom) {
         this.fragment = fragment;
         this.danmakuView = danmakuView;
         this.liveRoom = liveRoom;

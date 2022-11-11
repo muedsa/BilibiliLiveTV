@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.player.danmaku;
+package com.muedsa.bilibililivetv.player.live.danmaku;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -10,7 +10,6 @@ import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.Duration;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.DanmakuFactory;
-import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 
 public class GiftDanmakuManager {
     private static final String TAG = GiftDanmakuManager.class.toString();

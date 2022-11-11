@@ -13,6 +13,7 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
+import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.container.GithubApi;
 import com.muedsa.github.model.BaseResponse;
@@ -77,10 +78,21 @@ public class RxRequestFactory {
     public static Single<LoginResponse> bilibiliLoginInfo(String oauthKey) {
         return Single.create(emitter -> {
             LoginResponse loginResponse = BilibiliLiveApi.client().getLoginInfo(oauthKey);
-            if(Objects.nonNull(loginResponse)){
+            if (Objects.nonNull(loginResponse)) {
                 emitter.onSuccess(loginResponse);
-            }else{
+            } else {
                 emitter.onError(HttpRequestException.create("request loginResponse error"));
+            }
+        });
+    }
+
+    public static Single<VideoDetail> bilibiliVideoDetail(String bv, int page) {
+        return Single.create(emitter -> {
+            VideoDetail videoDetail = BilibiliLiveApi.client().getVideoDetail(bv, page);
+            if (Objects.nonNull(videoDetail)) {
+                emitter.onSuccess(videoDetail);
+            } else {
+                emitter.onError(HttpRequestException.create("request videoDetail error"));
             }
         });
     }
@@ -88,10 +100,10 @@ public class RxRequestFactory {
     public static Single<GithubReleaseTagInfo> githubLatestRelease() {
         return Single.create(emitter -> {
             BaseResponse<GithubReleaseTagInfo> response = GithubApi.client().getLatestReleaseInfo(GithubApi.GITHUB_USER, GithubApi.GITHUB_REPO);
-            if(response != null){
-                if(response.getCode() == ErrorCode.SUCCESS) {
+            if (response != null) {
+                if (response.getCode() == ErrorCode.SUCCESS) {
                     emitter.onSuccess(response.getData());
-                }else{
+                } else {
                     emitter.onError(HttpRequestException.create(response.getMsg()));
                 }
             }else{

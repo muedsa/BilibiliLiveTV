@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.player;
+package com.muedsa.bilibililivetv.player.live.danmaku;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +13,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.fragment.PlaybackVideoFragment;
+import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class ExoPlayerDelegate {
 
-    private final PlaybackVideoFragment fragment;
+    private final LiveStreamPlaybackFragment fragment;
     private final LiveRoom liveRoom;
 
     private PlaybackTransportControlGlue playbackTransportControlGlue;
@@ -32,7 +32,7 @@ public class ExoPlayerDelegate {
 
     private Listener listener;
 
-    public ExoPlayerDelegate(@NonNull PlaybackVideoFragment fragment, @Nullable Listener listener, LiveRoom liveRoom){
+    public ExoPlayerDelegate(@NonNull LiveStreamPlaybackFragment fragment, @Nullable Listener listener, LiveRoom liveRoom) {
         this.fragment = fragment;
         this.listener = listener;
         this.liveRoom = liveRoom;

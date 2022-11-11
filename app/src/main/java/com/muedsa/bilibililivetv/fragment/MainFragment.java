@@ -12,9 +12,20 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
@@ -28,19 +39,7 @@ import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.os.Looper;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
-import android.widget.TextView;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -49,16 +48,16 @@ import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
-import com.muedsa.bilibililivetv.activity.DetailsActivity;
+import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
 import com.muedsa.bilibililivetv.activity.LoginActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
-import com.muedsa.bilibililivetv.activity.VideoTestActivity;
+import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
-import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
@@ -322,13 +321,13 @@ public class MainFragment extends BrowseSupportFragment {
                 FragmentActivity activity = requireActivity();
                 LiveRoom liveRoom = (LiveRoom) item;
                 Log.d(TAG, "roomId: " + liveRoom.getId());
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsActivity.LIVE_ROOM, liveRoom);
+                Intent intent = new Intent(getActivity(), LiveRoomDetailsActivity.class);
+                intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, liveRoom);
 
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                        DetailsActivity.SHARED_ELEMENT_NAME)
+                                ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                LiveRoomDetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
                 activity.startActivity(intent, bundle);
             } else if(item instanceof GithubReleaseTagInfo){
@@ -364,8 +363,11 @@ public class MainFragment extends BrowseSupportFragment {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
                 } else if(desc.contains(getString(R.string.video_test))) {
-                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
-                    startActivity(intent);
+//                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
+//                    startActivity(intent);
+                    Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
+                    intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV1gN4y1K7dx");
+                    requireActivity().startActivity(intent);
                 } else {
                     ToastUtil.showLongToast(getActivity(), desc);
                 }

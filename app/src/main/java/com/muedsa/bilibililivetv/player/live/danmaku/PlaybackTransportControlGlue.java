@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.player;
+package com.muedsa.bilibililivetv.player.live.danmaku;
 
 import android.content.Context;
 import android.graphics.Color;
