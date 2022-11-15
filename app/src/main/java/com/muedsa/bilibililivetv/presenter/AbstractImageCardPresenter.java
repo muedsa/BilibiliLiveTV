@@ -29,6 +29,15 @@ public abstract class AbstractImageCardPresenter extends Presenter {
         view.setInfoAreaBackgroundColor(color);
     }
 
+    public static void setsSelectedBackgroundColor(int sSelectedBackgroundColor) {
+        AbstractImageCardPresenter.sSelectedBackgroundColor = sSelectedBackgroundColor;
+    }
+
+
+    public static void setsDefaultBackgroundColor(int sDefaultBackgroundColor) {
+        AbstractImageCardPresenter.sDefaultBackgroundColor = sDefaultBackgroundColor;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         sDefaultBackgroundColor =

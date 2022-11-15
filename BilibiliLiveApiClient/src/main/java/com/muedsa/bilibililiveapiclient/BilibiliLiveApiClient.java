@@ -6,6 +6,9 @@ import com.alibaba.fastjson2.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
+import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
+import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
@@ -24,14 +27,18 @@ import com.muedsa.httpjsonclient.Container;
 import com.muedsa.httpjsonclient.HttpJsonClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class BilibiliLiveApiClient {
     private static final Logger logger = Logger.getGlobal();
@@ -173,5 +180,37 @@ public class BilibiliLiveApiClient {
     public BilibiliResponse<HistoryTable> history() throws IOException {
         return httpJsonClient.getJson(ApiUrlContainer.HISTORY_LIST, new TypeReference<BilibiliResponse<HistoryTable>>() {
         }, requestHeader);
+    }
+
+    public DmWebViewReply videoDanmakuView(long oid) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.VIDEO_DANMAKU_VIEW, oid);
+        byte[] data = httpJsonClient.getByteArray(url, requestHeader);
+        return DmWebViewReply.parseFrom(data);
+    }
+
+    public DmSegMobileReply videoDanmakuSegment(long oid, int segmentIndex) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.VIDEO_DANMAKU_SEGMENT, oid, segmentIndex);
+        byte[] data = httpJsonClient.getByteArray(url, requestHeader);
+        return DmSegMobileReply.parseFrom(data);
+    }
+
+    public List<DanmakuElem> videoDanmakuElemList(long oid) throws IOException {
+        DmWebViewReply dmWebViewReply = videoDanmakuView(oid);
+        long count = 0;
+        List<DanmakuElem> list = new ArrayList<>();
+        if (dmWebViewReply.hasDmSge() && dmWebViewReply.getDmSge().hasTotal()) {
+            count = dmWebViewReply.getDmSge().getTotal();
+        }
+        for (int i = 1; i < count + 1; i++) {
+            DmSegMobileReply dmSegMobileReply = videoDanmakuSegment(oid, i);
+            if (dmSegMobileReply.getElemsCount() > 0) {
+                list.addAll(dmSegMobileReply.getElemsList());
+            } else {
+                break;
+            }
+        }
+        return list.stream()
+                .sorted(Comparator.comparingInt(DanmakuElem::getProgress))
+                .collect(Collectors.toList());
     }
 }

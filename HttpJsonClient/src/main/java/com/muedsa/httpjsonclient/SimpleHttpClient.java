@@ -12,10 +12,15 @@ public class SimpleHttpClient {
     public URLConnection connect(String url, Map<String, String> headers) throws IOException {
         URL urlObj = new URL(url);
         URLConnection urlConnection = urlObj.openConnection();
-        if(headers != null) headers.forEach(urlConnection::setRequestProperty);
+        if (headers != null) headers.forEach(urlConnection::setRequestProperty);
         urlConnection.setConnectTimeout(2000);
         urlConnection.setReadTimeout(3000);
         return urlConnection;
+    }
+
+    public byte[] getByteArray(String url, Map<String, String> headers) throws IOException {
+        URLConnection connect = connect(url, headers);
+        return IOUtil.convertStreamToByteArray(connect.getInputStream(), connect.getHeaderField(Container.HEADER_KEY_CONTENT_ENCODING));
     }
 
     public String get(String url, Map<String, String> headers) throws IOException {

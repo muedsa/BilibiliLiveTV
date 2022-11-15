@@ -10,6 +10,9 @@ import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
+import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
+import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
 import com.muedsa.bilibililiveapiclient.model.live.AnchorBaseInfo;
 import com.muedsa.bilibililiveapiclient.model.live.AnchorInfo;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuHostInfo;
@@ -180,7 +183,7 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public void getVideDetailTest() throws IOException {
+    public VideoDetail getVideDetailTest() throws IOException {
         VideoDetail videoDetail = client.getVideoDetail("BV1WY411Z7Cj");
         Assertions.assertNotNull(videoDetail);
         VideoInfo videoInfo = videoDetail.getVideoInfo();
@@ -214,6 +217,7 @@ public class BilibiliLiveApiClientTest {
         } else {
             logger.info("get play info fail:" + playInfoResponse.getMessage());
         }
+        return videoDetail;
     }
 
     //@Test
@@ -267,5 +271,40 @@ public class BilibiliLiveApiClientTest {
             sessData = matcher.group(1);
         }
         return sessData;
+    }
+
+    @Test
+    public void videoDanmakuViewTest() throws IOException {
+        DmWebViewReply dmWebViewReply = client.videoDanmakuView(885244431);
+        Assertions.assertNotNull(dmWebViewReply);
+        Assertions.assertTrue(dmWebViewReply.hasDmSge());
+        Assertions.assertTrue(dmWebViewReply.getDmSge().hasTotal());
+        logger.info("count:" + dmWebViewReply.getCount());
+    }
+
+    @Test
+    public void videoDanmakuSegmentTest() throws IOException {
+        long oid = 885244431;
+        DmWebViewReply dmWebViewReply = client.videoDanmakuView(oid);
+        Assertions.assertTrue(dmWebViewReply.hasDmSge());
+        Assertions.assertTrue(dmWebViewReply.getDmSge().hasTotal());
+        int count = 0;
+        logger.info("oid:" + oid + ", page total:" + dmWebViewReply.getDmSge().getTotal());
+        for (int i = 1; i < dmWebViewReply.getDmSge().getTotal() + 1; i++) {
+            DmSegMobileReply dmSegMobileReply = client.videoDanmakuSegment(oid, i);
+            Assertions.assertNotNull(dmSegMobileReply);
+            count += dmSegMobileReply.getElemsCount();
+            logger.info("oid:" + oid + ", index:" + i + " count:" + dmSegMobileReply.getElemsCount());
+        }
+        logger.info("oid:" + oid + ", danmaku count:" + count);
+    }
+
+    @Test
+    public void videoDanmakuElemListTest() throws IOException {
+        long oid = 885244431;
+        List<DanmakuElem> danmakuElems = client.videoDanmakuElemList(oid);
+        for (DanmakuElem danmakuElem : danmakuElems) {
+            logger.info(danmakuElem.getProgress() + ":" + danmakuElem.getMode() + ":" + danmakuElem.getContent());
+        }
     }
 }

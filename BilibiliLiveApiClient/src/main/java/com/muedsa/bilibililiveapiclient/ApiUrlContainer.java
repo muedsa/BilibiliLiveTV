@@ -24,4 +24,8 @@ public class ApiUrlContainer {
     public static String VIDEO_URL = "https://www.bilibili.com/video/%s?p=%d";
 
     public static String HISTORY_LIST = "https://api.bilibili.com/x/web-interface/history/cursor?max=0&view_at=0&business=";
+
+    public static String VIDEO_DANMAKU_VIEW = "https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=%d";
+
+    public static String VIDEO_DANMAKU_SEGMENT = "https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=%d&segment_index=%d";
 }

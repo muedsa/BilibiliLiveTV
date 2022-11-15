@@ -1,5 +1,6 @@
 package com.muedsa.bilibililivetv.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
 import androidx.leanback.media.PlaybackTransportControlGlue;
@@ -25,9 +25,13 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.EventLogger;
+import com.muedsa.bilibililivetv.BuildConfig;
+import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.model.VideoPlayInfo;
+import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
+import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.Container;
 
@@ -35,53 +39,119 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import master.flame.danmaku.controller.DrawHandler;
+import master.flame.danmaku.danmaku.model.BaseDanmaku;
+import master.flame.danmaku.danmaku.model.DanmakuTimer;
+import master.flame.danmaku.danmaku.model.android.DanmakuContext;
+import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
+import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
+
 public class VideoPlaybackFragment extends VideoSupportFragment {
     private static final String TAG = VideoPlaybackFragment.class.getSimpleName();
 
     private ExoPlayer exoPlayer;
-    private PlaybackTransportControlGlue<LeanbackPlayerAdapter> playbackTransportControlGlue;
+    private PlaybackTransportControlGlue<LeanbackPlayerAdapter> glue;
+
+    private DanmakuSurfaceView danmakuView;
+    private DanmakuContext danmakuContext;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
-//        DanmakuSurfaceView danmakuView = (DanmakuSurfaceView) LayoutInflater.from(getContext()).inflate(
-//                R.layout.danmaku_surface, root, false);
-//        if(root != null) root.addView(danmakuView, 0);
-        VideoPlayInfo playInfo = (VideoPlayInfo) requireActivity().getIntent().getSerializableExtra(VideoDetailsActivity.PLAY_INFO);
-        if (Objects.nonNull(playInfo) && Objects.nonNull(playInfo.getVideoUrl()) && Objects.nonNull(playInfo.getAudioUrl())) {
-            initPlayer();
-            playVideo(playInfo);
+        danmakuView = (DanmakuSurfaceView) LayoutInflater.from(getContext())
+                .inflate(R.layout.danmaku_surface, root, false);
+        if (root != null) root.addView(danmakuView, 0);
+        VideoPlayInfo videoPlayInfo = (VideoPlayInfo) requireActivity().getIntent().getSerializableExtra(VideoDetailsActivity.PLAY_INFO);
+        if (Objects.nonNull(videoPlayInfo)
+                && Objects.nonNull(videoPlayInfo.getVideoUrl())
+                && Objects.nonNull(videoPlayInfo.getAudioUrl())) {
+            initExoPlayer();
+            initDanmakuView();
+            prepareVideo(videoPlayInfo);
+            prepareDanmaku(videoPlayInfo);
         }
         return root;
     }
 
-    private void initPlayer() {
-        FragmentActivity activity = requireActivity();
-        VideoSupportFragmentGlueHost glueHost =
-                new VideoSupportFragmentGlueHost(this);
+    private void initExoPlayer() {
+        Context context = requireContext();
+        VideoSupportFragmentGlueHost videoSupportFragmentGlueHost = new VideoSupportFragmentGlueHost(this);
         DefaultRenderersFactory renderersFactory =
-                new DefaultRenderersFactory(activity)
+                new DefaultRenderersFactory(context)
                         .forceEnableMediaCodecAsynchronousQueueing();
-        exoPlayer = new ExoPlayer.Builder(activity, renderersFactory)
-                .setMediaSourceFactory(new DefaultMediaSourceFactory(activity))
+        exoPlayer = new ExoPlayer.Builder(context, renderersFactory)
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(context))
                 .build();
         exoPlayer.addAnalyticsListener(new EventLogger());
         exoPlayer.addListener(new Player.Listener() {
             @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Log.d(TAG, "onPlaybackStateChanged: " + playbackState);
+                Player.Listener.super.onPlaybackStateChanged(playbackState);
+                if (Player.STATE_BUFFERING == playbackState) {
+                    if (Objects.nonNull(danmakuView)) {
+                        danmakuView.pause();
+                    }
+                } else if (Player.STATE_READY == playbackState) {
+                    checkAllReadyAndStart();
+                }
+            }
+
+            @Override
+            public void onIsPlayingChanged(boolean isPlaying) {
+                Log.d(TAG, "onIsPlayingChanged: " + isPlaying);
+                Player.Listener.super.onIsPlayingChanged(isPlaying);
+                if (isPlaying) {
+                    checkAllReadyAndStart();
+                } else {
+                    if (Objects.nonNull(danmakuView)) {
+                        danmakuView.pause();
+                    }
+                }
+            }
+
+            @Override
             public void onPlayerError(@NonNull PlaybackException error) {
                 Player.Listener.super.onPlayerError(error);
-                ToastUtil.showLongToast(activity, error.getMessage());
+                ToastUtil.showLongToast(context, error.getMessage());
             }
         });
-        LeanbackPlayerAdapter playerAdapter = new LeanbackPlayerAdapter(activity, exoPlayer, 50);
-        playbackTransportControlGlue = new PlaybackTransportControlGlue<>(activity, playerAdapter);
-        playbackTransportControlGlue.setHost(glueHost);
+        LeanbackPlayerAdapter playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
+        glue = new PlaybackTransportControlGlue<>(context, playerAdapter);
+        glue.setHost(videoSupportFragmentGlueHost);
+        glue.setSeekEnabled(true);
     }
 
-    private void playVideo(VideoPlayInfo videoPlayInfo) {
-        playbackTransportControlGlue.setTitle(videoPlayInfo.getTitle());
-        playbackTransportControlGlue.setSubtitle(videoPlayInfo.getSubTitle());
+    private void initDanmakuView() {
+        danmakuContext = DefaultDanmakuContext.create();
+        danmakuView.enableDanmakuDrawingCache(true);
+        danmakuView.showFPS(BuildConfig.DEBUG);
+        danmakuView.show();
+        danmakuView.setCallback(new DrawHandler.Callback() {
+            @Override
+            public void prepared() {
+                Log.d(TAG, "danmakuView prepared");
+                checkAllReadyAndStart();
+            }
+
+            @Override
+            public void updateTimer(DanmakuTimer danmakuTimer) {
+            }
+
+            @Override
+            public void danmakuShown(BaseDanmaku baseDanmaku) {
+            }
+
+            @Override
+            public void drawingFinished() {
+            }
+        });
+    }
+
+    private void prepareVideo(VideoPlayInfo videoPlayInfo) {
+        glue.setTitle(videoPlayInfo.getTitle());
+        glue.setSubtitle(videoPlayInfo.getSubTitle());
         Map<String, String> headers = new HashMap<>();
         headers.put(Container.HEADER_KEY_COOKIE, BilibiliLiveApi.client().getCookies());
         headers.put(Container.HEADER_KEY_USER_AGENT, Container.HEADER_VALUE_USER_AGENT);
@@ -94,27 +164,62 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         MergingMediaSource mergedSource = new MergingMediaSource(videoMediaSource, audioMediaSource);
         exoPlayer.setMediaSource(mergedSource);
         exoPlayer.prepare();
-        playbackTransportControlGlue.play();
+    }
+
+    private void prepareDanmaku(VideoPlayInfo videoPlayInfo) {
+        BaseDanmakuParser danmakuParser = new BilibiliDanmakuParser(videoPlayInfo.getCid());
+        danmakuParser.setConfig(danmakuContext);
+        danmakuView.prepare(danmakuParser, danmakuContext);
+    }
+
+    private void checkAllReadyAndStart() {
+        requireActivity().runOnUiThread(() -> {
+            if ((Player.STATE_READY == exoPlayer.getPlaybackState())
+                    && danmakuView.isPrepared()) {
+                if (!glue.isPlaying()) {
+                    glue.play();
+                }
+                danmakuView.start(exoPlayer.getCurrentPosition());
+            }
+        });
     }
 
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
         super.onPause();
-        playbackTransportControlGlue.pause();
+        if (Objects.nonNull(exoPlayer) && Objects.nonNull(glue)) {
+            glue.pause();
+        }
+        if (Objects.nonNull(danmakuView)) {
+            danmakuView.pause();
+        }
     }
 
     @Override
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        playbackTransportControlGlue.play();
+        if (Objects.nonNull(exoPlayer) && Objects.nonNull(glue) && Objects.nonNull(danmakuView)) {
+            checkAllReadyAndStart();
+        }
     }
 
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView");
         super.onDestroyView();
-        exoPlayer.release();
+        if (Objects.nonNull(exoPlayer) && Objects.nonNull(glue)) {
+            glue = null;
+            exoPlayer.release();
+            exoPlayer = null;
+        }
+        if (Objects.nonNull(danmakuView)) {
+            danmakuView.release();
+            danmakuView = null;
+        }
+        if (Objects.nonNull(danmakuContext)) {
+            danmakuContext = null;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.muedsa.bilibililivetv.player.live.danmaku;
+package com.muedsa.bilibililivetv.player.live;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -11,17 +11,15 @@ import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
+import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
-
-import java.util.HashMap;
 
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.controller.IDanmakuView;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.DanmakuTimer;
 import master.flame.danmaku.danmaku.model.IDanmakus;
-import master.flame.danmaku.danmaku.model.IDisplayer;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
@@ -49,27 +47,7 @@ public class DanmakuDelegate {
     }
 
     public void init(){
-        // 设置最大显示行数
-        HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5);
-        maxLinesPair.put(BaseDanmaku.TYPE_FIX_TOP, 5);
-        maxLinesPair.put(BaseDanmaku.TYPE_FIX_BOTTOM, 8);
-        // 设置是否禁止重叠
-        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<>();
-        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
-        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
-        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_BOTTOM, true);
-
-        danmakuContext = DanmakuContext.create();
-        danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
-                .setDuplicateMergingEnabled(false)
-                .setScrollSpeedFactor(1.2f)
-                .setScaleTextSize(1.2f)
-                .setMaximumLines(maxLinesPair)
-                .preventOverlapping(overlappingEnablePair)
-                .setDanmakuTransparency(0.85f)
-                .setDanmakuMargin(5);
-
+        danmakuContext = DefaultDanmakuContext.create();
         danmakuParser = new BaseDanmakuParser() {
             @Override
             protected IDanmakus parse() {

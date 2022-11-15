@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.player.live.danmaku.GiftDanmakuManager;
+import com.muedsa.bilibililivetv.player.live.GiftDanmakuManager;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.HashMap;

@@ -304,13 +304,13 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void setupUIElements() {
-        setBadgeDrawable(requireActivity().getResources().getDrawable(R.drawable.bilibili_logo, null));
+        Context context = requireContext();
+        setBadgeDrawable(ContextCompat.getDrawable(context, R.drawable.bilibili_logo));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
         // over title
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
-        Context context = requireContext();
         // set fastLane (or headers) background color
         setBrandColor(ContextCompat.getColor(context, R.color.fastlane_background));
     }

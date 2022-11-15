@@ -9,21 +9,26 @@ import java.util.zip.GZIPInputStream;
 
 public class IOUtil {
 
-    public static String convertStreamToString(InputStream inputStream, String coding, String charset) throws IOException {
+    public static byte[] convertStreamToByteArray(InputStream inputStream, String coding) throws IOException {
         if (Objects.nonNull(coding)) {
             if (Container.HEADER_VALUE_PART_ENCODING_IDENTITY.equals(coding)) {
-                return decodeStreamToString(inputStream, charset);
+                return decodeStreamToByteArray(inputStream);
             } else if (Container.HEADER_VALUE_PART_ENCODING_GZIP.equals(coding)) {
-                return gzipStreamToString(inputStream, charset);
+                return decodeStreamToByteArray(new GZIPInputStream(inputStream));
             } else {
                 throw new IllegalStateException("coding " + coding + " not supported");
             }
         } else {
-            return decodeStreamToString(inputStream, charset);
+            return decodeStreamToByteArray(inputStream);
         }
     }
 
-    private static String decodeStreamToString(InputStream inputStream, String charset) throws IOException {
+    public static String convertStreamToString(InputStream inputStream, String coding, String charset) throws IOException {
+        byte[] bytes = convertStreamToByteArray(inputStream, coding);
+        return new String(bytes, charset);
+    }
+
+    private static byte[] decodeStreamToByteArray(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024 * 8];
         int n;
@@ -31,18 +36,11 @@ public class IOUtil {
             while ((n = inputStream.read(buffer)) >= 0) {
                 byteArrayOutputStream.write(buffer, 0, n);
             }
-            return byteArrayOutputStream.toString(charset);
-        } catch (Exception e) {
-            throw e;
+            return byteArrayOutputStream.toByteArray();
         } finally {
-            safeClose(inputStream);
             safeClose(byteArrayOutputStream);
+            safeClose(inputStream);
         }
-    }
-
-    private static String gzipStreamToString(InputStream inputStream, String charset) throws IOException {
-        GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
-        return decodeStreamToString(gzipInputStream, charset);
     }
 
     public static void safeClose(Closeable closeable) {
