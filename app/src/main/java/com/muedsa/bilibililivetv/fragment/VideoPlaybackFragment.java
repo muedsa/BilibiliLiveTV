@@ -176,7 +176,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
 
     private void checkAllReadyAndStart() {
         requireActivity().runOnUiThread(() -> {
-            if ((Player.STATE_READY == exoPlayer.getPlaybackState())
+            if (Objects.nonNull(exoPlayer)
+                    && Objects.nonNull(danmakuView)
+                    && Player.STATE_READY == exoPlayer.getPlaybackState()
                     && danmakuView.isPrepared()) {
                 if (!glue.isPlaying()) {
                     glue.play();
