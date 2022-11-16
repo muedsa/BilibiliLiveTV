@@ -43,6 +43,9 @@ import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.Container;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -219,11 +222,12 @@ public class LoginFragment extends Fragment {
     }
 
     private static final Pattern regex = Pattern.compile("\\S*SESSDATA=(\\S*)&bili_jct\\S*");
-    private static String getSessData(String loginUrl){
+    private static String getSessData(String loginUrl) throws UnsupportedEncodingException {
         String sessData = "";
         Matcher matcher = regex.matcher(loginUrl);
         if(matcher.matches()){
             sessData = matcher.group(1);
+            URLEncoder.encode(sessData, StandardCharsets.UTF_8.name());
         }
         Log.d(TAG, "SESSDATA:" + sessData);
         return sessData;
