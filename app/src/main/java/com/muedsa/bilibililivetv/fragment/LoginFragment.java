@@ -44,6 +44,7 @@ import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.Container;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -227,7 +228,7 @@ public class LoginFragment extends Fragment {
         Matcher matcher = regex.matcher(loginUrl);
         if(matcher.matches()){
             sessData = matcher.group(1);
-            URLEncoder.encode(sessData, StandardCharsets.UTF_8.name());
+            URLDecoder.decode(sessData, StandardCharsets.UTF_8.name());
         }
         Log.d(TAG, "SESSDATA:" + sessData);
         return sessData;
