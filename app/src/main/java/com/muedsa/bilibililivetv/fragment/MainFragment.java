@@ -173,9 +173,10 @@ public class MainFragment extends BrowseSupportFragment {
                     resources.getString(R.string.head_title_other));
             GridItemPresenter mGridPresenter = new GridItemPresenter();
             ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+            gridRowAdapter.add(resources.getString(R.string.bilibili_history_refresh));
+            gridRowAdapter.add(resources.getString(R.string.bilibili_scan_qr_code_login));
             gridRowAdapter.add(resources.getString(R.string.clear_history));
             gridRowAdapter.add(resources.getString(R.string.clear_channel));
-            gridRowAdapter.add(resources.getString(R.string.bilibili_scan_qr_code_login));
             if(BuildConfig.DEBUG){
                 gridRowAdapter.add(resources.getString(R.string.danmaku_test));
                 gridRowAdapter.add(resources.getString(R.string.video_test));
@@ -359,9 +360,8 @@ public class MainFragment extends BrowseSupportFragment {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
-
+            FragmentActivity activity = requireActivity();
             if (item instanceof LiveRoom) {
-                FragmentActivity activity = requireActivity();
                 LiveRoom liveRoom = (LiveRoom) item;
                 Log.d(TAG, "roomId: " + liveRoom.getId());
                 Intent intent = new Intent(getActivity(), LiveRoomDetailsActivity.class);
@@ -372,18 +372,23 @@ public class MainFragment extends BrowseSupportFragment {
                                 ((ImageCardView) itemViewHolder.view).getMainImageView(),
                                 LiveRoomDetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
-                activity.startActivity(intent, bundle);
+                startActivity(intent, bundle);
             } else if (item instanceof HistoryRecord) {
                 HistoryRecord historyRecord = (HistoryRecord) item;
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
                 intent.putExtra(VideoDetailsActivity.VIDEO_BV, historyRecord.getHistory().getBvid());
                 intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
-                requireActivity().startActivity(intent);
+                startActivity(intent);
             } else if (item instanceof GithubReleaseTagInfo) {
                 jumpToUrl(getString(R.string.latest_version_download_url));
             } else if (item instanceof String) {
                 String desc = (String) item;
-                if (desc.contains(getString(R.string.clear_history))) {
+                if(desc.contains(getString(R.string.bilibili_history_refresh))) {
+                    runBilibiliHistoryRequest();
+                }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                }else if(desc.contains(getString(R.string.clear_history))) {
                     new AlertDialog.Builder(getContext())
                             .setTitle(getString(R.string.clear_history_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> liveRoomViewModel
@@ -408,15 +413,12 @@ public class MainFragment extends BrowseSupportFragment {
                 } else if(desc.contains(getString(R.string.danmaku_test))) {
                     Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
                     startActivity(intent);
-                } else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(intent);
                 } else if(desc.contains(getString(R.string.video_test))) {
 //                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
 //                    startActivity(intent);
                     Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
                     intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV1gN4y1K7dx");
-                    requireActivity().startActivity(intent);
+                    startActivity(intent);
                 } else {
                     ToastUtil.showLongToast(getActivity(), desc);
                 }

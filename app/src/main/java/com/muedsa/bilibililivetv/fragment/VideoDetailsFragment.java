@@ -109,6 +109,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(videoDetail -> {
+                    FragmentActivity activity = requireActivity();
                     if (Objects.nonNull(videoDetail.getVideoInfo())
                             && Objects.nonNull(videoDetail.getVideoInfo().getVideoData())) {
                         //视频信息 封面图
@@ -126,18 +127,21 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                                 videoPlayInfoList = VideoInfoConvert.buildVideoPlayInfoList(videoInfo, playInfoResponse.getData(), url);
                                 updateDetailsOverviewActions();
                             } else {
-                                //toast
+                                ToastUtil.showLongToast(activity, Objects.nonNull(playInfoResponse.getMessage())?
+                                        playInfoResponse.getMessage() : activity.getString(R.string.toast_msg_jump_video_detail_error));
                             }
                         } else {
-                            //toast
+                            ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error));
                         }
                         mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
                     } else {
-                        //toast
+                        ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error));
                     }
 
                 }, throwable -> {
-
+                    Log.e(TAG, "bilibiliVideoDetail error:", throwable);
+                    FragmentActivity activity = requireActivity();
+                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error) + ":" +throwable.getMessage());
                 }, listCompositeDisposable);
 
     }
@@ -188,8 +192,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 intent.putExtra(VideoDetailsActivity.PLAY_INFO, videoPlayInfoList.get(index));
                 startActivity(intent);
             } else {
-                //toast
-                ToastUtil.showLongToast(activity, activity.getString(R.string.live_play_failure));
+                ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_video_play_failure));
             }
         });
         mPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsPresenter);
@@ -226,9 +229,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
+                    public void onLoadCleared(@Nullable Drawable placeholder) {}
                 });
     }
 
@@ -253,9 +254,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                                 }
 
                                 @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                                }
+                                public void onLoadCleared(@Nullable Drawable placeholder) {}
                             });
                 });
     }

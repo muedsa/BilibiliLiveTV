@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.request.HttpRequestException;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.Container;
 
 import java.util.Objects;
@@ -58,10 +60,12 @@ public class LoginFragment extends Fragment {
     private int imageSize;
 
     private TextView textView;
+    private Button button;
 
     private ListCompositeDisposable listCompositeDisposable;
 
     private Timer timer;
+    private int timerCount = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,6 +73,7 @@ public class LoginFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_login, container, false);
         imageView = root.findViewById(R.id.login_fragment_image_view);
         textView = root.findViewById(R.id.login_fragment_text_view);
+        button = root.findViewById(R.id.login_fragment_button);
         FragmentActivity activity = requireActivity();
         WindowManager windowManager = activity.getWindowManager();
         int height;
@@ -77,7 +82,6 @@ public class LoginFragment extends Fragment {
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             height = bounds.height() - insets.top - insets.bottom;
-
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -89,6 +93,14 @@ public class LoginFragment extends Fragment {
         if(layoutParams instanceof LinearLayout.LayoutParams){
             ((LinearLayout.LayoutParams)layoutParams).topMargin = mTop;
         }
+        button.setOnClickListener(v -> {
+            Log.d(TAG, "logout");
+            FragmentActivity fragmentActivity = requireActivity();
+            SharedPreferences sharedPreferences = fragmentActivity.getSharedPreferences(App.SP_NAME, Context.MODE_PRIVATE);
+            sharedPreferences.edit().remove(Container.COOKIE_KEY_SESSDATA).apply();
+            BilibiliLiveApi.logout();
+            checkLogin();
+        });
         listCompositeDisposable = new ListCompositeDisposable();
         checkLogin();
         return root;
@@ -104,6 +116,7 @@ public class LoginFragment extends Fragment {
                     if (Objects.nonNull(userNav.getIsLogin()) && userNav.isLogin()) {
                         Log.d(TAG, "checkLogin: isLogin");
                         textView.setText(userNav.getUname());
+                        button.setVisibility(View.VISIBLE);
                         GlideApp.with(requireActivity())
                                 .load(userNav.getFace())
                                 .centerCrop()
@@ -134,6 +147,7 @@ public class LoginFragment extends Fragment {
 
     private void prepareLogin(){
         Log.d(TAG, "prepareLogin");
+        button.setVisibility(View.GONE);
         listCompositeDisposable.clear();
         RxRequestFactory.bilibiliLoginUrl()
                 .subscribeOn(Schedulers.io())
@@ -143,8 +157,8 @@ public class LoginFragment extends Fragment {
                     textView.setText(requireActivity().getString(R.string.bilibili_scan_qr_code_login));
                     startCheckScan(loginUrl.getOauthKey());
                 }, throwable -> {
-                    //todo handler throwable
                     Log.d(TAG, "bilibiliLoginUrl: ", throwable);
+                    ToastUtil.showLongToast(requireActivity(), throwable.getMessage());
                 }, listCompositeDisposable);
     }
 
@@ -168,28 +182,38 @@ public class LoginFragment extends Fragment {
         Log.d(TAG, "startCheckScan");
         releaseTimer();
         timer = new Timer();
+        timerCount = 0;
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Log.d(TAG, "bilibiliLoginInfo: oauthKey" + oauthKey);
-                RxRequestFactory.bilibiliLoginInfo(oauthKey)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(loginInfo -> {
-                            if(loginInfo.getStatus()) {
-                                Log.d(TAG, "login success: " + loginInfo.getData().getUrl());
-                                releaseTimer();
-                                listCompositeDisposable.clear();
-                                String sessData = getSessData(loginInfo.getData().getUrl());
-                                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(App.SP_NAME, Context.MODE_PRIVATE);
-                                sharedPreferences.edit().putString(Container.COOKIE_KEY_SESSDATA, sessData).apply();
-                                BilibiliLiveApi.client().putCookie(Container.COOKIE_KEY_SESSDATA, sessData);
-                                checkLogin();
-                            }
-                        }, throwable -> {
-                            //todo handler throwable
-                            Log.d(TAG, "startCheckScan: ", throwable);
-                        }, listCompositeDisposable);
+                FragmentActivity activity = requireActivity();
+                if(timerCount > 40){
+                    releaseTimer();
+                    listCompositeDisposable.clear();
+                    ToastUtil.showLongToast(activity, activity.getString(R.string.login_timeout));
+                    prepareLogin();
+                }else{
+                    Log.d(TAG, "bilibiliLoginInfo: oauthKey=" + oauthKey);
+                    RxRequestFactory.bilibiliLoginInfo(oauthKey)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(loginInfo -> {
+                                if(loginInfo.getStatus()) {
+                                    Log.d(TAG, "login success: " + loginInfo.getData().getUrl());
+                                    releaseTimer();
+                                    listCompositeDisposable.clear();
+                                    String sessData = getSessData(loginInfo.getData().getUrl());
+                                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(App.SP_NAME, Context.MODE_PRIVATE);
+                                    sharedPreferences.edit().putString(Container.COOKIE_KEY_SESSDATA, sessData).apply();
+                                    BilibiliLiveApi.login(sessData);
+                                    checkLogin();
+                                }
+                            }, throwable -> {
+                                Log.d(TAG, "startCheckScan: ", throwable);
+                                ToastUtil.showLongToast(activity, throwable.getMessage());
+                            }, listCompositeDisposable);
+                }
+                timerCount++;
             }
         }, 1500, 1500);
     }

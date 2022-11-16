@@ -5,7 +5,7 @@
     <string name="browse_title">Bilibili Live</string>
     <string name="danmaku_test">弹幕测试</string>
     <string name="video_test">视频测试</string>
-    <string name="clear_history">清除历史记录</string>
+    <string name="clear_history">清除直播历史记录</string>
     <string name="clear_history_alert">确定清除历史记录?</string>
     <string name="alert_yes">确定</string>
     <string name="alert_no">取消</string>
@@ -32,7 +32,6 @@
     <string name="playback_controls_gift_play">礼物弹幕开</string>
     <string name="playback_controls_gift_stop">礼物弹幕关</string>
     <string name="playback_controls_change_play_url">切换线路</string>
-    <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
     <string name="search_input_hint">请输入房间号</string>
@@ -56,6 +55,11 @@
     <string name="toast_msg_gift_on">礼物弹幕开启</string>
     <string name="toast_msg_gift_off">礼物弹幕关闭</string>
     <string name="toast_msg_jump_url_error">无法打开浏览器, %s</string>
+    <string name="toast_msg_jump_video_detail_error">获取播放信息失败,可能视频不存在</string>
+    <string name="toast_msg_video_play_failure">视频地址获取失败,可能视频不存在</string>
     <string name="bilibili_scan_qr_code_login">BiliBili扫码登录</string>
     <string name="loading">加载中…</string>
+    <string name="bilibili_history_refresh">刷新历史记录</string>
+    <string name="logout">注销</string>
+    <string name="login_timeout">登录超时，请重新扫码</string>
 </resources>

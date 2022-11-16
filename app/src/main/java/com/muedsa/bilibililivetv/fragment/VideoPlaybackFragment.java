@@ -49,6 +49,8 @@ import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
 public class VideoPlaybackFragment extends VideoSupportFragment {
     private static final String TAG = VideoPlaybackFragment.class.getSimpleName();
 
+    private static final long MAX_VIDEO_DANMAKU_TIME_DIFF = 200; //ms
+
     private ExoPlayer exoPlayer;
     private PlaybackTransportControlGlue<LeanbackPlayerAdapter> glue;
 
@@ -179,7 +181,11 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                 if (!glue.isPlaying()) {
                     glue.play();
                 }
-                danmakuView.start(exoPlayer.getCurrentPosition());
+                long danmakuTime = danmakuView.getCurrentTime();
+                long videoTime = exoPlayer.getCurrentPosition();
+                if(Math.abs(videoTime - danmakuTime) > MAX_VIDEO_DANMAKU_TIME_DIFF) {
+                    danmakuView.start(videoTime);
+                }
             }
         });
     }

@@ -62,6 +62,15 @@ public class BilibiliLiveApiClient {
 
     public void putCookie(String k, String v){
         simpleCookie.put(k, v);
+        updateHeaderCookie();
+    }
+
+    public void removeCookie(String k){
+        simpleCookie.remove(k);
+        updateHeaderCookie();
+    }
+
+    private void updateHeaderCookie(){
         Iterator<Map.Entry<String, String>> iterator = simpleCookie.entrySet().iterator();
         StringBuilder sb = new StringBuilder();
         while (iterator.hasNext()) {
