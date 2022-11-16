@@ -1,0 +1,181 @@
+syntax = "proto3";
+
+package com.muedsa.bilibililiveapiclient.model;
+
+option java_multiple_files = true;
+option java_package = "com.muedsa.bilibililiveapiclient.model.danmaku";
+option java_outer_classname = "DanmakuProto";
+
+message DmWebViewReply {
+  optional int32 state = 1;
+  optional string text = 2;
+  optional string textSide = 3;
+  optional DmSegConfig dmSge = 4;
+  optional DanmakuFlagConfig flag = 5;
+  repeated string specialDms = 6;
+  optional bool checkBox = 7;
+  optional int64 count = 8;
+  repeated CommandDm commandDms = 9;
+  optional DanmuWebPlayerConfig dmSetting = 10;
+  optional string reportFilter = 11;
+  repeated Expressions expressions = 12;
+  repeated PostPanel postPanel = 13;
+}
+
+message PostPanel {
+  optional int64 start = 1;
+  optional int64 end = 2;
+  optional int64 priority = 3;
+  optional int64 bizId = 4;
+  optional PostPanelBizType bizType = 5;
+  optional ClickButton clickButton = 6;
+  optional TextInput textInput = 7;
+  optional CheckBox checkBox = 8;
+  optional Toast toast = 9;
+}
+
+message ClickButton {
+  repeated string portraitText = 1;
+  repeated string landscapeText = 2;
+  repeated string portraitTextFocus = 3;
+  repeated string landscapeTextFocus = 4;
+  optional RenderType renderType = 5;
+  optional bool show = 6;
+}
+
+enum PostPanelBizType {
+  PostPanelBizTypeNone = 0;
+  PostPanelBizTypeEncourage = 1;
+}
+
+message TextInput {
+  repeated string portraitPlaceholder = 1;
+  repeated string landscapePlaceholder = 2;
+  optional RenderType renderType = 3;
+  optional bool placeholderPost = 4;
+  optional bool show = 5;
+}
+
+enum RenderType {
+  RenderTypeNone = 0;
+  RenderTypeSingle = 1;
+  RenderTypeRotation = 2;
+}
+
+message CheckBox {
+  optional string text = 1;
+  optional CheckboxType type = 2;
+  optional bool defaultValue = 3;
+  optional bool show = 4;
+}
+
+enum CheckboxType {
+  CheckboxTypeNone = 0;
+  CheckboxTypeEncourage = 1;
+}
+
+message Toast {
+  optional string text = 1;
+  optional int32 duration = 2;
+  optional bool show = 3;
+  optional Button button = 4;
+}
+
+message Button {
+  optional string text = 1;
+  optional ToastFunctionType action = 2;
+}
+
+enum ToastFunctionType {
+  ToastFunctionTypeNone = 0;
+  ToastFunctionTypePostPanel = 1;
+}
+
+enum ToastBizType {
+  ToastBizTypeNone = 0;
+  ToastBizTypeEncourage = 1;
+}
+
+message CommandDm {
+  optional int64 id = 1;
+  optional int64 oid = 2;
+  optional int64 mid = 3;
+  optional int64 command = 4;
+  optional string content = 5;
+  optional int32 progress = 6;
+  optional string ctime = 7;
+  optional string mtime = 8;
+  optional string extra = 9;
+  optional string idStr = 10;
+}
+
+message DmSegConfig {
+  optional int64 pageSize = 1;
+  optional int64 total = 2;
+}
+
+message DanmakuFlagConfig {
+  optional int32 recFlag = 1;
+  optional string recText = 2;
+  optional int32 recSwitch = 3;
+}
+
+message DmSegMobileReply {
+  repeated DanmakuElem elems = 1;
+}
+
+message DanmakuElem {
+  optional int64 id = 1;
+  optional int32 progress = 2;
+  optional int32 mode = 3;
+  optional int32 fontSize = 4;
+  optional uint32 color = 5;
+  optional string midHash = 6;
+  optional string content = 7;
+  optional int64 ctime = 8;
+  optional int32 weight = 9;
+  optional string action = 10;
+  optional int32 pool = 11;
+  optional string idStr = 12;
+  optional int32 attr = 13;
+  optional string animation = 22;
+}
+
+message DanmuWebPlayerConfig {
+  optional bool dmSwitch = 1;
+  optional bool aiSwitch = 2;
+  optional int32 aiLevel = 3;
+  optional bool typeTop = 4;
+  optional bool typeScroll = 5;
+  optional bool typeBottom = 6;
+  optional bool typeColor = 7;
+  optional bool typeSpecial = 8;
+  optional bool preventShade = 9;
+  optional bool dmask = 10;
+  optional float opacity = 11;
+  optional int32 dmArea = 12;
+  optional float speedPlus = 13;
+  optional float fontSize = 14;
+  optional bool fullScreenSync = 15;
+  optional bool speedSync = 16;
+  optional string fontFamily = 17;
+  optional bool bold = 18;
+  optional int32 fontBorder = 19;
+  optional string drawType = 20;
+  optional int32 seniorModeSwitch = 21;
+}
+
+message Expressions {
+  repeated Expression data = 1;
+}
+
+message Expression {
+  repeated string keyword = 1;
+  optional string url = 2;
+  repeated Period period = 3;
+}
+
+message Period {
+  optional int64 start = 1;
+  optional int64 end = 2;
+}

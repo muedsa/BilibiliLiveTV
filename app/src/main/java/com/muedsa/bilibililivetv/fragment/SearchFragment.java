@@ -38,14 +38,16 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.activity.DetailsActivity;
-import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
+import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
+import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveUser;
 import com.muedsa.bilibililivetv.model.LiveUserConvert;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.presenter.LiveUserPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
@@ -163,20 +165,28 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     @Override
     public boolean onQueryTextSubmit(String query) {
         listCompositeDisposable.clear();
-        RxRequestFactory.bilibiliSearchLive(query)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(searchResult -> {
-                            mRowsAdapter.clear();
-                            loadLiveUserSearchData(searchResult.getLiveUser());
-                            loadLiveRoomSearchData(searchResult.getLiveRoom());
-                        },
-                        throwable -> {
-                            ToastUtil.showLongToast(requireActivity(), throwable.getMessage());
-                            Log.e(TAG, "bilibiliSearchLive error", throwable);
-                        },
-                        listCompositeDisposable);
-        return true;
+        boolean flag = true;
+        if (query.startsWith(BilibiliLiveApi.VIDEO_BV_PREFIX)) {
+            flag = false;
+            Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
+            intent.putExtra(VideoDetailsActivity.VIDEO_BV, query);
+            intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
+            requireActivity().startActivity(intent);
+        } else {
+            RxRequestFactory.bilibiliSearchLive(query)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(searchResult -> {
+                                mRowsAdapter.clear();
+                                loadLiveUserSearchData(searchResult.getLiveUser());
+                                loadLiveRoomSearchData(searchResult.getLiveRoom());
+                            }, throwable -> {
+                                ToastUtil.showLongToast(requireActivity(), throwable.getMessage());
+                                Log.e(TAG, "bilibiliSearchLive error", throwable);
+                            },
+                            listCompositeDisposable);
+        }
+        return flag;
     }
 
     private void loadLiveUserSearchData(List<com.muedsa.bilibililiveapiclient.model.search.LiveUser> liveUserList) {
@@ -222,13 +232,13 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
             }else if(item instanceof LiveRoom){
                 liveRoom = (LiveRoom) item;
             }
-            if(liveRoom != null){
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsActivity.LIVE_ROOM, liveRoom);
+            if(liveRoom != null) {
+                Intent intent = new Intent(getActivity(), LiveRoomDetailsActivity.class);
+                intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, liveRoom);
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
                                 ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                                DetailsActivity.SHARED_ELEMENT_NAME)
+                                LiveRoomDetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
                 activity.startActivity(intent, bundle);
             }

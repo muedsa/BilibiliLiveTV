@@ -14,4 +14,18 @@ public class ApiUrlContainer {
     public static String WS_CHAT = "wss://broadcastlv.chat.bilibili.com:443/sub";
 
     public static String SEARCH_LIVE = "https://api.bilibili.com/x/web-interface/search/type?page=%d&page_size=%d&order=online&platform=android&keyword=%s&search_type=live";
+
+    public static String USER_NAV = "https://api.bilibili.com/x/web-interface/nav";
+
+    public static String GET_LOGIN_URL = "http://passport.bilibili.com/qrcode/getLoginUrl";
+
+    public static String GET_LOGIN_INFO = "http://passport.bilibili.com/qrcode/getLoginInfo";
+
+    public static String VIDEO_URL = "https://www.bilibili.com/video/%s?p=%d";
+
+    public static String HISTORY_LIST = "https://api.bilibili.com/x/web-interface/history/cursor?max=0&view_at=0&business=";
+
+    public static String VIDEO_DANMAKU_VIEW = "https://api.bilibili.com/x/v2/dm/web/view?type=1&oid=%d";
+
+    public static String VIDEO_DANMAKU_SEGMENT = "https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=%d&segment_index=%d";
 }

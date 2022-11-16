@@ -37,6 +37,7 @@ dependencies {
 
     implementation "androidx.tvprovider:tvprovider:1.1.0-alpha01"
     implementation "androidx.leanback:leanback:$leanback_version"
+    implementation "androidx.leanback:leanback-preference:$leanback_version"
 
     implementation ("com.github.bumptech.glide:glide:$glide_version") {
         exclude group: "com.android.support"
@@ -46,6 +47,7 @@ dependencies {
 
     implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
     implementation "com.google.android.exoplayer:exoplayer-hls:$exoplayer_version"
+    //implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-leanback:$exoplayer_version"
 
     implementation project(path: ':repository:DanmakuFlameMaster')
@@ -60,4 +62,6 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava3:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+
+    implementation 'com.google.zxing:core:3.5.1'
 }

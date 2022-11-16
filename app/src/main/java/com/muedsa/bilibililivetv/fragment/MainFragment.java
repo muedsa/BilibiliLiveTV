@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.fragment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -11,9 +12,20 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
@@ -27,42 +39,36 @@ import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.os.Looper;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
-import android.widget.TextView;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
 import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
-import com.muedsa.bilibililivetv.activity.DetailsActivity;
+import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
+import com.muedsa.bilibililivetv.activity.LoginActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
+import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
-import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
+import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -77,8 +83,9 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int GRID_ITEM_HEIGHT = 200;
     private static final int MAX_NUM_COLS = 8;
     private static final int HEAD_TITLE_HISTORY = 1;
-    private static final int HEAD_TITLE_OTHER = 2;
-    private static final int HEAD_TITLE_LATEST_VERSION = 3;
+    private static final int HEAD_TITLE_BILIBILI_HISTORY = 2;
+    private static final int HEAD_TITLE_OTHER = 3;
+    private static final int HEAD_TITLE_LATEST_VERSION = 4;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private Drawable mDefaultBackground;
@@ -94,6 +101,7 @@ public class MainFragment extends BrowseSupportFragment {
 
 
     private List<ListRow> historyListRows;
+    private ListRow bilibiliVideoHistoryListRow;
     private ListRow otherListRow;
     private ListRow versionListRow;
 
@@ -108,7 +116,7 @@ public class MainFragment extends BrowseSupportFragment {
 
         setupEventListeners();
 
-        initRows();
+        //initRows();
     }
 
 
@@ -124,6 +132,7 @@ public class MainFragment extends BrowseSupportFragment {
                     loadHistoryRows(liveRooms);
                     loadRows();
                 }));
+        runBilibiliHistoryRequest();
         runLatestVersionTask();
         loadRows();
     }
@@ -131,6 +140,7 @@ public class MainFragment extends BrowseSupportFragment {
     @Override
     public void onResume() {
         super.onResume();
+        initRows();
     }
 
     @Override
@@ -143,24 +153,34 @@ public class MainFragment extends BrowseSupportFragment {
         disposable.dispose();
     }
 
-    private void loadRows(){
-        //历史记录
+    private void loadRows() {
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        if(null != historyListRows){
+
+        //历史记录
+        if (null != historyListRows) {
             Log.d(TAG, "loadRows: historyListRows size: " + historyListRows.size());
             rowsAdapter.addAll(0, historyListRows);
         }
 
+        //Bilibili历史记录
+        if (bilibiliVideoHistoryListRow != null) {
+            rowsAdapter.add(bilibiliVideoHistoryListRow);
+        }
+
         //其他
-        if(otherListRow == null) {
+        if (otherListRow == null) {
+            Resources resources = getResources();
             HeaderItem gridHeader = new HeaderItem(HEAD_TITLE_OTHER,
-                    getResources().getString(R.string.head_title_other));
+                    resources.getString(R.string.head_title_other));
             GridItemPresenter mGridPresenter = new GridItemPresenter();
             ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-            gridRowAdapter.add(getResources().getString(R.string.clear_history));
-            gridRowAdapter.add(getResources().getString(R.string.clear_channel));
+            gridRowAdapter.add(resources.getString(R.string.bilibili_history_refresh));
+            gridRowAdapter.add(resources.getString(R.string.bilibili_scan_qr_code_login));
+            gridRowAdapter.add(resources.getString(R.string.clear_history));
+            gridRowAdapter.add(resources.getString(R.string.clear_channel));
             if(BuildConfig.DEBUG){
-                gridRowAdapter.add(getResources().getString(R.string.danmaku_test));
+                gridRowAdapter.add(resources.getString(R.string.danmaku_test));
+                gridRowAdapter.add(resources.getString(R.string.video_test));
             }
             otherListRow = new ListRow(gridHeader, gridRowAdapter);
         }
@@ -208,15 +228,24 @@ public class MainFragment extends BrowseSupportFragment {
                 int listIndex = rowIndex * MAX_NUM_COLS + colIndex;
                 listRowAdapter.add(list.get(listIndex));
             }
-            if(rowIndex == 0){
+            if (rowIndex == 0) {
                 historyListRows.add(new ListRow(historyRecordHeader, listRowAdapter));
-            }else{
+            } else {
                 historyListRows.add(new ListRow(listRowAdapter));
             }
         }
     }
 
-    private void runLatestVersionTask(){
+    private void loadBilibiliHistoryRows(List<HistoryRecord> list) {
+        VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
+        HeaderItem headerItem = new HeaderItem(HEAD_TITLE_BILIBILI_HISTORY,
+                getResources().getString(R.string.head_title_video_history));
+        ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
+        listRowAdapter.addAll(0, list);
+        bilibiliVideoHistoryListRow = new ListRow(headerItem, listRowAdapter);
+    }
+
+    private void runLatestVersionTask() {
         RxRequestFactory.githubLatestRelease()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -231,6 +260,27 @@ public class MainFragment extends BrowseSupportFragment {
                 }, throwable -> {
                     ToastUtil.showLongToast(getActivity(), throwable.getMessage());
                     Log.e(TAG, "githubLatestRelease error", throwable);
+                }, disposable);
+    }
+
+    private static final String VIDEO_BUSINESS = "archive";
+
+    private void runBilibiliHistoryRequest() {
+        RxRequestFactory.bilibiliHistory()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(historyTable -> {
+                    if (Objects.nonNull(historyTable.getList())) {
+                        List<HistoryRecord> historyRecordList = historyTable.getList().stream()
+                                .filter(h -> VIDEO_BUSINESS.equals(h.getHistory().getBusiness()))
+                                .collect(Collectors.toList());
+                        if (!historyRecordList.isEmpty()) {
+                            loadBilibiliHistoryRows(historyRecordList);
+                            loadRows();
+                        }
+                    }
+                }, throwable -> {
+                    Log.e(TAG, "bilibiliHistory error", throwable);
                 }, disposable);
     }
 
@@ -256,13 +306,13 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void setupUIElements() {
-        setBadgeDrawable(requireActivity().getResources().getDrawable(R.drawable.bilibili_logo, null));
+        Context context = requireContext();
+        setBadgeDrawable(ContextCompat.getDrawable(context, R.drawable.bilibili_logo));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
         // over title
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
-        Context context = requireContext();
         // set fastLane (or headers) background color
         setBrandColor(ContextCompat.getColor(context, R.color.fastlane_background));
     }
@@ -311,25 +361,35 @@ public class MainFragment extends BrowseSupportFragment {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
-
+            FragmentActivity activity = requireActivity();
             if (item instanceof LiveRoom) {
-                FragmentActivity activity = requireActivity();
                 LiveRoom liveRoom = (LiveRoom) item;
                 Log.d(TAG, "roomId: " + liveRoom.getId());
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsActivity.LIVE_ROOM, liveRoom);
+                Intent intent = new Intent(getActivity(), LiveRoomDetailsActivity.class);
+                intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, liveRoom);
 
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                        DetailsActivity.SHARED_ELEMENT_NAME)
+                                ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                LiveRoomDetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
-                activity.startActivity(intent, bundle);
-            } else if(item instanceof GithubReleaseTagInfo){
+                startActivity(intent, bundle);
+            } else if (item instanceof HistoryRecord) {
+                HistoryRecord historyRecord = (HistoryRecord) item;
+                Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
+                intent.putExtra(VideoDetailsActivity.VIDEO_BV, historyRecord.getHistory().getBvid());
+                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
+                startActivity(intent);
+            } else if (item instanceof GithubReleaseTagInfo) {
                 jumpToUrl(getString(R.string.latest_version_download_url));
             } else if (item instanceof String) {
                 String desc = (String) item;
-                if(desc.contains(getString(R.string.clear_history))){
+                if(desc.contains(getString(R.string.bilibili_history_refresh))) {
+                    runBilibiliHistoryRequest();
+                }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                }else if(desc.contains(getString(R.string.clear_history))) {
                     new AlertDialog.Builder(getContext())
                             .setTitle(getString(R.string.clear_history_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> liveRoomViewModel
@@ -353,6 +413,12 @@ public class MainFragment extends BrowseSupportFragment {
                             .show();
                 } else if(desc.contains(getString(R.string.danmaku_test))) {
                     Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
+                    startActivity(intent);
+                } else if(desc.contains(getString(R.string.video_test))) {
+//                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
+//                    startActivity(intent);
+                    Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
+                    intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV1gN4y1K7dx");
                     startActivity(intent);
                 } else {
                     ToastUtil.showLongToast(getActivity(), desc);
