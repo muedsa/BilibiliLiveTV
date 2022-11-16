@@ -5,6 +5,7 @@
 [![GitHub Releases](https://img.shields.io/github/downloads/MUedsa/BilibiliLiveTV/total?logo=github)](https://github.com/MUedsa/BilibiliLiveTV/releases)  
 [Leanback](https://developer.android.google.cn/training/tv/start/start#tv-libraries) + [ExoPlayer](https://github.com/google/ExoPlayer) + [DanmakuFlameMaster](https://github.com/bilibili/DanmakuFlameMaster)
 ## Usage
-![](screenshot/record.webp)
 
 多P视频的视频列表请在视频详情页按↓
+
+![](screenshot/record.webp)
