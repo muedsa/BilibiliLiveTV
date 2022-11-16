@@ -116,7 +116,7 @@ public class MainFragment extends BrowseSupportFragment {
 
         setupEventListeners();
 
-        initRows();
+        //initRows();
     }
 
 
@@ -140,6 +140,7 @@ public class MainFragment extends BrowseSupportFragment {
     @Override
     public void onResume() {
         super.onResume();
+        initRows();
     }
 
     @Override
