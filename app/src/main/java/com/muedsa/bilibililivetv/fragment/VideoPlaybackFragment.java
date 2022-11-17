@@ -2,6 +2,7 @@ package com.muedsa.bilibililivetv.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,7 @@ import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
 public class VideoPlaybackFragment extends VideoSupportFragment {
     private static final String TAG = VideoPlaybackFragment.class.getSimpleName();
 
-    private static final long MAX_VIDEO_DANMAKU_TIME_DIFF = 200; //ms
+    private long lastSyncTime = 0;
 
     private ExoPlayer exoPlayer;
     private PlaybackTransportControlGlue<LeanbackPlayerAdapter> glue;
@@ -175,21 +176,20 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     }
 
     private void checkAllReadyAndStart() {
-        requireActivity().runOnUiThread(() -> {
-            if (Objects.nonNull(exoPlayer)
-                    && Objects.nonNull(danmakuView)
-                    && Player.STATE_READY == exoPlayer.getPlaybackState()
-                    && danmakuView.isPrepared()) {
-                if (!glue.isPlaying()) {
-                    glue.play();
+        long now = System.currentTimeMillis();
+        if(lastSyncTime < now && now - lastSyncTime > 100) {
+            requireActivity().runOnUiThread(() -> {
+                if (Objects.nonNull(exoPlayer)
+                        && Objects.nonNull(danmakuView)
+                        && Player.STATE_READY == exoPlayer.getPlaybackState()
+                        && danmakuView.isPrepared()) {
+                    if (!glue.isPlaying()) {
+                        glue.play();
+                    }
+                    danmakuView.start(exoPlayer.getCurrentPosition());
                 }
-                long danmakuTime = danmakuView.getCurrentTime();
-                long videoTime = exoPlayer.getCurrentPosition();
-                if(Math.abs(videoTime - danmakuTime) > MAX_VIDEO_DANMAKU_TIME_DIFF) {
-                    danmakuView.start(videoTime);
-                }
-            }
-        });
+            });
+        }
     }
 
     @Override

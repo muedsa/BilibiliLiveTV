@@ -76,6 +76,7 @@ public class BilibiliDanmakuParser extends BaseDanmakuParser {
                 }
             }
         }
+        Log.d(TAG, "parse danmaku, count:" + danmakus.size());
         return danmakus;
     }
 }
