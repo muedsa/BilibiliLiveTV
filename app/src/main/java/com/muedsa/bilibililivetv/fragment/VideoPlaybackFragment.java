@@ -178,6 +178,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     private void checkAllReadyAndStart() {
         long now = System.currentTimeMillis();
         if(lastSyncTime < now && now - lastSyncTime > 100) {
+            lastSyncTime = now;
             requireActivity().runOnUiThread(() -> {
                 if (Objects.nonNull(exoPlayer)
                         && Objects.nonNull(danmakuView)
