@@ -1,6 +1,6 @@
 package com.muedsa.httpjsonclient;
 
-public class Container {
+public class HttpClientContainer {
     public static final String HEADER_KEY_USER_AGENT = "User-Agent";
     public static final String HEADER_KEY_COOKIE = "Cookie";
     public static final String HEADER_KEY_ACCEPT_ENCODING = "Accept-Encoding";
@@ -17,8 +17,4 @@ public class Container {
     public static final String HEADER_VALUE_PART_ENCODING_GZIP = "gzip";
     public static final String HEADER_VALUE_PART_ENCODING_PACK200_GZIP = "pack200-gzip";
     public static final String HEADER_VALUE_PART_ENCODING_ZSTD = "zstd";
-
-    public static final String COOKIE_KEY_BUVID3 = "buvid3";
-    public static final String COOKIE_VALUE_BUVID3 = "undefined";
-    public static final String COOKIE_KEY_SESSDATA = "SESSDATA";
 }

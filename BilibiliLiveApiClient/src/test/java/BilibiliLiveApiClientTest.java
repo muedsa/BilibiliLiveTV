@@ -32,7 +32,7 @@ import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.util.ApiUtil;
-import com.muedsa.httpjsonclient.Container;
+import com.muedsa.httpjsonclient.HttpClientContainer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -232,7 +232,7 @@ public class BilibiliLiveApiClientTest {
                     && loginResponse.getStatus()) {
                 logger.info("登录成功!");
                 String sessData = getSessData(loginResponse.getData().getUrl());
-                client.putCookie(Container.COOKIE_KEY_SESSDATA, sessData);
+                client.putCookie(HttpClientContainer.COOKIE_KEY_SESSDATA, sessData);
                 getVideDetailTest();
                 break;
             }

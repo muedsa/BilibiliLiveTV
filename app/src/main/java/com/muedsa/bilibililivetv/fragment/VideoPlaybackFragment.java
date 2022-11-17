@@ -2,7 +2,6 @@ package com.muedsa.bilibililivetv.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +33,7 @@ import com.muedsa.bilibililivetv.model.VideoPlayInfo;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
 import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.util.ToastUtil;
-import com.muedsa.httpjsonclient.Container;
+import com.muedsa.httpjsonclient.HttpClientContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -156,9 +155,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         glue.setTitle(videoPlayInfo.getTitle());
         glue.setSubtitle(videoPlayInfo.getSubTitle());
         Map<String, String> headers = new HashMap<>();
-        headers.put(Container.HEADER_KEY_COOKIE, BilibiliLiveApi.client().getCookies());
-        headers.put(Container.HEADER_KEY_USER_AGENT, Container.HEADER_VALUE_USER_AGENT);
-        headers.put(Container.HEADER_KEY_REFERER, videoPlayInfo.getReferer());
+        headers.put(HttpClientContainer.HEADER_KEY_COOKIE, BilibiliLiveApi.client().getCookies());
+        headers.put(HttpClientContainer.HEADER_KEY_USER_AGENT, HttpClientContainer.HEADER_VALUE_USER_AGENT);
+        headers.put(HttpClientContainer.HEADER_KEY_REFERER, videoPlayInfo.getReferer());
         DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory().setDefaultRequestProperties(headers);
         MediaSource videoMediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(MediaItem.fromUri(videoPlayInfo.getVideoUrl()));

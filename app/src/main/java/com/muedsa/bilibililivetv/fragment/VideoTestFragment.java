@@ -26,7 +26,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.muedsa.bilibililivetv.util.ToastUtil;
-import com.muedsa.httpjsonclient.Container;
+import com.muedsa.httpjsonclient.HttpClientContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,8 +65,8 @@ public class VideoTestFragment extends VideoSupportFragment {
         playbackTransportControlGlue.setTitle("TEST");
         playbackTransportControlGlue.setSubtitle("test 233");
         Map<String, String> headers = new HashMap<>();
-        headers.put(Container.HEADER_KEY_COOKIE, "");
-        headers.put(Container.HEADER_KEY_USER_AGENT, Container.HEADER_VALUE_USER_AGENT);
+        headers.put(HttpClientContainer.HEADER_KEY_COOKIE, "");
+        headers.put(HttpClientContainer.HEADER_KEY_USER_AGENT, HttpClientContainer.HEADER_VALUE_USER_AGENT);
         headers.put("referer", "https://www.bilibili.com/video/BV19e411K7LG");
         DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory()
                 .setDefaultRequestProperties(headers);
