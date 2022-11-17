@@ -52,6 +52,7 @@ import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
 import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
 import com.muedsa.bilibililivetv.activity.LoginActivity;
 import com.muedsa.bilibililivetv.activity.SearchActivity;
+import com.muedsa.bilibililivetv.activity.SettingsActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
@@ -176,6 +177,7 @@ public class MainFragment extends BrowseSupportFragment {
             ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
             gridRowAdapter.add(resources.getString(R.string.bilibili_history_refresh));
             gridRowAdapter.add(resources.getString(R.string.bilibili_scan_qr_code_login));
+            gridRowAdapter.add(resources.getString(R.string.setting));
             gridRowAdapter.add(resources.getString(R.string.clear_history));
             gridRowAdapter.add(resources.getString(R.string.clear_channel));
             if(BuildConfig.DEBUG){
@@ -376,7 +378,7 @@ public class MainFragment extends BrowseSupportFragment {
                 startActivity(intent, bundle);
             } else if (item instanceof HistoryRecord) {
                 HistoryRecord historyRecord = (HistoryRecord) item;
-                Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
+                Intent intent = new Intent(activity, VideoDetailsActivity.class);
                 intent.putExtra(VideoDetailsActivity.VIDEO_BV, historyRecord.getHistory().getBvid());
                 intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
                 startActivity(intent);
@@ -387,10 +389,13 @@ public class MainFragment extends BrowseSupportFragment {
                 if(desc.contains(getString(R.string.bilibili_history_refresh))) {
                     runBilibiliHistoryRequest();
                 }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    Intent intent = new Intent(activity, LoginActivity.class);
+                    startActivity(intent);
+                }if(desc.contains(getString(R.string.setting))) {
+                    Intent intent = new Intent(activity, SettingsActivity.class);
                     startActivity(intent);
                 }else if(desc.contains(getString(R.string.clear_history))) {
-                    new AlertDialog.Builder(getContext())
+                    new AlertDialog.Builder(activity)
                             .setTitle(getString(R.string.clear_history_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> liveRoomViewModel
                                     .clear()
@@ -401,7 +406,7 @@ public class MainFragment extends BrowseSupportFragment {
                             .create()
                             .show();
                 }else if(desc.contains(getString(R.string.clear_channel))){
-                    new AlertDialog.Builder(getContext())
+                    new AlertDialog.Builder(activity)
                             .setTitle(getString(R.string.clear_channel_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) ->
                                     Completable.create(emitter -> {
@@ -412,16 +417,16 @@ public class MainFragment extends BrowseSupportFragment {
                             .create()
                             .show();
                 } else if(desc.contains(getString(R.string.danmaku_test))) {
-                    Intent intent = new Intent(getActivity(), DanmakuTestActivity.class);
+                    Intent intent = new Intent(activity, DanmakuTestActivity.class);
                     startActivity(intent);
                 } else if(desc.contains(getString(R.string.video_test))) {
 //                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
 //                    startActivity(intent);
-                    Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
-                    intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV1gN4y1K7dx");
+                    Intent intent = new Intent(activity, VideoDetailsActivity.class);
+                    intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV1WY411Z7Cj");
                     startActivity(intent);
                 } else {
-                    ToastUtil.showLongToast(getActivity(), desc);
+                    ToastUtil.showLongToast(activity, desc);
                 }
             }
         }

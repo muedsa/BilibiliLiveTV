@@ -1,7 +1,5 @@
 package com.muedsa.bilibililivetv.fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Insets;
@@ -34,15 +32,13 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
-import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
-import com.muedsa.bilibililivetv.Prefs;
+import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.request.HttpRequestException;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
-import com.muedsa.httpjsonclient.HttpClientContainer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

@@ -1,15 +1,14 @@
 package com.muedsa.bilibililivetv;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.BilibiliApiContainer;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
+import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.room.AppDatabase;
 import com.muedsa.bilibililivetv.util.VersionLegacy;
-import com.muedsa.httpjsonclient.HttpClientContainer;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -17,9 +16,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class App extends Application {
 
     private AppDatabase database;
-
-    public static final String SP_NAME = "BILIBILI_LIVE_TV";
-
     @Override
     public void onCreate() {
         super.onCreate();

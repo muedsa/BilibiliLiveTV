@@ -1,7 +1,9 @@
-package com.muedsa.bilibililivetv;
+package com.muedsa.bilibililivetv.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
 
 import com.muedsa.bilibililiveapiclient.BilibiliApiContainer;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
@@ -11,16 +13,15 @@ import java.util.Objects;
 
 public class Prefs {
     public static DefaultValuePref<String> SESS_DATA = new DefaultValuePref<>(BilibiliApiContainer.COOKIE_KEY_SESSDATA, "");
-    public static DefaultValuePref<Float> DANMAKU_SCALE_TEXT_SIZE = new DefaultValuePref<>("SCALE_TEXT_SIZE", DefaultDanmakuContext.DEFAULT_SCALE_TEXT_SIZE);
-    public static DefaultValuePref<Float> DANMAKU_TRANSPARENCY = new DefaultValuePref<>("DANMAKU_TRANSPARENCY", DefaultDanmakuContext.DEFAULT_DANMAKU_TRANSPARENCY);
-    public static DefaultValuePref<Integer> DANMAKU_MARGIN = new DefaultValuePref<>("DANMAKU_MARGIN",DefaultDanmakuContext.DEFAULT_DANMAKU_MARGIN);
+    public static DefaultValuePref<Integer> DANMAKU_SCALE_TEXT_SIZE = new DefaultValuePref<>("SCALE_TEXT_SIZE", 120);
+    public static DefaultValuePref<Integer> DANMAKU_TRANSPARENCY = new DefaultValuePref<>("DANMAKU_TRANSPARENCY", 85);
+    public static DefaultValuePref<Integer> DANMAKU_MARGIN = new DefaultValuePref<>("DANMAKU_MARGIN", 5);
 
-    public static final String SP_NAME = "BILIBILI_LIVE_TV";
     public static SharedPreferences SHARED_PREFERENCES;
 
     public static synchronized void init(Context context){
         if(Objects.isNull(SHARED_PREFERENCES)){
-            SHARED_PREFERENCES = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+            SHARED_PREFERENCES = PreferenceManager.getDefaultSharedPreferences(context);
         }
     }
 
