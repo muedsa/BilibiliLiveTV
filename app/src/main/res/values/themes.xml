@@ -15,4 +15,11 @@
     <style name="LiveUserImageCardViewStyle" parent="@style/Widget.Leanback.ImageCardViewStyle">
         <item name="lbImageCardViewType">Title</item>
     </style>
+    <style name="LeanbackPreferences" parent="@style/Theme.Leanback">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Leanback</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:colorPrimary">@color/fastlane_background</item>
+    </style>
 </resources>

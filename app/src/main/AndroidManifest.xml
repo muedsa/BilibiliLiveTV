@@ -72,7 +72,8 @@
             android:exported="false" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/LeanbackPreferences"/>
         <activity
             android:name=".activity.DanmakuTestActivity"
             android:exported="false" />

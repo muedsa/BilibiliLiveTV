@@ -24,9 +24,6 @@ public class SettingsFragment extends LeanbackSettingsFragmentCompat  {
                 requireActivity().getClassLoader(), pref.getFragment());
         f.setArguments(args);
         f.setTargetFragment(caller, 0);
-//        getChildFragmentManager().setFragmentResultListener("requestKey", caller, (requestKey, result) -> {
-//
-//        });
         if (f instanceof PreferenceFragmentCompat
                 || f instanceof PreferenceDialogFragmentCompat) {
             startPreferenceFragment(f);
