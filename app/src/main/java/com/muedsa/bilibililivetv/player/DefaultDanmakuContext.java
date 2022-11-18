@@ -1,5 +1,7 @@
 package com.muedsa.bilibililivetv.player;
 
+import com.muedsa.bilibililivetv.preferences.Prefs;
+
 import java.util.HashMap;
 
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
@@ -27,11 +29,11 @@ public class DefaultDanmakuContext {
         danmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3)
                 .setDuplicateMergingEnabled(false)
                 .setScrollSpeedFactor(1.2f)
-                .setScaleTextSize(1.2f)
+                .setScaleTextSize(Prefs.getInt(Prefs.DANMAKU_SCALE_TEXT_SIZE) / 100f)
                 .setMaximumLines(MAX_LINES_PAIR)
                 .preventOverlapping(OVERLAPPING_ENABLE_PAIR)
-                .setDanmakuTransparency(0.85f)
-                .setDanmakuMargin(5);
+                .setDanmakuTransparency(Prefs.getInt(Prefs.DANMAKU_TRANSPARENCY) / 100f)
+                .setDanmakuMargin(Prefs.getInt(Prefs.DANMAKU_MARGIN));
         return danmakuContext;
     }
 }

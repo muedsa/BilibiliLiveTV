@@ -23,7 +23,7 @@ import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.util.ApiUtil;
-import com.muedsa.httpjsonclient.Container;
+import com.muedsa.httpjsonclient.HttpClientContainer;
 import com.muedsa.httpjsonclient.HttpJsonClient;
 
 import java.io.IOException;
@@ -51,9 +51,9 @@ public class BilibiliLiveApiClient {
 
     public BilibiliLiveApiClient(){
         httpJsonClient = new HttpJsonClient();
-        putHeader(Container.HEADER_KEY_USER_AGENT, Container.HEADER_VALUE_USER_AGENT);
-        putHeader(Container.HEADER_KEY_ACCEPT_ENCODING, Container.HEADER_VALUE_PART_ENCODING_IDENTITY);
-        putCookie(Container.COOKIE_KEY_BUVID3, Container.COOKIE_VALUE_BUVID3);
+        putHeader(HttpClientContainer.HEADER_KEY_USER_AGENT, HttpClientContainer.HEADER_VALUE_USER_AGENT);
+        putHeader(HttpClientContainer.HEADER_KEY_ACCEPT_ENCODING, HttpClientContainer.HEADER_VALUE_PART_ENCODING_IDENTITY);
+        putCookie(BilibiliApiContainer.COOKIE_KEY_BUVID3, BilibiliApiContainer.COOKIE_VALUE_BUVID3);
     }
 
     public void putHeader(String k, String v){
@@ -80,11 +80,11 @@ public class BilibiliLiveApiClient {
                     .append(entry.getValue())
                     .append("; ");
         }
-        putHeader(Container.HEADER_KEY_COOKIE, sb.toString());
+        putHeader(HttpClientContainer.HEADER_KEY_COOKIE, sb.toString());
     }
 
     public String getCookies() {
-        return requestHeader.getOrDefault(Container.HEADER_KEY_COOKIE, "");
+        return requestHeader.getOrDefault(HttpClientContainer.HEADER_KEY_COOKIE, "");
     }
 
     public BilibiliResponse<PlayUrlData> getPlayUrlMessage(Long roomId, Qn qn) throws IOException {

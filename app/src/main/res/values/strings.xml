@@ -11,7 +11,6 @@
     <string name="alert_no">取消</string>
     <string name="remove_history_alert">确定删除?</string>
     <string name="error_fragment">Error Fragment</string>
-    <string name="personal_settings">Personal Settings</string>
     <string name="clear_channel">清除首屏节目</string>
     <string name="clear_channel_alert">确定清除首屏节目?</string>
     <string name="watch_trailer_title">播放</string>
@@ -62,4 +61,11 @@
     <string name="bilibili_history_refresh">刷新历史记录</string>
     <string name="logout">注销</string>
     <string name="login_timeout">登录超时，请重新扫码</string>
+    <string name="setting">设置</string>
+    <string name="perf_title_danmaku_scale_text_size">弹幕缩放比例(%)</string>
+    <string name="perf_title_danmaku_transparency">弹幕透明度(%)</string>
+    <string name="perf_title_danmaku_margin">弹幕边距</string>
+    <string name="perf_key_danmaku_scale_text_size">SCALE_TEXT_SIZE</string>
+    <string name="perf_key_danmaku_transparency">DANMAKU_TRANSPARENCY</string>
+    <string name="perf_key_danmaku_margin">DANMAKU_MARGIN</string>
 </resources>

@@ -1,7 +1,5 @@
 package com.muedsa.bilibililivetv.fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Insets;
@@ -34,18 +32,16 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
-import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
+import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.request.HttpRequestException;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
-import com.muedsa.httpjsonclient.Container;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Timer;
@@ -99,9 +95,7 @@ public class LoginFragment extends Fragment {
         }
         button.setOnClickListener(v -> {
             Log.d(TAG, "logout");
-            FragmentActivity fragmentActivity = requireActivity();
-            SharedPreferences sharedPreferences = fragmentActivity.getSharedPreferences(App.SP_NAME, Context.MODE_PRIVATE);
-            sharedPreferences.edit().remove(Container.COOKIE_KEY_SESSDATA).apply();
+            Prefs.remove(Prefs.SESS_DATA);
             BilibiliLiveApi.logout();
             checkLogin();
         });
@@ -207,8 +201,7 @@ public class LoginFragment extends Fragment {
                                     releaseTimer();
                                     listCompositeDisposable.clear();
                                     String sessData = getSessData(loginInfo.getData().getUrl());
-                                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(App.SP_NAME, Context.MODE_PRIVATE);
-                                    sharedPreferences.edit().putString(Container.COOKIE_KEY_SESSDATA, sessData).apply();
+                                    Prefs.putString(Prefs.SESS_DATA, sessData);
                                     BilibiliLiveApi.login(sessData);
                                     checkLogin();
                                 }

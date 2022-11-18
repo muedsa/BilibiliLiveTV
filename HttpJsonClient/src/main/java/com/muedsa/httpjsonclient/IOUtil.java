@@ -11,9 +11,9 @@ public class IOUtil {
 
     public static byte[] convertStreamToByteArray(InputStream inputStream, String coding) throws IOException {
         if (Objects.nonNull(coding)) {
-            if (Container.HEADER_VALUE_PART_ENCODING_IDENTITY.equals(coding)) {
+            if (HttpClientContainer.HEADER_VALUE_PART_ENCODING_IDENTITY.equals(coding)) {
                 return decodeStreamToByteArray(inputStream);
-            } else if (Container.HEADER_VALUE_PART_ENCODING_GZIP.equals(coding)) {
+            } else if (HttpClientContainer.HEADER_VALUE_PART_ENCODING_GZIP.equals(coding)) {
                 return decodeStreamToByteArray(new GZIPInputStream(inputStream));
             } else {
                 throw new IllegalStateException("coding " + coding + " not supported");

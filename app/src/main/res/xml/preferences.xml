@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    app:title="@string/setting">
+    <SeekBarPreference
+        app:key="@string/perf_key_danmaku_scale_text_size"
+        app:title="@string/perf_title_danmaku_scale_text_size"
+        app:useSimpleSummaryProvider="true"
+        app:min="0"
+        android:max="2000"
+        app:seekBarIncrement="5"
+        android:defaultValue="120"/>
+    <SeekBarPreference
+        app:key="@string/perf_key_danmaku_transparency"
+        app:title="@string/perf_title_danmaku_transparency"
+        app:useSimpleSummaryProvider="true"
+        app:min="0"
+        android:max="100"
+        app:seekBarIncrement="1"
+        android:defaultValue="85"/>
+    <SeekBarPreference
+        app:key="@string/perf_key_danmaku_transparency"
+        app:title="@string/perf_title_danmaku_margin"
+        app:useSimpleSummaryProvider="true"
+        app:min="0"
+        android:max="50"
+        app:seekBarIncrement="1"
+        android:defaultValue="5"/>
+</PreferenceScreen>

@@ -4,6 +4,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.muedsa.bilibililiveapiclient.BilibiliApiContainer;
 import com.muedsa.bilibililiveapiclient.BilibiliLiveApiClient;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
@@ -32,7 +33,6 @@ import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.util.ApiUtil;
-import com.muedsa.httpjsonclient.Container;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -232,7 +232,7 @@ public class BilibiliLiveApiClientTest {
                     && loginResponse.getStatus()) {
                 logger.info("登录成功!");
                 String sessData = getSessData(loginResponse.getData().getUrl());
-                client.putCookie(Container.COOKIE_KEY_SESSDATA, sessData);
+                client.putCookie(BilibiliApiContainer.COOKIE_KEY_SESSDATA, sessData);
                 getVideDetailTest();
                 break;
             }
