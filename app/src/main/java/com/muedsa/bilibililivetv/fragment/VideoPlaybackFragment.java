@@ -122,6 +122,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         LeanbackPlayerAdapter playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
         glue = new PlaybackTransportControlGlue<>(context, playerAdapter);
         glue.setHost(videoSupportFragmentGlueHost);
+        glue.setControlsOverlayAutoHideEnabled(true);
         glue.setSeekEnabled(true);
     }
 

@@ -58,6 +58,7 @@ public class ExoPlayerDelegate {
         playerAdapter = new LeanbackPlayerAdapter(activity, exoPlayer, 50);
         playbackTransportControlGlue = new PlaybackTransportControlGlue(activity, playerAdapter);
         playbackTransportControlGlue.setHost(glueHost);
+        playbackTransportControlGlue.setControlsOverlayAutoHideEnabled(true);
         playbackTransportControlGlue.setTitle(liveRoom.getTitle());
         playbackTransportControlGlue.setSubtitle(liveRoom.getUname());
         playbackTransportControlGlue.addPlayerCallback(new PlaybackTransportControlGlue.LiveRoomPlayerCallback() {
