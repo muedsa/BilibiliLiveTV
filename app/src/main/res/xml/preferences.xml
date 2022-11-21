@@ -19,7 +19,7 @@
         app:seekBarIncrement="1"
         android:defaultValue="85"/>
     <SeekBarPreference
-        app:key="@string/perf_key_danmaku_transparency"
+        app:key="@string/perf_key_danmaku_margin"
         app:title="@string/perf_title_danmaku_margin"
         app:useSimpleSummaryProvider="true"
         app:min="0"
