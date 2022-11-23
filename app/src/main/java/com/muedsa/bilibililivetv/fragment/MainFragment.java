@@ -61,6 +61,7 @@ import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
@@ -80,8 +81,8 @@ public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = MainFragment.class.getSimpleName();
 
     private static final int BACKGROUND_UPDATE_DELAY = 300;
-    private static final int GRID_ITEM_WIDTH = 200;
-    private static final int GRID_ITEM_HEIGHT = 200;
+    private static final int GRID_ITEM_WIDTH_DP = 100;
+    private static final int GRID_ITEM_HEIGHT_DP = 100;
     private static final int MAX_NUM_COLS = 8;
     private static final int HEAD_TITLE_HISTORY = 1;
     private static final int HEAD_TITLE_BILIBILI_HISTORY = 2;
@@ -458,7 +459,9 @@ public class MainFragment extends BrowseSupportFragment {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent) {
             TextView view = new TextView(parent.getContext());
-            view.setLayoutParams(new ViewGroup.LayoutParams(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT));
+            int width = DpUtil.convertDpToPixel(parent.getContext(), GRID_ITEM_WIDTH_DP);
+            int height = DpUtil.convertDpToPixel(parent.getContext(), GRID_ITEM_HEIGHT_DP);
+            view.setLayoutParams(new ViewGroup.LayoutParams(width, height));
             view.setFocusable(true);
             view.setFocusableInTouchMode(true);
             view.setBackgroundColor(

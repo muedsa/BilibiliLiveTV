@@ -11,12 +11,14 @@ import androidx.leanback.widget.Presenter;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.DpUtil;
 
 public class LiveRoomPresenter extends AbstractImageCardPresenter {
     private static final String TAG = LiveRoomPresenter.class.getSimpleName();
 
-    private static final int CARD_WIDTH = 313;
-    private static final int CARD_HEIGHT = 176;
+    private static final int CARD_WIDTH_DP = 160;
+    private static final int CARD_HEIGHT_DP = 90;
+
     private Drawable mDefaultCardImage;
 
     private CardLongClickListener cardLongClickListener;
@@ -41,7 +43,9 @@ public class LiveRoomPresenter extends AbstractImageCardPresenter {
         if (liveRoom.getCoverImageUrl() != null) {
             cardView.setTitleText(liveRoom.getTitle());
             cardView.setContentText(liveRoom.getUname());
-            cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
+            int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
+            int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_HEIGHT_DP);
+            cardView.setMainImageDimensions(width, height);
             if(cardLongClickListener != null) {
                 cardView.setOnLongClickListener(v -> {
                     if(cardLongClickListener != null) {

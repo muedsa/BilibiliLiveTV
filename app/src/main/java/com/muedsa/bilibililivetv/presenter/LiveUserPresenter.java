@@ -10,12 +10,12 @@ import androidx.leanback.widget.ImageCardView;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.model.LiveUser;
+import com.muedsa.bilibililivetv.util.DpUtil;
 
 public class LiveUserPresenter extends AbstractImageCardPresenter {
     private static final String TAG = LiveUserPresenter.class.getSimpleName();
 
-    private static final int CARD_WIDTH = 200;
-    private static final int CARD_HEIGHT = 200;
+    private static final int CARD_SIZE_DP = 110;
     private Drawable mDefaultCardImage;
 
     public LiveUserPresenter() {
@@ -37,7 +37,8 @@ public class LiveUserPresenter extends AbstractImageCardPresenter {
         if (liveUser.getUface() != null) {
             cardView.setTitleText(liveUser.getUname());
             cardView.setContentDescription(liveUser.getLiveStatusDesc(cardView.getContext().getResources()));
-            cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
+            int size = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_SIZE_DP);
+            cardView.setMainImageDimensions(size, size);
             GlideApp.with(viewHolder.view.getContext())
                     .load(liveUser.getUface())
                     .centerCrop()

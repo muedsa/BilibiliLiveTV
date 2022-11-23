@@ -11,12 +11,14 @@ import androidx.leanback.widget.Presenter;
 import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
 public class GithubReleasePresenter extends AbstractImageCardPresenter {
     private static final String TAG = GithubReleasePresenter.class.getSimpleName();
 
-    private static final int CARD_SCALE = 2;
+    private static final int CARD_WIDTH_DP = 320;
+
     private Drawable mDefaultCardImage;
 
     public GithubReleasePresenter() {
@@ -38,8 +40,9 @@ public class GithubReleasePresenter extends AbstractImageCardPresenter {
         if (info.getImage() != null) {
             cardView.setTitleText("Latest Version: " + info.getTag());
             cardView.setContentText("Current Version:" + BuildConfig.VERSION_NAME);
-            int width = info.getImageWidth() / CARD_SCALE;
-            int height = info.getImageHeight() / CARD_SCALE;
+            int cardHeightDp = CARD_WIDTH_DP * info.getImageHeight() / info.getImageWidth();
+            int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
+            int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), cardHeightDp);
             cardView.setMainImageDimensions(width, height);
             GlideApp.with(viewHolder.view.getContext())
                     .load(info.getImage())

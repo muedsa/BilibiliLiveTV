@@ -8,4 +8,9 @@ public class DpUtil {
         float density = context.getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
+
+    public static int convertPixelToDp(Context context, int px) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round((float) px / density);
+    }
 }

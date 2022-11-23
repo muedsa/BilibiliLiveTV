@@ -10,13 +10,14 @@ import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoPage;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.util.DpUtil;
 
 import java.util.Objects;
 
 public class VideoCardPresenter extends AbstractImageCardPresenter {
 
-    private static final int CARD_WIDTH = 313;
-    private static final int CARD_HEIGHT = 176;
+    private static final int CARD_WIDTH_DP = 160;
+    private static final int CARD_HEIGHT_DP = 90;
 
     public VideoCardPresenter() {
         super(0);
@@ -47,7 +48,9 @@ public class VideoCardPresenter extends AbstractImageCardPresenter {
             ImageCardView cardView = (ImageCardView) viewHolder.view;
             cardView.setTitleText(title);
             cardView.setContentText(content);
-            cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
+            int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
+            int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_HEIGHT_DP);
+            cardView.setMainImageDimensions(width, height);
             GlideApp.with(viewHolder.view.getContext())
                     .load(url)
                     .centerCrop()
