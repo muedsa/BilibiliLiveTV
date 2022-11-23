@@ -1,11 +1,10 @@
 package com.muedsa.bilibililivetv.player.live;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.leanback.media.PlaybackGlue;
+import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
@@ -14,29 +13,31 @@ import androidx.leanback.widget.PlaybackRowPresenter;
 
 import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.player.DanmakuPlayToggleAction;
+import com.muedsa.bilibililivetv.util.DrawableUtil;
 
 import java.util.List;
 
-public class PlaybackTransportControlGlue extends androidx.leanback.media.PlaybackTransportControlGlue<LeanbackPlayerAdapter> {
+public class BilibiliLivePlaybackTransportControlGlue extends PlaybackTransportControlGlue<LeanbackPlayerAdapter> {
 
     DanmakuPlayToggleAction danmakuPlayToggleAction;
     ChangePlayUrlAction changePlayUrlAction;
     SuperChatToggleAction superChatToggleAction;
     GiftToggleAction giftToggleAction;
 
-    public PlaybackTransportControlGlue(Context context, LeanbackPlayerAdapter impl) {
+    public BilibiliLivePlaybackTransportControlGlue(Context context, LeanbackPlayerAdapter impl) {
         super(context, impl);
     }
 
     @Override
     protected PlaybackRowPresenter onCreateRowPresenter() {
-        PlaybackTransportRowPresenter rowPresenter = new PlaybackTransportRowPresenter(getContext(),
-                PlaybackTransportControlGlue.this);
+        BilibiliLivePlaybackTransportRowPresenter rowPresenter = new BilibiliLivePlaybackTransportRowPresenter(getContext(),
+                BilibiliLivePlaybackTransportControlGlue.this);
         rowPresenter.setDescriptionPresenter(new AbstractDetailsDescriptionPresenter() {
             @Override
             protected void onBindDescription(ViewHolder
                                                      viewHolder, Object obj) {
-                PlaybackTransportControlGlue glue = (PlaybackTransportControlGlue) obj;
+                BilibiliLivePlaybackTransportControlGlue glue = (BilibiliLivePlaybackTransportControlGlue) obj;
                 viewHolder.getTitle().setText(glue.getTitle());
                 viewHolder.getSubtitle().setText(glue.getSubtitle());
             }
@@ -110,30 +111,11 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
     }
 
 
-    static class DanmakuPlayToggleAction extends PlaybackControlsRow.MultiAction {
-
-        public static final int INDEX_ON = 0;
-        public static final int INDEX_OFF = 1;
-
-        public DanmakuPlayToggleAction(Context context) {
-            super(R.id.playback_controls_danmaku_play_toggle);
-            Drawable[] drawables = new Drawable[2];
-            drawables[INDEX_ON] = getWhiteDrawable(context, R.drawable.ic_danmaku_enable);
-            drawables[INDEX_OFF] = getWhiteDrawable(context, R.drawable.ic_danmaku_disable);
-
-            setDrawables(drawables);
-            String[] labels = new String[drawables.length];
-            labels[INDEX_ON] = context.getString(R.string.playback_controls_danmu_play);
-            labels[INDEX_OFF] = context.getString(R.string.playback_controls_danmu_stop);
-            setLabels(labels);
-        }
-    }
-
     static class ChangePlayUrlAction extends Action {
 
         public ChangePlayUrlAction(Context context) {
             super(R.id.playback_controls_change_play_url);
-            setIcon(getWhiteDrawable(context, R.drawable.ic_baseline_swap_horizontal_circle));
+            setIcon(DrawableUtil.getWhiteDrawable(context, R.drawable.ic_baseline_swap_horizontal_circle));
             setLabel1(context.getString(R.string.playback_controls_change_play_url));
         }
     }
@@ -146,8 +128,8 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         public SuperChatToggleAction(Context context) {
             super(R.id.playback_controls_super_chat_toggle);
             Drawable[] drawables = new Drawable[2];
-            drawables[INDEX_ON] = getWhiteDrawable(context, R.drawable.ic_sc_enable);
-            drawables[INDEX_OFF] = getWhiteDrawable(context, R.drawable.ic_sc_disable);
+            drawables[INDEX_ON] = DrawableUtil.getWhiteDrawable(context, R.drawable.ic_sc_enable);
+            drawables[INDEX_OFF] = DrawableUtil.getWhiteDrawable(context, R.drawable.ic_sc_disable);
 
             setDrawables(drawables);
             String[] labels = new String[drawables.length];
@@ -165,8 +147,8 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
         public GiftToggleAction(Context context) {
             super(R.id.playback_controls_super_chat_toggle);
             Drawable[] drawables = new Drawable[2];
-            drawables[INDEX_ON] = getWhiteDrawable(context, R.drawable.ic_gift_enable);
-            drawables[INDEX_OFF] = getWhiteDrawable(context, R.drawable.ic_gift_disable);
+            drawables[INDEX_ON] = DrawableUtil.getWhiteDrawable(context, R.drawable.ic_gift_enable);
+            drawables[INDEX_OFF] = DrawableUtil.getWhiteDrawable(context, R.drawable.ic_gift_disable);
 
             setDrawables(drawables);
             String[] labels = new String[drawables.length];
@@ -174,13 +156,6 @@ public class PlaybackTransportControlGlue extends androidx.leanback.media.Playba
             labels[INDEX_OFF] = context.getString(R.string.playback_controls_gift_stop);
             setLabels(labels);
         }
-    }
-
-    static Drawable getWhiteDrawable(Context context, int drawableId) {
-        Drawable drawable = context.getDrawable(drawableId);
-        Drawable whiteDrawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(whiteDrawable, Color.WHITE);
-        return whiteDrawable;
     }
 
     public abstract static class LiveRoomPlayerCallback extends PlayerCallback {

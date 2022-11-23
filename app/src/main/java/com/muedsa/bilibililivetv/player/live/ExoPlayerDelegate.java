@@ -25,7 +25,7 @@ public class ExoPlayerDelegate {
     private final LiveStreamPlaybackFragment fragment;
     private final LiveRoom liveRoom;
 
-    private PlaybackTransportControlGlue playbackTransportControlGlue;
+    private BilibiliLivePlaybackTransportControlGlue glue;
     private LeanbackPlayerAdapter playerAdapter;
     private ExoPlayer exoPlayer;
     private List<MediaItem> mediaItemList;
@@ -56,12 +56,12 @@ public class ExoPlayerDelegate {
             }
         });
         playerAdapter = new LeanbackPlayerAdapter(activity, exoPlayer, 50);
-        playbackTransportControlGlue = new PlaybackTransportControlGlue(activity, playerAdapter);
-        playbackTransportControlGlue.setHost(glueHost);
-        playbackTransportControlGlue.setControlsOverlayAutoHideEnabled(true);
-        playbackTransportControlGlue.setTitle(liveRoom.getTitle());
-        playbackTransportControlGlue.setSubtitle(liveRoom.getUname());
-        playbackTransportControlGlue.addPlayerCallback(new PlaybackTransportControlGlue.LiveRoomPlayerCallback() {
+        glue = new BilibiliLivePlaybackTransportControlGlue(activity, playerAdapter);
+        glue.setHost(glueHost);
+        glue.setControlsOverlayAutoHideEnabled(true);
+        glue.setTitle(liveRoom.getTitle());
+        glue.setSubtitle(liveRoom.getUname());
+        glue.addPlayerCallback(new BilibiliLivePlaybackTransportControlGlue.LiveRoomPlayerCallback() {
             @Override
             public void onPlayStateChanged(PlaybackGlue glue) {
                 super.onPlayStateChanged(glue);
@@ -116,7 +116,7 @@ public class ExoPlayerDelegate {
         if(mediaItemList.size() > 0){
             exoPlayer.setMediaItems(mediaItemList);
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-            playbackTransportControlGlue.play();
+            glue.play();
         }else{
             ToastUtil.showLongToast(activity, activity.getString(R.string.live_play_failure));
         }
@@ -124,23 +124,23 @@ public class ExoPlayerDelegate {
 
     public boolean isPlaying(){
         boolean flag = false;
-        if(playbackTransportControlGlue != null){
-            flag = playbackTransportControlGlue.isPlaying();
+        if(glue != null){
+            flag = glue.isPlaying();
         }
         return flag;
     }
 
     public void pause(){
-        if (playbackTransportControlGlue != null && playbackTransportControlGlue.isPlaying()) {
-            playbackTransportControlGlue.pause();
+        if (glue != null && glue.isPlaying()) {
+            glue.pause();
         }
     }
 
     public void resume(){
-        if(playbackTransportControlGlue != null){
-            if(playbackTransportControlGlue.isPrepared()
-                    && !playbackTransportControlGlue.isPlaying()){
-                playbackTransportControlGlue.play();
+        if(glue != null){
+            if(glue.isPrepared()
+                    && !glue.isPlaying()){
+                glue.play();
             }
         }else{
             init();
@@ -152,7 +152,7 @@ public class ExoPlayerDelegate {
             exoPlayer.release();
             exoPlayer = null;
             playerAdapter = null;
-            playbackTransportControlGlue = null;
+            glue = null;
         }
     }
 
