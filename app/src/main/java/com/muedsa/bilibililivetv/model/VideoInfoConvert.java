@@ -47,6 +47,12 @@ public class VideoInfoConvert {
             videoPlayInfo.setVideoUrl(video.getBaseUrl());
             videoPlayInfo.setAudioUrl(audioOption.get().getBaseUrl());
             videoPlayInfo.setReferer(url);
+            if(Objects.nonNull(videoInfo.getVideoData().getSubtitle())
+                    && Objects.nonNull(videoInfo.getVideoData().getSubtitle().getList())){
+                videoPlayInfo.setSubtitleList(videoInfo.getVideoData().getSubtitle().getList());
+            }else{
+                videoPlayInfo.setSubtitleList(Collections.emptyList());
+            }
             return videoPlayInfo;
         }).collect(Collectors.toList());
     }

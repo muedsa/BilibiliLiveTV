@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.leanback.widget.PlaybackTransportRowPresenter;
 import androidx.leanback.widget.RowPresenter;
 
 import java.text.SimpleDateFormat;
@@ -11,12 +12,12 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class PlaybackTransportRowPresenter extends androidx.leanback.widget.PlaybackTransportRowPresenter {
+public class BilibiliLivePlaybackTransportRowPresenter extends PlaybackTransportRowPresenter {
     private final Context context;
     private final View.OnKeyListener keyListener;
     private Timer timer;
 
-    public PlaybackTransportRowPresenter(Context context, View.OnKeyListener keyListener) {
+    public BilibiliLivePlaybackTransportRowPresenter(Context context, View.OnKeyListener keyListener) {
         this.context = context;
         this.keyListener = keyListener;
     }
@@ -25,7 +26,7 @@ public class PlaybackTransportRowPresenter extends androidx.leanback.widget.Play
     protected void onBindRowViewHolder(RowPresenter.ViewHolder vh, Object item) {
         super.onBindRowViewHolder(vh, item);
         vh.setOnKeyListener(keyListener);
-        androidx.leanback.widget.PlaybackTransportRowPresenter.ViewHolder mvh = (androidx.leanback.widget.PlaybackTransportRowPresenter.ViewHolder) vh;
+        PlaybackTransportRowPresenter.ViewHolder mvh = (PlaybackTransportRowPresenter.ViewHolder) vh;
         TextView durationView = mvh.getDurationView();
         if(timer == null) {
             timer = new Timer();

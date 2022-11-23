@@ -2,7 +2,9 @@ package com.muedsa.bilibililiveapiclient.model.video;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
-public class VideoSubtitle {
+import java.io.Serializable;
+
+public class VideoSubtitle implements Serializable {
 
     @JSONField(name = "id")
     private Long id;

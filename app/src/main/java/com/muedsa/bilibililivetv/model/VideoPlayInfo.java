@@ -1,6 +1,9 @@
 package com.muedsa.bilibililivetv.model;
 
+import com.muedsa.bilibililiveapiclient.model.video.VideoSubtitle;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class VideoPlayInfo implements Serializable {
 
@@ -18,6 +21,8 @@ public class VideoPlayInfo implements Serializable {
     private String audioUrl;
 
     private String referer;
+
+    private List<VideoSubtitle> subtitleList;
 
     public String getBv() {
         return bv;
@@ -97,5 +102,13 @@ public class VideoPlayInfo implements Serializable {
 
     public void setReferer(String referer) {
         this.referer = referer;
+    }
+
+    public List<VideoSubtitle> getSubtitleList() {
+        return subtitleList;
+    }
+
+    public void setSubtitleList(List<VideoSubtitle> subtitleList) {
+        this.subtitleList = subtitleList;
     }
 }

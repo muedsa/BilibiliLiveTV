@@ -51,6 +51,7 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer-hls:$exoplayer_version"
     //implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-leanback:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
 
     implementation project(path: ':repository:DanmakuFlameMaster')
     implementation 'com.github.ctiao:ndkbitmap-armv7a:0.9.24'
