@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
-import androidx.leanback.media.PlaybackGlue;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -139,6 +138,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                         danmakuView.pause();
                     }
                 } else if (Player.STATE_READY == playbackState) {
+                    ToastUtil.debug(() -> requireContext(), "exoplayer ready");
                     checkAllReadyAndStart();
                 }
             }
@@ -194,6 +194,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
             @Override
             public void prepared() {
                 Log.d(TAG, "danmakuView prepared");
+                ToastUtil.debug(() -> requireContext(), "danmaku ready");
                 checkAllReadyAndStart();
             }
 

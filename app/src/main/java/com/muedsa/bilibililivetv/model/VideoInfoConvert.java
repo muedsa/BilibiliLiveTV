@@ -20,7 +20,7 @@ public class VideoInfoConvert {
 
     public static Map<Integer, String> buildQualityDescription(PlayInfo playInfo) {
         return playInfo.getSupportFormats().stream()
-                .collect(Collectors.toMap(SupportFormat::getQuality, SupportFormat::getDisplayDesc));
+                .collect(Collectors.toMap(SupportFormat::getQuality, SupportFormat::getNewDescription));
 
     }
 
@@ -43,7 +43,7 @@ public class VideoInfoConvert {
             videoPlayInfo.setSubTitle(Objects.nonNull(videoInfo.getVideoData().getOwner()) ? videoInfo.getVideoData().getOwner().getName() : "");
             videoPlayInfo.setQuality(video.getId());
             videoPlayInfo.setQualityDescription(qualityMap.getOrDefault(video.getId(), ""));
-            videoPlayInfo.setCodecs(video.getCodecs());
+            videoPlayInfo.setCodecs(video.getCodecs().split("\\.")[0]);
             videoPlayInfo.setVideoUrl(video.getBaseUrl());
             videoPlayInfo.setAudioUrl(audioOption.get().getBaseUrl());
             videoPlayInfo.setReferer(url);

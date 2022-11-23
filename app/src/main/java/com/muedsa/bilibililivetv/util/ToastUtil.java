@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 
 import com.muedsa.bilibililivetv.BuildConfig;
 
+import java.util.function.Supplier;
+
 public class ToastUtil {
     private final static String TAG = ToastUtil.class.getSimpleName();
 
@@ -43,4 +45,15 @@ public class ToastUtil {
         return context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed();
     }
 
+    public static void debug(Supplier<Context> contextSupplier, CharSequence text) {
+        if(BuildConfig.DEBUG){
+            showLongToast(contextSupplier.get(), text);
+        }
+    }
+
+    public static void debug(Supplier<Context> contextSupplier, Supplier<CharSequence> textSupplier) {
+        if(BuildConfig.DEBUG){
+            showLongToast(contextSupplier.get(), textSupplier.get());
+        }
+    }
 }
