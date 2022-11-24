@@ -370,7 +370,6 @@ public class MainFragment extends BrowseSupportFragment {
                 Log.d(TAG, "roomId: " + liveRoom.getId());
                 Intent intent = new Intent(getActivity(), LiveRoomDetailsActivity.class);
                 intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, liveRoom);
-
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
                                 ((ImageCardView) itemViewHolder.view).getMainImageView(),
@@ -382,7 +381,12 @@ public class MainFragment extends BrowseSupportFragment {
                 Intent intent = new Intent(activity, VideoDetailsActivity.class);
                 intent.putExtra(VideoDetailsActivity.VIDEO_BV, historyRecord.getHistory().getBvid());
                 intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
-                startActivity(intent);
+                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                activity,
+                                ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                VideoDetailsActivity.SHARED_ELEMENT_NAME)
+                        .toBundle();
+                startActivity(intent, bundle);
             } else if (item instanceof GithubReleaseTagInfo) {
                 jumpToUrl(getString(R.string.latest_version_download_url));
             } else if (item instanceof String) {
@@ -442,6 +446,9 @@ public class MainFragment extends BrowseSupportFragment {
                 Row row) {
             if (item instanceof LiveRoom) {
                 mBackgroundUri = ((LiveRoom) item).getBackgroundImageUrl();
+                startBackgroundTimer();
+            }else if(item instanceof HistoryRecord){
+                mBackgroundUri = ((HistoryRecord) item).getCover();
                 startBackgroundTimer();
             }
         }
