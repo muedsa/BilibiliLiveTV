@@ -2,7 +2,7 @@ package com.muedsa.bilibililiveapiclient.model.search;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
-public class SearchAggregation {
+public class SearchAggregation<T> {
 
     @JSONField(name = "seid")
     private String seId;
@@ -29,7 +29,7 @@ public class SearchAggregation {
     private PageInfoAggregation pageInfo;
 
     @JSONField(name = "result")
-    private SearchResult result;
+    private T result;
 
     @JSONField(name = "show_column")
     private Integer showColumn;
@@ -104,11 +104,11 @@ public class SearchAggregation {
         this.pageInfo = pageInfo;
     }
 
-    public SearchResult getResult() {
+    public T getResult() {
         return result;
     }
 
-    public void setResult(SearchResult result) {
+    public void setResult(T result) {
         this.result = result;
     }
 

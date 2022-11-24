@@ -57,7 +57,7 @@ import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
 import com.muedsa.bilibililivetv.presenter.GithubReleasePresenter;
-import com.muedsa.bilibililivetv.presenter.LiveRoomPresenter;
+import com.muedsa.bilibililivetv.presenter.LiveRoomCardPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
@@ -99,7 +99,7 @@ public class MainFragment extends BrowseSupportFragment {
 
     private LiveRoomViewModel liveRoomViewModel;
     private final CompositeDisposable disposable = new CompositeDisposable();
-    private LiveRoomPresenter.CardLongClickListener liveRoomCardLongClickListener;
+    private LiveRoomCardPresenter.CardLongClickListener liveRoomCardLongClickListener;
 
 
     private List<ListRow> historyListRows;
@@ -211,7 +211,7 @@ public class MainFragment extends BrowseSupportFragment {
                     .create()
                     .show();
         }
-        LiveRoomPresenter liveRoomPresenter = new LiveRoomPresenter(liveRoomCardLongClickListener);
+        LiveRoomCardPresenter liveRoomCardPresenter = new LiveRoomCardPresenter(liveRoomCardLongClickListener);
 
         HeaderItem historyRecordHeader = new HeaderItem(HEAD_TITLE_HISTORY,
                 getResources().getString(R.string.head_title_history));
@@ -222,7 +222,7 @@ public class MainFragment extends BrowseSupportFragment {
         }
         historyListRows = new ArrayList<>(row);
         for(int rowIndex = 0; rowIndex < row; rowIndex++){
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(liveRoomPresenter);
+            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(liveRoomCardPresenter);
             int max_num_cols = MAX_NUM_COLS;
             if(mod > 0 && rowIndex == row - 1){
                 max_num_cols = mod;

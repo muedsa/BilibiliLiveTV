@@ -3,7 +3,7 @@ package com.muedsa.bilibililivetv.model;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.live.RoomInfo;
-import com.muedsa.bilibililiveapiclient.util.ApiUtil;
+import com.muedsa.bilibililiveapiclient.model.search.SearchLiveRoom;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
 import java.util.Objects;
@@ -64,33 +64,13 @@ public final class LiveRoomConvert {
         }
     }
 
-    public static void updateRoomInfo(LiveRoom liveRoom, com.muedsa.bilibililiveapiclient.model.search.LiveRoom searchLiveRoom){
-        liveRoom.setId(searchLiveRoom.getRoomId());
-        liveRoom.setShortId(searchLiveRoom.getShortId());
-        liveRoom.setTitle(ApiUtil.removeSearchHighlight(searchLiveRoom.getTitle()));
-
-        if(!Strings.isNullOrEmpty(searchLiveRoom.getCover())){
-            liveRoom.setSystemCoverImageUrl(searchLiveRoom.getCover());
-        }
-
+    public static String getImageUrl(SearchLiveRoom searchLiveRoom) {
+        String url = null;
         if(!Strings.isNullOrEmpty(searchLiveRoom.getUserCover())){
-            liveRoom.setCoverImageUrl(searchLiveRoom.getUserCover());
-        }else if(Strings.isNullOrEmpty(liveRoom.getCoverImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())){
-            liveRoom.setCoverImageUrl(liveRoom.getSystemCoverImageUrl());
+            url = searchLiveRoom.getUserCover();
+        }else if(!Strings.isNullOrEmpty(searchLiveRoom.getCover())){
+            url = searchLiveRoom.getUserCover();
         }
-
-        if(!Strings.isNullOrEmpty(searchLiveRoom.getUserCover())){
-            liveRoom.setBackgroundImageUrl(searchLiveRoom.getUserCover());
-        }else if(Strings.isNullOrEmpty(liveRoom.getBackgroundImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())){
-            liveRoom.setBackgroundImageUrl((liveRoom.getSystemCoverImageUrl()));
-        }
-
-        if(!Objects.isNull(searchLiveRoom.getLiveStatus())){
-            liveRoom.setLiveStatus(searchLiveRoom.getLiveStatus());
-        }
-
-        if(!Strings.isNullOrEmpty(searchLiveRoom.getUname())) {
-            liveRoom.setUname(ApiUtil.removeSearchHighlight(searchLiveRoom.getUname()));
-        }
+        return url;
     }
 }

@@ -15,6 +15,10 @@ public class ApiUrlContainer {
 
     public static String SEARCH_LIVE = "https://api.bilibili.com/x/web-interface/search/type?page=%d&page_size=%d&order=online&platform=android&keyword=%s&search_type=live";
 
+    public static String SEARCH_VIDEO = "https://api.bilibili.com/x/web-interface/search/type?page=%d&page_size=%d&order=online&platform=android&keyword=%s&search_type=video";
+
+    public static String SEARCH_ALL = "https://api.bilibili.com/x/web-interface/search/all?page=%d&page_size=%d&order=online&platform=android&keyword=%s";
+
     public static String USER_NAV = "https://api.bilibili.com/x/web-interface/nav";
 
     public static String GET_LOGIN_URL = "http://passport.bilibili.com/qrcode/getLoginUrl";

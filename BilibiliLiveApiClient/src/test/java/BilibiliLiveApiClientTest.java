@@ -26,6 +26,8 @@ import com.muedsa.bilibililiveapiclient.model.live.RoomInfo;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
+import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
+import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDash;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDashInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
@@ -134,11 +136,11 @@ public class BilibiliLiveApiClientTest {
 
     @Test
     public void searchLive() throws IOException {
-        BilibiliResponse<SearchAggregation> response = client.searchLive("1000", 1, 10);
+        BilibiliResponse<SearchAggregation<SearchResult>> response = client.searchLive("1000", 1, 10);
         Assertions.assertEquals(0L, response.getCode());
-        SearchAggregation searchAggregation = response.getData();
+        SearchAggregation<SearchResult> searchAggregation = response.getData();
         Assertions.assertNotNull(searchAggregation);
-        if(searchAggregation.getResult().getLiveRoom() != null){
+        if(searchAggregation.getResult() != null){
             logger.info("liveRoom search result:");
             searchAggregation.getResult().getLiveRoom().forEach(liveRoom -> {
                 String message = String.format("roomId:%d, title:%s", liveRoom.getRoomId(), ApiUtil.removeSearchHighlight(liveRoom.getTitle()));
@@ -149,6 +151,22 @@ public class BilibiliLiveApiClientTest {
             logger.info("liveUser search result:");
             searchAggregation.getResult().getLiveUser().forEach(liveUser -> {
                 String message = String.format("roomId:%d, uname:%s", liveUser.getRoomId(),  ApiUtil.removeSearchHighlight(liveUser.getUname()));
+                logger.info(message);
+            });
+        }
+    }
+
+    @Test
+    public void searchVideo() throws IOException {
+        BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = client.searchVideo("原神", 1, 10);
+        Assertions.assertEquals(0L, response.getCode(), response::getMessage);
+        SearchAggregation<List<SearchVideoInfo>> searchAggregation = response.getData();
+        Assertions.assertNotNull(searchAggregation);
+        List<SearchVideoInfo> videoInfoList = searchAggregation.getResult();
+        if(Objects.nonNull(videoInfoList)){
+            logger.info("video search result:");
+            videoInfoList.forEach(video -> {
+                String message = String.format("BV:%s, title:%s, author:%s", video.getBvId(), ApiUtil.removeSearchHighlight(video.getTitle()), ApiUtil.removeSearchHighlight(video.getAuthor()));
                 logger.info(message);
             });
         }

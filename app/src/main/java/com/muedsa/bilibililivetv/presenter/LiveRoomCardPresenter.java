@@ -5,16 +5,20 @@ import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 
+import com.google.common.base.Strings;
+import com.muedsa.bilibililiveapiclient.model.search.SearchLiveRoom;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.DpUtil;
 
-public class LiveRoomPresenter extends AbstractImageCardPresenter {
-    private static final String TAG = LiveRoomPresenter.class.getSimpleName();
+public class LiveRoomCardPresenter extends AbstractImageCardPresenter {
+    private static final String TAG = LiveRoomCardPresenter.class.getSimpleName();
 
     private static final int CARD_WIDTH_DP = 160;
     private static final int CARD_HEIGHT_DP = 90;
@@ -23,7 +27,7 @@ public class LiveRoomPresenter extends AbstractImageCardPresenter {
 
     private CardLongClickListener cardLongClickListener;
 
-    public LiveRoomPresenter(CardLongClickListener cardLongClickListener) {
+    public LiveRoomCardPresenter(CardLongClickListener cardLongClickListener) {
         super(0);
         this.cardLongClickListener = cardLongClickListener;
     }
@@ -38,24 +42,37 @@ public class LiveRoomPresenter extends AbstractImageCardPresenter {
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
         Log.d(TAG, "onBindViewHolder");
-        LiveRoom liveRoom = (LiveRoom) item;
-        ImageCardView cardView = (ImageCardView) viewHolder.view;
-        if (liveRoom.getCoverImageUrl() != null) {
-            cardView.setTitleText(liveRoom.getTitle());
-            cardView.setContentText(liveRoom.getUname());
+        CharSequence title = "";
+        CharSequence content = "";
+        String url = null;
+        if(item instanceof LiveRoom){
+            LiveRoom liveRoom = (LiveRoom) item;
+            title = liveRoom.getTitle();
+            content = liveRoom.getUname();
+            url = liveRoom.getCoverImageUrl();
+        }else if(item instanceof SearchLiveRoom) {
+            SearchLiveRoom searchLiveRoom = (SearchLiveRoom) item;
+            title = HtmlCompat.fromHtml(searchLiveRoom.getTitle(), HtmlCompat.FROM_HTML_MODE_COMPACT);
+            content = HtmlCompat.fromHtml(searchLiveRoom.getUname(), HtmlCompat.FROM_HTML_MODE_COMPACT);
+            url = LiveRoomConvert.getImageUrl(searchLiveRoom);
+        }
+        if (!Strings.isNullOrEmpty(url)) {
+            ImageCardView cardView = (ImageCardView) viewHolder.view;
+            cardView.setTitleText(title);
+            cardView.setContentText(content);
             int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
             int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_HEIGHT_DP);
             cardView.setMainImageDimensions(width, height);
-            if(cardLongClickListener != null) {
+            if(cardLongClickListener != null && item instanceof LiveRoom) {
                 cardView.setOnLongClickListener(v -> {
                     if(cardLongClickListener != null) {
-                        cardLongClickListener.onLongClick(liveRoom);
+                        cardLongClickListener.onLongClick((LiveRoom) item);
                     }
                     return true;
                 });
             }
             GlideApp.with(viewHolder.view.getContext())
-                    .load(liveRoom.getCoverImageUrl())
+                    .load(url)
                     .centerCrop()
                     .error(mDefaultCardImage)
                     .into(cardView.getMainImageView());

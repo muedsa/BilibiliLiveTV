@@ -45,6 +45,7 @@
     <string name="head_title_latest_version">最新版本</string>
     <string name="head_title_search_result_live_user">主播</string>
     <string name="head_title_search_result_live_room">直播间</string>
+    <string name="head_title_search_result_video">视频</string>
     <string name="total_msg_change_play_url">切换到线路%d</string>
     <string name="toast_msg_danmu_connect_success">连接到弹幕服务器</string>
     <string name="toast_msg_danmu_connect_error">弹幕服务器连接关闭: %s</string>

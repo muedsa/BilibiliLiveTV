@@ -2,10 +2,12 @@ package com.muedsa.bilibililivetv.presenter;
 
 
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.ImageCardView;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
+import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoPage;
 import com.muedsa.bilibililivetv.GlideApp;
@@ -25,8 +27,8 @@ public class VideoCardPresenter extends AbstractImageCardPresenter {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-        String title = "";
-        String content = "";
+        CharSequence title = "";
+        CharSequence content = "";
         String url = "";
         if (item instanceof VideoData) {
             VideoData videoData = (VideoData) item;
@@ -43,6 +45,11 @@ public class VideoCardPresenter extends AbstractImageCardPresenter {
             title = historyRecord.getTitle();
             content = historyRecord.getAuthorName();
             url = historyRecord.getCover();
+        } else if (item instanceof SearchVideoInfo) {
+            SearchVideoInfo searchVideoInfo = (SearchVideoInfo) item;
+            title = HtmlCompat.fromHtml(searchVideoInfo.getTitle(), HtmlCompat.FROM_HTML_MODE_COMPACT);
+            content = HtmlCompat.fromHtml(searchVideoInfo.getAuthor(), HtmlCompat.FROM_HTML_MODE_COMPACT);
+            url = searchVideoInfo.getPic();
         }
         if (!Strings.isNullOrEmpty(url)) {
             ImageCardView cardView = (ImageCardView) viewHolder.view;

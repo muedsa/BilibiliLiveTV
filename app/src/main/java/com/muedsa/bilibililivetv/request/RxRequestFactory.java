@@ -14,6 +14,7 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
+import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.container.GithubApi;
@@ -21,6 +22,7 @@ import com.muedsa.github.model.BaseResponse;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -36,8 +38,15 @@ public class RxRequestFactory {
 
     public static Single<SearchResult> bilibiliSearchLive(String query) {
         return Single.create(emitter -> {
-            BilibiliResponse<SearchAggregation> response = BilibiliLiveApi.client().searchLive(query, 1, 10);
-            handleResponse(response, emitter, SearchAggregation::getResult, "BilibiliDanmuToken", true, null);
+            BilibiliResponse<SearchAggregation<SearchResult>> response = BilibiliLiveApi.client().searchLive(query, 1, 10);
+            handleResponse(response, emitter, SearchAggregation::getResult, "BilibiliSearchLive", true, null);
+        });
+    }
+
+    public static Single<List<SearchVideoInfo>> bilibiliSearchVideo(String query) {
+        return Single.create(emitter -> {
+            BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = BilibiliLiveApi.client().searchVideo(query, 1, 10);
+            handleResponse(response, emitter, SearchAggregation::getResult, "BilibiliSearchVideo", true, null);
         });
     }
 

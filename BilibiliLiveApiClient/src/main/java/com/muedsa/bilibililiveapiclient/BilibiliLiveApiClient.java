@@ -19,6 +19,8 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginInfo;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
+import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
+import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
@@ -109,9 +111,14 @@ public class BilibiliLiveApiClient {
         return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<DanmakuInfo>>(){}, requestHeader);
     }
 
-    public BilibiliResponse<SearchAggregation> searchLive(String keyword, int page, int pageSize) throws IOException {
+    public BilibiliResponse<SearchAggregation<SearchResult>> searchLive(String keyword, int page, int pageSize) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.SEARCH_LIVE, page, pageSize, keyword);
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation<SearchResult>>>(){}, requestHeader);
+    }
+
+    public BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> searchVideo(String keyword, int page, int pageSize) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.SEARCH_VIDEO, page, pageSize, keyword);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>>>(){}, requestHeader);
     }
 
     public BilibiliResponse<LoginUrl> getLoginUrl() throws IOException {

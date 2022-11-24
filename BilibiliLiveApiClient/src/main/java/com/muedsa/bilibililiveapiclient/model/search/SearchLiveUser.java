@@ -4,12 +4,14 @@ import com.alibaba.fastjson2.annotation.JSONField;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-public class LiveRoom {
+public class SearchLiveUser {
 
     @JSONField(name = "area")
     private Integer area;
+
+    @JSONField(name = "area_v2_id")
+    private Integer areaV2Id;
 
     @JSONField(name = "attentions")
     private Integer attentions;
@@ -17,23 +19,17 @@ public class LiveRoom {
     @JSONField(name = "cate_name")
     private String cateName;
 
-    @JSONField(name = "cover")
-    private String cover;
-
     @JSONField(name = "hit_columns")
     private List<String> hitColumns;
 
-    @JSONField(name = "is_live_room_inline")
-    private Integer isLiveRoomInline;
+    @JSONField(name = "is_live")
+    private Boolean isLive;
 
     @JSONField(name = "live_status")
     private Integer liveStatus;
 
-    @JSONField(name = "live_time", format = "yyyy-MM-dd HH:mm:ss", locale = "zh_CN")
+    @JSONField(name = "live_time", format = "yyyy-MM-dd HH:mm:ss")
     private Date liveTime;
-
-    @JSONField(name = "online")
-    private Integer online;
 
     @JSONField(name = "rank_index")
     private Integer rankIndex;
@@ -53,9 +49,6 @@ public class LiveRoom {
     @JSONField(name = "tags")
     private String tags;
 
-    @JSONField(name = "title")
-    private String title;
-
     @JSONField(name = "type")
     private String type;
 
@@ -63,16 +56,10 @@ public class LiveRoom {
     private String uface;
 
     @JSONField(name = "uid")
-    private Long uid;
+    private Integer uid;
 
     @JSONField(name = "uname")
     private String uname;
-
-    @JSONField(name = "user_cover")
-    private String userCover;
-
-    @JSONField(name = "watched_show")
-    private WatchedShow watchedShow;
 
     public Integer getArea() {
         return area;
@@ -80,6 +67,14 @@ public class LiveRoom {
 
     public void setArea(Integer area) {
         this.area = area;
+    }
+
+    public Integer getAreaV2Id() {
+        return areaV2Id;
+    }
+
+    public void setAreaV2Id(Integer areaV2Id) {
+        this.areaV2Id = areaV2Id;
     }
 
     public Integer getAttentions() {
@@ -98,14 +93,6 @@ public class LiveRoom {
         this.cateName = cateName;
     }
 
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
     public List<String> getHitColumns() {
         return hitColumns;
     }
@@ -114,12 +101,12 @@ public class LiveRoom {
         this.hitColumns = hitColumns;
     }
 
-    public Integer getIsLiveRoomInline() {
-        return isLiveRoomInline;
+    public Boolean getLive() {
+        return isLive;
     }
 
-    public void setIsLiveRoomInline(Integer isLiveRoomInline) {
-        this.isLiveRoomInline = isLiveRoomInline;
+    public void setLive(Boolean live) {
+        isLive = live;
     }
 
     public Integer getLiveStatus() {
@@ -136,14 +123,6 @@ public class LiveRoom {
 
     public void setLiveTime(Date liveTime) {
         this.liveTime = liveTime;
-    }
-
-    public Integer getOnline() {
-        return online;
-    }
-
-    public void setOnline(Integer online) {
-        this.online = online;
     }
 
     public Integer getRankIndex() {
@@ -194,14 +173,6 @@ public class LiveRoom {
         this.tags = tags;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getType() {
         return type;
     }
@@ -218,11 +189,11 @@ public class LiveRoom {
         this.uface = uface;
     }
 
-    public Long getUid() {
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(Long uid) {
+    public void setUid(Integer uid) {
         this.uid = uid;
     }
 
@@ -232,21 +203,5 @@ public class LiveRoom {
 
     public void setUname(String uname) {
         this.uname = uname;
-    }
-
-    public String getUserCover() {
-        return userCover;
-    }
-
-    public void setUserCover(String userCover) {
-        this.userCover = userCover;
-    }
-
-    public WatchedShow getWatchedShow() {
-        return watchedShow;
-    }
-
-    public void setWatchedShow(WatchedShow watchedShow) {
-        this.watchedShow = watchedShow;
     }
 }
