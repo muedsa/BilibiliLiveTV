@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import com.muedsa.bilibililiveapiclient.BilibiliApiContainer;
-import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
 
 import java.util.Objects;
 
@@ -16,6 +15,12 @@ public class Prefs {
     public static DefaultValuePref<Integer> DANMAKU_SCALE_TEXT_SIZE = new DefaultValuePref<>("SCALE_TEXT_SIZE", 120);
     public static DefaultValuePref<Integer> DANMAKU_TRANSPARENCY = new DefaultValuePref<>("DANMAKU_TRANSPARENCY", 85);
     public static DefaultValuePref<Integer> DANMAKU_MARGIN = new DefaultValuePref<>("DANMAKU_MARGIN", 5);
+    public static DefaultValuePref<Integer> DANMAKU_MAX_LINES_SCROLL = new DefaultValuePref<>("DANMAKU_MAX_LINES_SCROLL", 5);
+    public static DefaultValuePref<Integer> DANMAKU_MAX_LINES_FIX_TOP = new DefaultValuePref<>("DANMAKU_MAX_LINES_FIX_TOP", 5);
+    public static DefaultValuePref<Integer> DANMAKU_MAX_LINES_FIX_BOTTOM = new DefaultValuePref<>("DANMAKU_MAX_LINES_FIX_BOTTOM", 8);
+    public static DefaultValuePref<Boolean> DANMAKU_OVERLAPPING_ENABLE_SCROLL = new DefaultValuePref<>("DANMAKU_OVERLAPPING_ENABLE_SCROLL", true);
+    public static DefaultValuePref<Boolean> DANMAKU_OVERLAPPING_ENABLE_FIX_TOP = new DefaultValuePref<>("DANMAKU_OVERLAPPING_ENABLE_FIX_TOP", true);
+    public static DefaultValuePref<Boolean> DANMAKU_OVERLAPPING_ENABLE_FIX_BOTTOM = new DefaultValuePref<>("DANMAKU_OVERLAPPING_ENABLE_FIX_BOTTOM", true);
 
     public static SharedPreferences SHARED_PREFERENCES;
 
@@ -61,6 +66,16 @@ public class Prefs {
         return SHARED_PREFERENCES.getFloat(pref.key, pref.getValue());
     }
 
+    public static boolean getBoolean(Pref pref, boolean defValue){
+        checkInit();
+        return SHARED_PREFERENCES.getBoolean(pref.key, defValue);
+    }
+
+    public static boolean getBoolean(DefaultValuePref<Boolean> pref){
+        checkInit();
+        return SHARED_PREFERENCES.getBoolean(pref.key, pref.getValue());
+    }
+
     public static void putString(Pref pref, String value){
         checkInit();
         SHARED_PREFERENCES.edit().putString(pref.key, value).apply();
@@ -74,6 +89,11 @@ public class Prefs {
     public static void putFloat(Pref pref, float value){
         checkInit();
         SHARED_PREFERENCES.edit().putFloat(pref.key, value).apply();
+    }
+
+    public static void putBoolean(Pref pref, boolean value){
+        checkInit();
+        SHARED_PREFERENCES.edit().putBoolean(pref.key, value).apply();
     }
 
     public static void remove(Pref pref){

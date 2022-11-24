@@ -26,4 +26,43 @@
         android:max="50"
         app:seekBarIncrement="1"
         android:defaultValue="5"/>
+    <SeekBarPreference
+        app:key="@string/perf_key_danmaku_max_lines_scroll"
+        app:title="@string/perf_title_danmaku_max_lines_scroll"
+        app:useSimpleSummaryProvider="true"
+        app:min="1"
+        android:max="20"
+        app:seekBarIncrement="1"
+        android:defaultValue="5"/>
+    <SeekBarPreference
+        app:key="@string/perf_key_danmaku_max_lines_fix_top"
+        app:title="@string/perf_title_danmaku_max_lines_fix_top"
+        app:useSimpleSummaryProvider="true"
+        app:min="1"
+        android:max="20"
+        app:seekBarIncrement="1"
+        android:defaultValue="5"/>
+    <SeekBarPreference
+        app:key="@string/perf_key_danmaku_max_lines_fix_bottom"
+        app:title="@string/perf_title_danmaku_max_lines_fix_bottom"
+        app:useSimpleSummaryProvider="true"
+        app:min="1"
+        android:max="20"
+        app:seekBarIncrement="1"
+        android:defaultValue="8"/>
+    <SwitchPreference
+        app:key="@string/perf_key_danmaku_overlapping_enable_scroll"
+        app:title="@string/perf_title_danmaku_overlapping_enable_scroll"
+        android:defaultValue="true"
+        app:useSimpleSummaryProvider="true"/>
+    <SwitchPreference
+        app:key="@string/perf_key_danmaku_overlapping_enable_fix_top"
+        app:title="@string/perf_title_danmaku_overlapping_enable_fix_top"
+        android:defaultValue="true"
+        app:useSimpleSummaryProvider="true"/>
+    <SwitchPreference
+        app:key="@string/perf_key_danmaku_overlapping_enable_fix_bottom"
+        app:title="@string/perf_title_danmaku_overlapping_enable_fix_bottom"
+        android:defaultValue="true"
+        app:useSimpleSummaryProvider="true"/>
 </PreferenceScreen>
