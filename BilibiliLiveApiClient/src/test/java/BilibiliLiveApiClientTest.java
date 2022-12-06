@@ -141,7 +141,7 @@ public class BilibiliLiveApiClientTest {
         SearchAggregation<SearchResult> searchAggregation = response.getData();
         Assertions.assertNotNull(searchAggregation);
         if(Objects.nonNull(searchAggregation.getResult())){
-            if(Objects.nonNull(searchAggregation.getResult().getLiveUser())){
+            if(Objects.nonNull(searchAggregation.getResult().getLiveRoom())){
                 logger.info("liveRoom search result:");
                 searchAggregation.getResult().getLiveRoom().forEach(liveRoom -> {
                     String message = String.format("roomId:%d, title:%s", liveRoom.getRoomId(), ApiUtil.removeSearchHighlight(liveRoom.getTitle()));
