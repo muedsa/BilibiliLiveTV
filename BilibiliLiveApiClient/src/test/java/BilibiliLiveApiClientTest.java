@@ -140,19 +140,21 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertEquals(0L, response.getCode());
         SearchAggregation<SearchResult> searchAggregation = response.getData();
         Assertions.assertNotNull(searchAggregation);
-        if(searchAggregation.getResult() != null){
-            logger.info("liveRoom search result:");
-            searchAggregation.getResult().getLiveRoom().forEach(liveRoom -> {
-                String message = String.format("roomId:%d, title:%s", liveRoom.getRoomId(), ApiUtil.removeSearchHighlight(liveRoom.getTitle()));
-                logger.info(message);
-            });
-        }
-        if(searchAggregation.getResult().getLiveUser() != null){
-            logger.info("liveUser search result:");
-            searchAggregation.getResult().getLiveUser().forEach(liveUser -> {
-                String message = String.format("roomId:%d, uname:%s", liveUser.getRoomId(),  ApiUtil.removeSearchHighlight(liveUser.getUname()));
-                logger.info(message);
-            });
+        if(Objects.nonNull(searchAggregation.getResult())){
+            if(Objects.nonNull(searchAggregation.getResult().getLiveUser())){
+                logger.info("liveRoom search result:");
+                searchAggregation.getResult().getLiveRoom().forEach(liveRoom -> {
+                    String message = String.format("roomId:%d, title:%s", liveRoom.getRoomId(), ApiUtil.removeSearchHighlight(liveRoom.getTitle()));
+                    logger.info(message);
+                });
+            }
+            if(Objects.nonNull(searchAggregation.getResult().getLiveUser())){
+                logger.info("liveUser search result:");
+                searchAggregation.getResult().getLiveUser().forEach(liveUser -> {
+                    String message = String.format("roomId:%d, uname:%s", liveUser.getRoomId(),  ApiUtil.removeSearchHighlight(liveUser.getUname()));
+                    logger.info(message);
+                });
+            }
         }
     }
 
