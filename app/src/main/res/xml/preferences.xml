@@ -3,6 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     app:title="@string/setting">
     <SeekBarPreference
+        app:key="@string/perf_key_video_playback_speed"
+        app:title="@string/perf_title_video_playback_speed"
+        app:useSimpleSummaryProvider="true"
+        app:min="50"
+        android:max="200"
+        app:seekBarIncrement="25"
+        android:defaultValue="120"/>
+    <SeekBarPreference
         app:key="@string/perf_key_danmaku_scale_text_size"
         app:title="@string/perf_title_danmaku_scale_text_size"
         app:useSimpleSummaryProvider="true"

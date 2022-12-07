@@ -40,10 +40,11 @@ import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.model.VideoPlayInfo;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
+import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleDecoder;
-import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliVideoPlaybackTransportControlGlue;
+import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.HttpClientContainer;
 
@@ -126,6 +127,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                 .setMediaSourceFactory(mediaSourceFactory)
                 .setTrackSelector(trackSelector)
                 .build();
+        exoPlayer.setPlaybackSpeed(Prefs.getInt(Prefs.VIDEO_PLAYBACK_SPEED) / 100f);
         exoPlayer.addAnalyticsListener(new EventLogger());
         exoPlayer.addListener(new Player.Listener() {
 
@@ -200,6 +202,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
 
             @Override
             public void updateTimer(DanmakuTimer danmakuTimer) {
+                requireActivity().runOnUiThread(() -> {
+                    danmakuTimer.update(exoPlayer.getCurrentPosition());
+                });
             }
 
             @Override
