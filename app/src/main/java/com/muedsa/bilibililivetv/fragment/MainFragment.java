@@ -224,7 +224,7 @@ public class MainFragment extends BrowseSupportFragment {
                 }
             };
         }
-        getAdapter().notifyItemRangeChanged(0, 1);
+        liveHistoryRowAdapter.setItems(list, liveRoomDiffCallback);
     }
 
     private void updateBilibiliHistoryRows(List<HistoryRecord> list) {
