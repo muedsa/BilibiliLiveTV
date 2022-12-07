@@ -3,7 +3,6 @@ package com.muedsa.bilibililivetv.fragment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -30,6 +29,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.leanback.widget.DiffCallback;
 import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.ListRow;
@@ -65,7 +65,7 @@ import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
@@ -83,11 +83,12 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH_DP = 100;
     private static final int GRID_ITEM_HEIGHT_DP = 100;
-    private static final int MAX_NUM_COLS = 8;
     private static final int HEAD_TITLE_HISTORY = 1;
     private static final int HEAD_TITLE_BILIBILI_HISTORY = 2;
     private static final int HEAD_TITLE_OTHER = 3;
     private static final int HEAD_TITLE_LATEST_VERSION = 4;
+
+    private static final String VIDEO_BUSINESS = "archive";
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private Drawable mDefaultBackground;
@@ -101,103 +102,28 @@ public class MainFragment extends BrowseSupportFragment {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private LiveRoomCardPresenter.CardLongClickListener liveRoomCardLongClickListener;
 
+    private ArrayObjectAdapter liveHistoryRowAdapter;
+    private ArrayObjectAdapter bilibiliVideoHistoryRowAdapter;
+    private ArrayObjectAdapter versionRowAdapter;
 
-    private List<ListRow> historyListRows;
-    private ListRow bilibiliVideoHistoryListRow;
-    private ListRow otherListRow;
-    private ListRow versionListRow;
+    private DiffCallback<LiveRoom> liveRoomDiffCallback;
+    private DiffCallback<HistoryRecord> bilibiliHistoryDiffCallback;
+    private DiffCallback<GithubReleaseTagInfo> versionDiffCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreated");
         super.onCreate(savedInstanceState);
-
         prepareBackgroundManager();
-
         setupUIElements();
-
         setupEventListeners();
-
-        //initRows();
+        setupRows();
     }
 
-
-    private void initRows(){
-        liveRoomViewModel = new ViewModelProvider(MainFragment.this,
-                new LiveRoomViewModel.Factory(((App) requireActivity().getApplication()).getDatabase().getLiveRoomDaoWrapper()))
-                .get(LiveRoomViewModel.class);
-        disposable.add(liveRoomViewModel.getLiveRooms()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(liveRooms -> {
-                    Log.d(TAG, "load liveRooms size: " + liveRooms.size());
-                    loadHistoryRows(liveRooms);
-                    loadRows();
-                }));
-        runBilibiliHistoryRequest();
-        runLatestVersionTask();
-        loadRows();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        initRows();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (null != mBackgroundTimer) {
-            Log.d(TAG, "onDestroy: " + mBackgroundTimer);
-            mBackgroundTimer.cancel();
-        }
-        disposable.dispose();
-    }
-
-    private void loadRows() {
+    private void setupRows(){
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
 
-        //历史记录
-        if (null != historyListRows) {
-            Log.d(TAG, "loadRows: historyListRows size: " + historyListRows.size());
-            rowsAdapter.addAll(0, historyListRows);
-        }
-
-        //Bilibili历史记录
-        if (bilibiliVideoHistoryListRow != null) {
-            rowsAdapter.add(bilibiliVideoHistoryListRow);
-        }
-
-        //其他
-        if (otherListRow == null) {
-            Resources resources = getResources();
-            HeaderItem gridHeader = new HeaderItem(HEAD_TITLE_OTHER,
-                    resources.getString(R.string.head_title_other));
-            GridItemPresenter mGridPresenter = new GridItemPresenter();
-            ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-            gridRowAdapter.add(resources.getString(R.string.bilibili_history_refresh));
-            gridRowAdapter.add(resources.getString(R.string.bilibili_scan_qr_code_login));
-            gridRowAdapter.add(resources.getString(R.string.setting));
-            gridRowAdapter.add(resources.getString(R.string.clear_history));
-            gridRowAdapter.add(resources.getString(R.string.clear_channel));
-            if(BuildConfig.DEBUG){
-                gridRowAdapter.add(resources.getString(R.string.danmaku_test));
-                gridRowAdapter.add(resources.getString(R.string.video_test));
-            }
-            otherListRow = new ListRow(gridHeader, gridRowAdapter);
-        }
-        rowsAdapter.add(otherListRow);
-
-        //版本更新
-        if(versionListRow != null){
-            rowsAdapter.add(versionListRow);
-        }
-
-        setAdapter(rowsAdapter);
-    }
-
-    private void loadHistoryRows(List<LiveRoom> list) {
+        // 本地直播间访问历史
         FragmentActivity activity = requireActivity();
         if(liveRoomCardLongClickListener == null) {
             liveRoomCardLongClickListener = liveRoom -> new AlertDialog.Builder(activity)
@@ -212,61 +138,140 @@ public class MainFragment extends BrowseSupportFragment {
                     .show();
         }
         LiveRoomCardPresenter liveRoomCardPresenter = new LiveRoomCardPresenter(liveRoomCardLongClickListener);
-
+        liveHistoryRowAdapter = new ArrayObjectAdapter(liveRoomCardPresenter);
         HeaderItem historyRecordHeader = new HeaderItem(HEAD_TITLE_HISTORY,
                 getResources().getString(R.string.head_title_history));
-        int row = list.size() / MAX_NUM_COLS;
-        int mod = list.size() % MAX_NUM_COLS;
-        if(mod > 0){
-            row++;
+        ListRow liveHistoryListRow = new ListRow(historyRecordHeader, liveHistoryRowAdapter);
+        rowsAdapter.add(0, liveHistoryListRow);
+
+        // bilibili播放历史
+        VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
+        HeaderItem bilibiliHistoryHeaderItem = new HeaderItem(HEAD_TITLE_BILIBILI_HISTORY,
+                getResources().getString(R.string.head_title_video_history));
+        bilibiliVideoHistoryRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
+        rowsAdapter.add(1, new ListRow(bilibiliHistoryHeaderItem, bilibiliVideoHistoryRowAdapter));
+
+        // 其他
+        HeaderItem otherHeader = new HeaderItem(HEAD_TITLE_OTHER,
+                activity.getString(R.string.head_title_other));
+        GridItemPresenter mGridPresenter = new GridItemPresenter();
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+        gridRowAdapter.add(activity.getString(R.string.bilibili_history_refresh));
+        gridRowAdapter.add(activity.getString(R.string.bilibili_scan_qr_code_login));
+        gridRowAdapter.add(activity.getString(R.string.setting));
+        gridRowAdapter.add(activity.getString(R.string.clear_history));
+        gridRowAdapter.add(activity.getString(R.string.clear_channel));
+        if(BuildConfig.DEBUG){
+            gridRowAdapter.add(activity.getString(R.string.danmaku_test));
+            gridRowAdapter.add(activity.getString(R.string.video_test));
         }
-        historyListRows = new ArrayList<>(row);
-        for(int rowIndex = 0; rowIndex < row; rowIndex++){
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(liveRoomCardPresenter);
-            int max_num_cols = MAX_NUM_COLS;
-            if(mod > 0 && rowIndex == row - 1){
-                max_num_cols = mod;
-            }
-            for (int colIndex = 0; colIndex < max_num_cols; colIndex++){
-                int listIndex = rowIndex * MAX_NUM_COLS + colIndex;
-                listRowAdapter.add(list.get(listIndex));
-            }
-            if (rowIndex == 0) {
-                historyListRows.add(new ListRow(historyRecordHeader, listRowAdapter));
-            } else {
-                historyListRows.add(new ListRow(listRowAdapter));
-            }
-        }
+        rowsAdapter.add(2, new ListRow(otherHeader, gridRowAdapter));
+
+        // 版本
+        HeaderItem versionHeaderItem = new HeaderItem(HEAD_TITLE_LATEST_VERSION,
+                getResources().getString(R.string.head_title_latest_version));
+        GithubReleasePresenter mGithubReleasePresenter = new GithubReleasePresenter();
+        versionRowAdapter = new ArrayObjectAdapter(mGithubReleasePresenter);
+        rowsAdapter.add(3, new ListRow(versionHeaderItem, versionRowAdapter));
+
+        setAdapter(rowsAdapter);
     }
 
-    private void loadBilibiliHistoryRows(List<HistoryRecord> list) {
-        VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
-        HeaderItem headerItem = new HeaderItem(HEAD_TITLE_BILIBILI_HISTORY,
-                getResources().getString(R.string.head_title_video_history));
-        ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
-        listRowAdapter.addAll(0, list);
-        bilibiliVideoHistoryListRow = new ListRow(headerItem, listRowAdapter);
+    private void loadRows(){
+        liveRoomViewModel = new ViewModelProvider(MainFragment.this,
+                new LiveRoomViewModel.Factory(((App) requireActivity().getApplication()).getDatabase().getLiveRoomDaoWrapper()))
+                .get(LiveRoomViewModel.class);
+        disposable.add(liveRoomViewModel.getLiveRooms()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(liveRooms -> {
+                    Log.d(TAG, "load liveRooms size: " + liveRooms.size());
+                    updateLiveHistoryRows(liveRooms);
+                }));
+        runBilibiliHistoryRequest();
+        runLatestVersionTask();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadRows();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (null != mBackgroundTimer) {
+            Log.d(TAG, "onDestroy: " + mBackgroundTimer);
+            mBackgroundTimer.cancel();
+        }
+        disposable.dispose();
+    }
+
+    private void updateLiveHistoryRows(List<LiveRoom> list) {
+        if(Objects.isNull(liveRoomDiffCallback)){
+            liveRoomDiffCallback = new DiffCallback<LiveRoom>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull LiveRoom oldItem, @NonNull LiveRoom newItem) {
+                    return oldItem.getId() == newItem.getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull LiveRoom oldItem, @NonNull LiveRoom newItem) {
+                    return oldItem.getId() == newItem.getId()
+                            && oldItem.getTitle().equals(newItem.getTitle())
+                            && oldItem.getBackgroundImageUrl().equals(newItem.getBackgroundImageUrl());
+                }
+            };
+        }
+        getAdapter().notifyItemRangeChanged(0, 1);
+    }
+
+    private void updateBilibiliHistoryRows(List<HistoryRecord> list) {
+        if(Objects.isNull(bilibiliHistoryDiffCallback)){
+            bilibiliHistoryDiffCallback = new DiffCallback<HistoryRecord>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull HistoryRecord oldItem, @NonNull HistoryRecord newItem) {
+                    return oldItem.getTitle().equals(newItem.getTitle())
+                            && oldItem.getAuthorName().equals(newItem.getAuthorName());
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull HistoryRecord oldItem, @NonNull HistoryRecord newItem) {
+                    return oldItem.getTitle().equals(newItem.getTitle())
+                            && oldItem.getAuthorName().equals(newItem.getAuthorName());
+                }
+            };
+        }
+        bilibiliVideoHistoryRowAdapter.setItems(list, bilibiliHistoryDiffCallback);
+    }
+
+    private void updateVersionRows(GithubReleaseTagInfo githubReleaseTagInfo) {
+        if(Objects.isNull(versionDiffCallback)){
+            versionDiffCallback = new DiffCallback<GithubReleaseTagInfo>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull GithubReleaseTagInfo oldItem, @NonNull GithubReleaseTagInfo newItem) {
+                    return oldItem.getUrl().equals(newItem.getUrl());
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull GithubReleaseTagInfo oldItem, @NonNull GithubReleaseTagInfo newItem) {
+                    return  oldItem.getUrl().equals(newItem.getUrl());
+                }
+            };
+        }
+        versionRowAdapter.setItems(Collections.singletonList(githubReleaseTagInfo), versionDiffCallback);
     }
 
     private void runLatestVersionTask() {
         RxRequestFactory.githubLatestRelease()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(githubReleaseTagInfo -> {
-                    HeaderItem headerItem = new HeaderItem(HEAD_TITLE_LATEST_VERSION,
-                            getResources().getString(R.string.head_title_latest_version));
-                    GithubReleasePresenter mGithubReleasePresenter = new GithubReleasePresenter();
-                    ArrayObjectAdapter rowAdapter = new ArrayObjectAdapter(mGithubReleasePresenter);
-                    rowAdapter.add(githubReleaseTagInfo);
-                    versionListRow = new ListRow(headerItem, rowAdapter);
-                    loadRows();
-                }, throwable -> {
+                .subscribe(this::updateVersionRows, throwable -> {
                     ToastUtil.showLongToast(getActivity(), throwable.getMessage());
                     Log.e(TAG, "githubLatestRelease error", throwable);
                 }, disposable);
     }
-
-    private static final String VIDEO_BUSINESS = "archive";
 
     private void runBilibiliHistoryRequest() {
         RxRequestFactory.bilibiliHistory()
@@ -278,8 +283,7 @@ public class MainFragment extends BrowseSupportFragment {
                                 .filter(h -> VIDEO_BUSINESS.equals(h.getHistory().getBusiness()))
                                 .collect(Collectors.toList());
                         if (!historyRecordList.isEmpty()) {
-                            loadBilibiliHistoryRows(historyRecordList);
-                            loadRows();
+                            updateBilibiliHistoryRows(historyRecordList);
                         }
                     }
                 }, throwable -> {
