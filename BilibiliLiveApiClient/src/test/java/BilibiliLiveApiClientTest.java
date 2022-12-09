@@ -31,6 +31,9 @@ import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDash;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDashInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.Season;
+import com.muedsa.bilibililiveapiclient.model.video.SeasonSection;
+import com.muedsa.bilibililiveapiclient.model.video.SectionEpisode;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
@@ -203,8 +206,8 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public VideoDetail getVideDetailTest() throws IOException {
-        VideoDetail videoDetail = client.getVideoDetail("BV1WY411Z7Cj");
+    public void getVideDetailTest() throws IOException {
+        VideoDetail videoDetail = client.getVideoDetail("BV11e411N7dy");
         Assertions.assertNotNull(videoDetail);
         VideoInfo videoInfo = videoDetail.getVideoInfo();
         Assertions.assertNotNull(videoInfo);
@@ -226,6 +229,26 @@ public class BilibiliLiveApiClientTest {
             Assertions.assertFalse(audioList.isEmpty());
             String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvid(), videoData.getTitle(), videoData.getDesc());
             logger.info(videoDataMessage);
+            Season season = videoData.getUgcSeason();
+            if(Objects.nonNull(season)){
+                String seasonMessage = String.format("Season title:%s, intro:%s, cover:%s", season.getTitle(), season.getIntro(), season.getCover());
+                logger.info(seasonMessage);
+                if(Objects.nonNull(season.getSections())){
+                    for (SeasonSection section : season.getSections()) {
+                        String sectionMessage = String.format("Section title:%s, type:%d, isActive:%b", section.getTitle(), section.getType(), section.getActive());
+                        logger.info(sectionMessage);
+                        if(Objects.nonNull(section.getEpisodes())){
+                            for (SectionEpisode episode : section.getEpisodes()) {
+                                String episodeMessage = String.format("Episode title:%s, bv:%s", episode.getTitle(), episode.getBvId());
+                                if(Objects.nonNull(episode.getArc())){
+                                    episodeMessage += String.format(", arc.pic:%s", episode.getArc().getPic());
+                                }
+                                logger.info(episodeMessage);
+                            }
+                        }
+                    }
+                }
+            }
             for (PlayDashInfo video : videoList) {
                 String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", video.getMimeType(), video.getCodecs(), video.getId(), video.getBaseUrl());
                 logger.info(message);
@@ -237,7 +260,6 @@ public class BilibiliLiveApiClientTest {
         } else {
             logger.info("get play info fail:" + playInfoResponse.getMessage());
         }
-        return videoDetail;
     }
 
     //@Test

@@ -88,6 +88,9 @@ public class VideoData {
     @JSONField(name = "subtitle")
     private VideoSubtitleInfo subtitle;
 
+    @JSONField(name = "ugc_season")
+    private Season ugcSeason;
+
     @JSONField(name = "is_season_display")
     private Boolean isSeasonDisplay;
 
@@ -300,6 +303,14 @@ public class VideoData {
 
     public void setSubtitle(VideoSubtitleInfo subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public Season getUgcSeason() {
+        return ugcSeason;
+    }
+
+    public void setUgcSeason(Season ugcSeason) {
+        this.ugcSeason = ugcSeason;
     }
 
     public Boolean getSeasonDisplay() {
