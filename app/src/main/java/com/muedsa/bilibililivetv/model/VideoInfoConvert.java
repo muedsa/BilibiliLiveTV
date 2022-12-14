@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.model;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDash;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDashInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.SectionEpisode;
 import com.muedsa.bilibililiveapiclient.model.video.SupportFormat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
@@ -75,5 +76,27 @@ public class VideoInfoConvert {
             }
         }
         return title;
+    }
+
+    public static int findPagePositionByCid(List<VideoPage> pages, Long cid, int defaultPos) {
+        int pos = defaultPos;
+        for (int i = 0; i < pages.size(); i++) {
+            if(cid.equals(pages.get(i).getCid())){
+                pos = i;
+                break;
+            }
+        }
+        return pos;
+    }
+
+    public static int findEpisodePositionByCid(List<SectionEpisode> episodes, Long cid, int defaultPos) {
+        int pos = defaultPos;
+        for (int i = 0; i < episodes.size(); i++) {
+            if(cid.equals(episodes.get(i).getCid())){
+                pos = i;
+                break;
+            }
+        }
+        return pos;
     }
 }

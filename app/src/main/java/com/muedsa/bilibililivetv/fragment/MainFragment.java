@@ -432,7 +432,7 @@ public class MainFragment extends BrowseSupportFragment {
 //                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
 //                    startActivity(intent);
                     Intent intent = new Intent(activity, VideoDetailsActivity.class);
-                    intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV1WY411Z7Cj");
+                    intent.putExtra(VideoDetailsActivity.VIDEO_BV, "BV11e411N7dy");
                     startActivity(intent);
                 } else {
                     ToastUtil.showLongToast(activity, desc);

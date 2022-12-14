@@ -22,7 +22,6 @@ import androidx.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
 import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.ListRow;
-import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
@@ -34,6 +33,9 @@ import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.Season;
+import com.muedsa.bilibililiveapiclient.model.video.SeasonSection;
+import com.muedsa.bilibililiveapiclient.model.video.SectionEpisode;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoPage;
 import com.muedsa.bilibililivetv.GlideApp;
@@ -44,6 +46,8 @@ import com.muedsa.bilibililivetv.activity.VideoPlaybackActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.model.VideoInfoConvert;
 import com.muedsa.bilibililivetv.model.VideoPlayInfo;
+import com.muedsa.bilibililivetv.presenter.DefaultPositionListRow;
+import com.muedsa.bilibililivetv.presenter.DefaultPositionListRowPresenter;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
@@ -92,6 +96,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         if (!Strings.isNullOrEmpty(bv) && bv.startsWith(BilibiliLiveApi.VIDEO_BV_PREFIX)) {
             listCompositeDisposable = new ListCompositeDisposable();
             mPresenterSelector = new ClassPresenterSelector();
+            mPresenterSelector.addClassPresenter(ListRow.class, new DefaultPositionListRowPresenter());
             mAdapter = new ArrayObjectAdapter(mPresenterSelector);
             setupDetailsOverviewRowPresenter();
             initializeBackground();
@@ -117,6 +122,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                         url = videoDetail.getUrl();
                         setupDetailsOverviewRow();
                         setupVideoPagesRow();
+                        setupVideoSeasonRows();
                         updateCardImage();
                         updateBackground();
                         //播放按钮
@@ -163,9 +169,31 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             ArrayObjectAdapter arrayObjectAdapter = new ArrayObjectAdapter(presenter);
             arrayObjectAdapter.addAll(0, videoInfo.getVideoData().getPages());
             HeaderItem headerItem = new HeaderItem("视频选集");
-            ListRow listRow = new ListRow(headerItem, arrayObjectAdapter);
+            int pos = VideoInfoConvert.findPagePositionByCid(videoInfo.getVideoData().getPages(),
+                    videoInfo.getVideoData().getCid(), 0);
+            ListRow listRow = new DefaultPositionListRow(headerItem, arrayObjectAdapter, pos);
             mAdapter.add(listRow);
-            mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
+        }
+    }
+
+    private void setupVideoSeasonRows() {
+        if (Objects.nonNull(videoInfo)
+                && Objects.nonNull(videoInfo.getVideoData())
+                && Objects.nonNull(videoInfo.getVideoData().getUgcSeason())
+                && Objects.nonNull(videoInfo.getVideoData().getUgcSeason().getSections())
+                && videoInfo.getVideoData().getUgcSeason().getSections().size() > 0) {
+            Season ugcSeason = videoInfo.getVideoData().getUgcSeason();
+            List<SeasonSection> sectionList = ugcSeason.getSections();
+            for (SeasonSection seasonSection : sectionList) {
+                VideoCardPresenter presenter = new VideoCardPresenter();
+                ArrayObjectAdapter arrayObjectAdapter = new ArrayObjectAdapter(presenter);
+                arrayObjectAdapter.addAll(0, seasonSection.getEpisodes());
+                HeaderItem headerItem = new HeaderItem(ugcSeason.getTitle() + "-" + seasonSection.getTitle());
+                int pos = VideoInfoConvert.findEpisodePositionByCid(seasonSection.getEpisodes(),
+                        videoInfo.getVideoData().getCid(), 0);
+                ListRow listRow = new DefaultPositionListRow(headerItem, arrayObjectAdapter, pos);
+                mAdapter.add(listRow);
+            }
         }
     }
 
@@ -267,13 +295,22 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
-
+            String jumpBv = null;
+            int jumPage = 1;
             if (item instanceof VideoPage) {
                 VideoPage videoPage = (VideoPage) item;
+                jumpBv = bv;
+                jumPage = videoPage.getPage();
+            } else if (item instanceof SectionEpisode) {
+                SectionEpisode episode = (SectionEpisode) item;
+                jumpBv = episode.getBvId();
+                jumPage = episode.getPage().getPage();
+            }
+            if(!Strings.isNullOrEmpty(jumpBv)){
                 FragmentActivity activity = requireActivity();
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
-                intent.putExtra(VideoDetailsActivity.VIDEO_BV, bv);
-                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, videoPage.getPage());
+                intent.putExtra(VideoDetailsActivity.VIDEO_BV, jumpBv);
+                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, jumPage);
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                         activity,
                         ((ImageCardView) itemViewHolder.view).getMainImageView(),
