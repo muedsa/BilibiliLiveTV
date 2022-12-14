@@ -8,7 +8,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.DetailsSupportFragment;
@@ -20,7 +19,6 @@ import androidx.leanback.widget.DetailsOverviewRow;
 import androidx.leanback.widget.FullWidthDetailsOverviewRowPresenter;
 import androidx.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
 import androidx.leanback.widget.HeaderItem;
-import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
@@ -101,8 +99,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             setupDetailsOverviewRowPresenter();
             initializeBackground();
             setAdapter(mAdapter);
-            initVideoDetail();
             setOnItemViewClickedListener(new ItemViewClickedListener());
+            initVideoDetail();
         } else {
             Intent intent = new Intent(activity, MainActivity.class);
             startActivity(intent);
@@ -307,15 +305,19 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 jumPage = episode.getPage().getPage();
             }
             if(!Strings.isNullOrEmpty(jumpBv)){
-                FragmentActivity activity = requireActivity();
-                Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
-                intent.putExtra(VideoDetailsActivity.VIDEO_BV, jumpBv);
-                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, jumPage);
-                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        activity,
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                        VideoDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-                activity.startActivity(intent, bundle);
+//                FragmentActivity activity = requireActivity();
+//                Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
+//                intent.putExtra(VideoDetailsActivity.VIDEO_BV, jumpBv);
+//                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, jumPage);
+//                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                        activity,
+//                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
+//                        VideoDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+//                activity.startActivity(intent, bundle);
+                bv = jumpBv;
+                page = jumPage;
+                mAdapter.clear();
+                initVideoDetail();
             }
         }
     }
