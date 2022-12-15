@@ -44,6 +44,7 @@ import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleDecoder;
 import com.muedsa.bilibililivetv.player.video.BilibiliVideoPlaybackTransportControlGlue;
+import com.muedsa.bilibililivetv.player.video.ExoPlayerPositionCache;
 import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.HttpClientContainer;
@@ -71,6 +72,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     private DefaultTrackSelector trackSelector;
     private ExoPlayer exoPlayer;
     private BilibiliVideoPlaybackTransportControlGlue glue;
+    private ExoPlayerPositionCache exoPlayerPositionCache;
 
     private DanmakuSurfaceView danmakuView;
     private DanmakuContext danmakuContext;
@@ -172,6 +174,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                 ToastUtil.showLongToast(context, error.getMessage());
             }
         });
+        exoPlayerPositionCache = new ExoPlayerPositionCache(exoPlayer);
         LeanbackPlayerAdapter playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
         glue = new BilibiliVideoPlaybackTransportControlGlue(context, playerAdapter);
         glue.setHost(videoSupportFragmentGlueHost);
@@ -202,9 +205,12 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
 
             @Override
             public void updateTimer(DanmakuTimer danmakuTimer) {
-                requireActivity().runOnUiThread(() -> {
-                    danmakuTimer.update(exoPlayer.getCurrentPosition());
-                });
+//                requireActivity().runOnUiThread(() -> {
+//                    danmakuTimer.update(exoPlayer.getCurrentPosition());
+//                });
+                long position = exoPlayerPositionCache.getPosition();
+                //Log.d(TAG, "updateTimer, oldTime:" + danmakuTimer.currMillisecond + ", newTime:" + position);
+                danmakuTimer.update(position);
             }
 
             @Override
@@ -332,6 +338,10 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView");
         super.onDestroyView();
+        if (Objects.nonNull(exoPlayerPositionCache)) {
+            exoPlayerPositionCache.release();
+            exoPlayerPositionCache = null;
+        }
         if (Objects.nonNull(exoPlayer) && Objects.nonNull(glue)) {
             glue = null;
             exoPlayer.release();
