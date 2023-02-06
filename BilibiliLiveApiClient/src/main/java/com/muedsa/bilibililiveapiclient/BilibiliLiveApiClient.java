@@ -210,19 +210,12 @@ public class BilibiliLiveApiClient {
         return DmSegMobileReply.parseFrom(data);
     }
 
-    public List<DanmakuElem> videoDanmakuElemList(long oid) throws IOException {
-        DmWebViewReply dmWebViewReply = videoDanmakuView(oid);
-        long count = 0;
+    public List<DanmakuElem> videoDanmakuElemList(long oid, int segmentSize) throws IOException {
         List<DanmakuElem> list = new ArrayList<>();
-        if (dmWebViewReply.hasDmSge() && dmWebViewReply.getDmSge().hasTotal()) {
-            count = dmWebViewReply.getDmSge().getTotal();
-        }
-        for (int i = 1; i < count + 1; i++) {
+        for (int i = 1; i < segmentSize + 1; i++) {
             DmSegMobileReply dmSegMobileReply = videoDanmakuSegment(oid, i);
             if (dmSegMobileReply.getElemsCount() > 0) {
                 list.addAll(dmSegMobileReply.getElemsList());
-            } else {
-                break;
             }
         }
         return list.stream()

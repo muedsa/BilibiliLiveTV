@@ -54,6 +54,8 @@ public class VideoInfoConvert {
             }else{
                 videoPlayInfo.setSubtitleList(Collections.emptyList());
             }
+            // 6分钟一个弹幕片段
+            videoPlayInfo.setDanmakuSegmentSize((int) Math.ceil(dash.getDuration() / (6d * 60d)));
             return videoPlayInfo;
         }).collect(Collectors.toList());
     }

@@ -24,6 +24,8 @@ public class VideoPlayInfo implements Serializable {
 
     private List<VideoSubtitle> subtitleList;
 
+    private Integer danmakuSegmentSize;
+
     public String getBv() {
         return bv;
     }
@@ -110,5 +112,13 @@ public class VideoPlayInfo implements Serializable {
 
     public void setSubtitleList(List<VideoSubtitle> subtitleList) {
         this.subtitleList = subtitleList;
+    }
+
+    public Integer getDanmakuSegmentSize() {
+        return danmakuSegmentSize;
+    }
+
+    public void setDanmakuSegmentSize(Integer danmakuSegmentSize) {
+        this.danmakuSegmentSize = danmakuSegmentSize;
     }
 }

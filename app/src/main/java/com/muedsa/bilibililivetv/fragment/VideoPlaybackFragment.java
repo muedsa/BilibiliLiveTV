@@ -40,9 +40,9 @@ import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.model.VideoPlayInfo;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
+import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleDecoder;
-import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliVideoPlaybackTransportControlGlue;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.HttpClientContainer;
@@ -226,7 +226,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     }
 
     private void prepareDanmaku(VideoPlayInfo videoPlayInfo) {
-        BaseDanmakuParser danmakuParser = new BilibiliDanmakuParser(videoPlayInfo.getCid());
+        BaseDanmakuParser danmakuParser = new BilibiliDanmakuParser(videoPlayInfo.getCid(), videoPlayInfo.getDanmakuSegmentSize());
         danmakuParser.setConfig(danmakuContext);
         danmakuView.prepare(danmakuParser, danmakuContext);
     }

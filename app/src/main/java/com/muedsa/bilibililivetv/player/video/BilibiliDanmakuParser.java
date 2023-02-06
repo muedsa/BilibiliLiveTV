@@ -20,14 +20,17 @@ public class BilibiliDanmakuParser extends BaseDanmakuParser {
 
     private final long cid;
 
-    public BilibiliDanmakuParser(long cid) {
+    private final int segmentSize;
+
+    public BilibiliDanmakuParser(long cid, int segmentSize) {
         this.cid = cid;
+        this.segmentSize = segmentSize;
     }
 
     private List<DanmakuElem> initDanmakuList() {
         List<DanmakuElem> list = new ArrayList<>(1);
         try {
-            list = BilibiliLiveApi.client().videoDanmakuElemList(cid);
+            list = BilibiliLiveApi.client().videoDanmakuElemList(cid, segmentSize);
             Log.d(TAG, "initDanmakuList: count=" + list.size());
         } catch (Exception e) {
             Log.d(TAG, "initDanmakuList:", e);

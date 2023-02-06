@@ -344,7 +344,7 @@ public class BilibiliLiveApiClientTest {
     @Test
     public void videoDanmakuElemListTest() throws IOException {
         long oid = 885244431;
-        List<DanmakuElem> danmakuElems = client.videoDanmakuElemList(oid);
+        List<DanmakuElem> danmakuElems = client.videoDanmakuElemList(oid, 1);
         for (DanmakuElem danmakuElem : danmakuElems) {
             logger.info(danmakuElem.getProgress() + ":" + danmakuElem.getMode() + ":" + danmakuElem.getContent());
         }
