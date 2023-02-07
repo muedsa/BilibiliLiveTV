@@ -12,3 +12,8 @@ updates:
       - maven-google
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "github-actions"
+    directory: ".github/workflows"
+    schedule:
+      interval: "daily"
