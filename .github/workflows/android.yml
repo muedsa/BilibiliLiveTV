@@ -26,7 +26,7 @@ jobs:
       run: ./gradlew test
     - name: Upload a Build Artifact
       if: always()
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: build-test-outputs
         path: |
