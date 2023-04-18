@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
-import com.muedsa.bilibililivetv.BuildConfig;
+import com.muedsa.bilibililivetv.EnvConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
@@ -55,7 +55,7 @@ public class DanmakuDelegate {
             }
         };
         danmakuView.enableDanmakuDrawingCache(true);
-        danmakuView.showFPS(BuildConfig.DEBUG);
+        danmakuView.showFPS(EnvConfig.DEBUG);
         danmakuView.show();
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override

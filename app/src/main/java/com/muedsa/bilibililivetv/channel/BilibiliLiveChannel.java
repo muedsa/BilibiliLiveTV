@@ -10,15 +10,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.tvprovider.media.tv.Channel;
 import androidx.tvprovider.media.tv.ChannelLogoUtils;
 import androidx.tvprovider.media.tv.PreviewProgram;
 import androidx.tvprovider.media.tv.TvContractCompat;
 
-import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.AppVersionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +102,7 @@ public class BilibiliLiveChannel {
                 Channel channel = Channel.fromCursor(cursor);
                 if(channelName.equals(channel.getInternalProviderId())){
                     channelId = channel.getId();
-                    if(BuildConfig.VERSION_CODE > channel.getInternalProviderFlag1()){
+                    if(AppVersionUtil.getVersionCode(context) > channel.getInternalProviderFlag1()){
                         updateChannel(context, channelId);
                     }
                     break;
@@ -141,7 +142,7 @@ public class BilibiliLiveChannel {
         builder.setType(TvContractCompat.Channels.TYPE_PREVIEW)
                 .setDisplayName(channelName)
                 .setInternalProviderId(channelName)
-                .setInternalProviderFlag1(BuildConfig.VERSION_CODE)
+                .setInternalProviderFlag1(AppVersionUtil.getVersionCode(context))
                 .setAppLinkText(context.getString(R.string.app_name))
                 .setAppLinkColor(Color.WHITE);
         return builder;

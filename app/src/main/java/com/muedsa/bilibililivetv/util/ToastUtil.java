@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.muedsa.bilibililivetv.BuildConfig;
+import com.muedsa.bilibililivetv.EnvConfig;
 
 import java.util.function.Supplier;
 
@@ -27,7 +27,7 @@ public class ToastUtil {
     }
 
     public static void debug(@Nullable Context context, CharSequence text) {
-        if(BuildConfig.DEBUG){
+        if(EnvConfig.DEBUG){
             showLongToast(context, text);
         }
     }
@@ -46,13 +46,13 @@ public class ToastUtil {
     }
 
     public static void debug(Supplier<Context> contextSupplier, CharSequence text) {
-        if(BuildConfig.DEBUG){
+        if(EnvConfig.DEBUG){
             showLongToast(contextSupplier.get(), text);
         }
     }
 
     public static void debug(Supplier<Context> contextSupplier, Supplier<CharSequence> textSupplier) {
-        if(BuildConfig.DEBUG){
+        if(EnvConfig.DEBUG){
             showLongToast(contextSupplier.get(), textSupplier.get());
         }
     }

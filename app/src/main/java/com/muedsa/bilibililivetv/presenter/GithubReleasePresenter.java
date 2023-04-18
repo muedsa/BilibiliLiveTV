@@ -8,9 +8,9 @@ import androidx.core.content.ContextCompat;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 
-import com.muedsa.bilibililivetv.BuildConfig;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
+import com.muedsa.bilibililivetv.util.AppVersionUtil;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
@@ -39,7 +39,8 @@ public class GithubReleasePresenter extends AbstractImageCardPresenter {
         ImageCardView cardView = (ImageCardView) viewHolder.view;
         if (info.getImage() != null) {
             cardView.setTitleText("Latest Version: " + info.getTag());
-            cardView.setContentText("Current Version:" + BuildConfig.VERSION_NAME);
+            cardView.setContentText("Current Version:" + AppVersionUtil
+                    .getVersionCode(viewHolder.view.getContext()));
             int cardHeightDp = CARD_WIDTH_DP * info.getImageHeight() / info.getImageWidth();
             int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
             int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), cardHeightDp);

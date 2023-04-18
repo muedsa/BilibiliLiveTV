@@ -34,7 +34,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.muedsa.bilibililiveapiclient.model.video.VideoSubtitle;
-import com.muedsa.bilibililivetv.BuildConfig;
+import com.muedsa.bilibililivetv.EnvConfig;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
@@ -188,7 +188,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     private void initDanmakuView() {
         danmakuContext = DefaultDanmakuContext.create();
         danmakuView.enableDanmakuDrawingCache(true);
-        danmakuView.showFPS(BuildConfig.DEBUG);
+        danmakuView.showFPS(EnvConfig.DEBUG);
         danmakuView.show();
         danmakuView.setCallback(new DrawHandler.Callback() {
             @Override

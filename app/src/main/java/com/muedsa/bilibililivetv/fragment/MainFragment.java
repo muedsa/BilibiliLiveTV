@@ -45,7 +45,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
 import com.muedsa.bilibililivetv.App;
-import com.muedsa.bilibililivetv.BuildConfig;
+import com.muedsa.bilibililivetv.EnvConfig;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
@@ -161,7 +161,7 @@ public class MainFragment extends BrowseSupportFragment {
         gridRowAdapter.add(activity.getString(R.string.setting));
         gridRowAdapter.add(activity.getString(R.string.clear_history));
         gridRowAdapter.add(activity.getString(R.string.clear_channel));
-        if(BuildConfig.DEBUG){
+        if(EnvConfig.DEBUG){
             gridRowAdapter.add(activity.getString(R.string.danmaku_test));
             gridRowAdapter.add(activity.getString(R.string.video_test));
         }
