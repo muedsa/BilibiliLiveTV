@@ -1,34 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
     android:id="@+id/login_fragment_root"
     tools:context=".fragment.LoginFragment">
-    <LinearLayout
+    <ImageView
+        android:id="@+id/login_fragment_image_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_gravity="center_horizontal">
-        <ImageView
-            android:id="@+id/login_fragment_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:src="@tools:sample/avatars"/>
-        <TextView
-            android:id="@+id/login_fragment_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
-            android:text="@string/loading"/>
-        <Button
-            android:id="@+id/login_fragment_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/logout"
-            android:visibility="gone"/>
-    </LinearLayout>
-</FrameLayout>
+        android:layout_height="wrap_content"
+        tools:src="@tools:sample/avatars"
+        android:contentDescription="@string/avatar" />
+    <TextView
+        android:id="@+id/login_fragment_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:text="@string/loading"/>
+    <Button
+        android:id="@+id/login_fragment_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/logout"
+        android:visibility="gone"/>
+</LinearLayout>

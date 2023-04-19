@@ -10,7 +10,6 @@
     <string name="alert_yes">确定</string>
     <string name="alert_no">取消</string>
     <string name="remove_history_alert">确定删除?</string>
-    <string name="error_fragment">Error Fragment</string>
     <string name="clear_channel">清除首屏节目</string>
     <string name="clear_channel_alert">确定清除首屏节目?</string>
     <string name="watch_trailer_title">播放</string>
@@ -34,10 +33,8 @@
     <string name="playback_controls_subtitle_toggle">字幕</string>
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
-    <string name="search_input_hint">请输入房间号</string>
     <!-- channel -->
     <string name="tv_channel_name">BilibiliLive</string>
-    <string name="tv_uir_path_channel">channel</string>
     <string name="tv_uir_path_program">BilibiliLive</string>
     <string name="head_title_history">直播历史记录</string>
     <string name="head_title_video_history">视频历史记录</string>
@@ -82,4 +79,5 @@
     <string name="perf_key_danmaku_overlapping_enable_scroll">DANMAKU_OVERLAPPING_ENABLE_SCROLL</string>
     <string name="perf_key_danmaku_overlapping_enable_fix_top">DANMAKU_OVERLAPPING_ENABLE_FIX_TOP</string>
     <string name="perf_key_danmaku_overlapping_enable_fix_bottom">DANMAKU_OVERLAPPING_ENABLE_FIX_BOTTOM</string>
+    <string name="avatar">Avatar</string>
 </resources>
