@@ -9,8 +9,8 @@ android {
         applicationId "com.muedsa.bilibililivetv"
         minSdk 26
         targetSdk 33
-        versionCode 34
-        versionName "1.7.6"
+        versionCode 35
+        versionName "1.7.7"
     }
 
     buildTypes {
