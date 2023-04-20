@@ -5,11 +5,18 @@ registries:
     url: https://maven.google.com
     username: ""
     password: ""
+  maven-center:
+    type: maven-repository
+    url: https://repo.maven.apache.org/maven2/
+    username: ""
+    password: ""
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
     registries:
+      - maven-center
       - maven-google
+      
     schedule:
       interval: "daily"
 
