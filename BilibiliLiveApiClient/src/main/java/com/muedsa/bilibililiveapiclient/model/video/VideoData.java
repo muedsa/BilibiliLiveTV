@@ -19,7 +19,7 @@ public class VideoData {
     private Integer tid;
 
     @JSONField(name = "tname")
-    private String tName;
+    private String tname;
 
     @JSONField(name = "copyright")
     private Integer copyright;
@@ -34,7 +34,7 @@ public class VideoData {
     private Long pubDate;
 
     @JSONField(name = "ctime")
-    private Long cTime;
+    private Long ctime;
 
     @JSONField(name = "desc")
     private String desc;
@@ -137,12 +137,12 @@ public class VideoData {
         this.tid = tid;
     }
 
-    public String gettName() {
-        return tName;
+    public String getTname() {
+        return tname;
     }
 
-    public void settName(String tName) {
-        this.tName = tName;
+    public void setTname(String tname) {
+        this.tname = tname;
     }
 
     public Integer getCopyright() {
@@ -177,12 +177,12 @@ public class VideoData {
         this.pubDate = pubDate;
     }
 
-    public Long getcTime() {
-        return cTime;
+    public Long getCtime() {
+        return ctime;
     }
 
-    public void setcTime(Long cTime) {
-        this.cTime = cTime;
+    public void setCtime(Long ctime) {
+        this.ctime = ctime;
     }
 
     public String getDesc() {

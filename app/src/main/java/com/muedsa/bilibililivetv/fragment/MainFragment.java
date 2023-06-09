@@ -44,6 +44,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
+import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.EnvConfig;
 import com.muedsa.bilibililivetv.GlideApp;
@@ -83,10 +84,12 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH_DP = 100;
     private static final int GRID_ITEM_HEIGHT_DP = 100;
-    private static final int HEAD_TITLE_HISTORY = 1;
-    private static final int HEAD_TITLE_BILIBILI_HISTORY = 2;
-    private static final int HEAD_TITLE_OTHER = 3;
-    private static final int HEAD_TITLE_LATEST_VERSION = 4;
+
+    private static final int HEAD_TITLE_POPULAR = 1;
+    private static final int HEAD_TITLE_HISTORY = 2;
+    private static final int HEAD_TITLE_BILIBILI_HISTORY = 3;
+    private static final int HEAD_TITLE_OTHER = 4;
+    private static final int HEAD_TITLE_LATEST_VERSION = 5;
 
     private static final String VIDEO_BUSINESS = "archive";
 
@@ -102,10 +105,12 @@ public class MainFragment extends BrowseSupportFragment {
     private final CompositeDisposable disposable = new CompositeDisposable();
     private LiveRoomCardPresenter.CardLongClickListener liveRoomCardLongClickListener;
 
+    private ArrayObjectAdapter videoPopularRowAdapter;
     private ArrayObjectAdapter liveHistoryRowAdapter;
     private ArrayObjectAdapter bilibiliVideoHistoryRowAdapter;
     private ArrayObjectAdapter versionRowAdapter;
 
+    private DiffCallback<VideoData> bilibiliVideoPopularDiffCallback;
     private DiffCallback<LiveRoom> liveRoomDiffCallback;
     private DiffCallback<HistoryRecord> bilibiliHistoryDiffCallback;
     private DiffCallback<GithubReleaseTagInfo> versionDiffCallback;
@@ -139,24 +144,35 @@ public class MainFragment extends BrowseSupportFragment {
         }
         LiveRoomCardPresenter liveRoomCardPresenter = new LiveRoomCardPresenter(liveRoomCardLongClickListener);
         liveHistoryRowAdapter = new ArrayObjectAdapter(liveRoomCardPresenter);
+
+        VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
+
+        // 推荐视频
+        HeaderItem popularHeader = new HeaderItem(HEAD_TITLE_POPULAR,
+                getResources().getString(R.string.head_title_popular));
+        videoPopularRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
+        ListRow popularListRow = new ListRow(popularHeader, videoPopularRowAdapter);
+        rowsAdapter.add(popularListRow);
+
+        // 直播历史记录
         HeaderItem historyRecordHeader = new HeaderItem(HEAD_TITLE_HISTORY,
                 getResources().getString(R.string.head_title_history));
         ListRow liveHistoryListRow = new ListRow(historyRecordHeader, liveHistoryRowAdapter);
-        rowsAdapter.add(0, liveHistoryListRow);
+        rowsAdapter.add(HEAD_TITLE_HISTORY - 1, liveHistoryListRow);
 
         // bilibili播放历史
-        VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
         HeaderItem bilibiliHistoryHeaderItem = new HeaderItem(HEAD_TITLE_BILIBILI_HISTORY,
                 getResources().getString(R.string.head_title_video_history));
         bilibiliVideoHistoryRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
-        rowsAdapter.add(1, new ListRow(bilibiliHistoryHeaderItem, bilibiliVideoHistoryRowAdapter));
+        rowsAdapter.add(new ListRow(bilibiliHistoryHeaderItem,
+                bilibiliVideoHistoryRowAdapter));
 
         // 其他
         HeaderItem otherHeader = new HeaderItem(HEAD_TITLE_OTHER,
                 activity.getString(R.string.head_title_other));
         GridItemPresenter mGridPresenter = new GridItemPresenter();
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-        gridRowAdapter.add(activity.getString(R.string.bilibili_history_refresh));
+        gridRowAdapter.add(activity.getString(R.string.bilibili_refresh));
         gridRowAdapter.add(activity.getString(R.string.bilibili_scan_qr_code_login));
         gridRowAdapter.add(activity.getString(R.string.setting));
         gridRowAdapter.add(activity.getString(R.string.clear_history));
@@ -165,14 +181,14 @@ public class MainFragment extends BrowseSupportFragment {
             gridRowAdapter.add(activity.getString(R.string.danmaku_test));
             gridRowAdapter.add(activity.getString(R.string.video_test));
         }
-        rowsAdapter.add(2, new ListRow(otherHeader, gridRowAdapter));
+        rowsAdapter.add(new ListRow(otherHeader, gridRowAdapter));
 
         // 版本
         HeaderItem versionHeaderItem = new HeaderItem(HEAD_TITLE_LATEST_VERSION,
                 getResources().getString(R.string.head_title_latest_version));
         GithubReleasePresenter mGithubReleasePresenter = new GithubReleasePresenter();
         versionRowAdapter = new ArrayObjectAdapter(mGithubReleasePresenter);
-        rowsAdapter.add(3, new ListRow(versionHeaderItem, versionRowAdapter));
+        rowsAdapter.add(new ListRow(versionHeaderItem, versionRowAdapter));
 
         setAdapter(rowsAdapter);
     }
@@ -188,6 +204,7 @@ public class MainFragment extends BrowseSupportFragment {
                     Log.d(TAG, "load liveRooms size: " + liveRooms.size());
                     updateLiveHistoryRows(liveRooms);
                 }));
+        runBilibiliVideoPopularRequest();
         runBilibiliHistoryRequest();
         runLatestVersionTask();
     }
@@ -206,6 +223,23 @@ public class MainFragment extends BrowseSupportFragment {
             mBackgroundTimer.cancel();
         }
         disposable.dispose();
+    }
+
+    private void updateBilibiliVideoPopularRows(List<VideoData> list) {
+        if(Objects.isNull(bilibiliVideoPopularDiffCallback)){
+            bilibiliVideoPopularDiffCallback = new DiffCallback<VideoData>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull VideoData oldItem, @NonNull VideoData newItem) {
+                    return oldItem.getBvid().equals(newItem.getBvid());
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull VideoData oldItem, @NonNull VideoData newItem) {
+                    return oldItem.getBvid().equals(newItem.getBvid());
+                }
+            };
+        }
+        videoPopularRowAdapter.setItems(list, bilibiliVideoPopularDiffCallback);
     }
 
     private void updateLiveHistoryRows(List<LiveRoom> list) {
@@ -263,13 +297,18 @@ public class MainFragment extends BrowseSupportFragment {
         versionRowAdapter.setItems(Collections.singletonList(githubReleaseTagInfo), versionDiffCallback);
     }
 
-    private void runLatestVersionTask() {
-        RxRequestFactory.githubLatestRelease()
+    private void runBilibiliVideoPopularRequest() {
+        RxRequestFactory.bilibiliVideoPopular(1, 20)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::updateVersionRows, throwable -> {
-                    ToastUtil.showLongToast(getActivity(), throwable.getMessage());
-                    Log.e(TAG, "githubLatestRelease error", throwable);
+                .subscribe(list -> {
+                    if (Objects.nonNull(list)) {
+                        if (!list.isEmpty()) {
+                            updateBilibiliVideoPopularRows(list);
+                        }
+                    }
+                }, throwable -> {
+                    Log.e(TAG, "bilibiliVideoPopular error", throwable);
                 }, disposable);
     }
 
@@ -288,6 +327,16 @@ public class MainFragment extends BrowseSupportFragment {
                     }
                 }, throwable -> {
                     Log.e(TAG, "bilibiliHistory error", throwable);
+                }, disposable);
+    }
+
+    private void runLatestVersionTask() {
+        RxRequestFactory.githubLatestRelease()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::updateVersionRows, throwable -> {
+                    ToastUtil.showLongToast(getActivity(), throwable.getMessage());
+                    Log.e(TAG, "githubLatestRelease error", throwable);
                 }, disposable);
     }
 
@@ -369,7 +418,18 @@ public class MainFragment extends BrowseSupportFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
             FragmentActivity activity = requireActivity();
-            if (item instanceof LiveRoom) {
+            if (item instanceof VideoData) {
+                VideoData videoData = (VideoData) item;
+                Intent intent = new Intent(activity, VideoDetailsActivity.class);
+                intent.putExtra(VideoDetailsActivity.VIDEO_BV, videoData.getBvid());
+                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
+                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                activity,
+                                ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                VideoDetailsActivity.SHARED_ELEMENT_NAME)
+                        .toBundle();
+                startActivity(intent, bundle);
+            } else if (item instanceof LiveRoom) {
                 LiveRoom liveRoom = (LiveRoom) item;
                 Log.d(TAG, "roomId: " + liveRoom.getId());
                 Intent intent = new Intent(getActivity(), LiveRoomDetailsActivity.class);
@@ -395,8 +455,10 @@ public class MainFragment extends BrowseSupportFragment {
                 jumpToUrl(getString(R.string.latest_version_download_url));
             } else if (item instanceof String) {
                 String desc = (String) item;
-                if(desc.contains(getString(R.string.bilibili_history_refresh))) {
+                if(desc.contains(getString(R.string.bilibili_refresh))) {
+                    runBilibiliVideoPopularRequest();
                     runBilibiliHistoryRequest();
+                    runLatestVersionTask();
                 }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
                     Intent intent = new Intent(activity, LoginActivity.class);
                     startActivity(intent);
@@ -448,7 +510,10 @@ public class MainFragment extends BrowseSupportFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
-            if (item instanceof LiveRoom) {
+            if (item instanceof VideoData) {
+                mBackgroundUri = ((VideoData) item).getPic();
+                startBackgroundTimer();
+            }else if (item instanceof LiveRoom) {
                 mBackgroundUri = ((LiveRoom) item).getBackgroundImageUrl();
                 startBackgroundTimer();
             }else if(item instanceof HistoryRecord){

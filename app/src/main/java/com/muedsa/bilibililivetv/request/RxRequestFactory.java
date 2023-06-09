@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.request;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
+import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
@@ -15,6 +16,7 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.container.GithubApi;
@@ -111,6 +113,13 @@ public class RxRequestFactory {
         return Single.create(emitter -> {
             BilibiliResponse<HistoryTable> response = BilibiliLiveApi.client().history();
             handleResponse(response, emitter, Function.identity(), "BilibiliHistory", true, null);
+        });
+    }
+
+    public static Single<List<VideoData>> bilibiliVideoPopular(int pageNum, int pageSize) {
+        return Single.create(emitter -> {
+            BilibiliResponse<BilibiliPageInfo<VideoData>> response = BilibiliLiveApi.client().popular(pageNum, pageSize);
+            handleResponse(response, emitter, BilibiliPageInfo::getList, "BilibiliPopular", true, null);
         });
     }
 

@@ -349,4 +349,21 @@ public class BilibiliLiveApiClientTest {
             logger.info(danmakuElem.getProgress() + ":" + danmakuElem.getMode() + ":" + danmakuElem.getContent());
         }
     }
+
+    @Test
+    public void popularTest() throws IOException {
+        BilibiliResponse<BilibiliPageInfo<VideoData>> response = client.popular(1, 20);
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getCode());
+        Assertions.assertEquals(response.getCode(), ErrorCode.SUCCESS);
+        Assertions.assertNotNull(response.getData());
+        List<VideoData> list = response.getData().getList();
+        Assertions.assertNotNull(list);
+        Assertions.assertFalse(list.isEmpty());
+        for (VideoData videoData : list) {
+            Assertions.assertNotNull(videoData);
+            Assertions.assertNotNull(videoData.getOwner());
+            logger.info("推荐视频:" + videoData.getTitle() + "[" + videoData.getBvid() + "]" + " " + videoData.getOwner().getName());
+        }
+    }
 }

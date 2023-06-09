@@ -36,6 +36,7 @@
     <!-- channel -->
     <string name="tv_channel_name">BilibiliLive</string>
     <string name="tv_uir_path_program">BilibiliLive</string>
+    <string name="head_title_popular">推荐视频</string>
     <string name="head_title_history">直播历史记录</string>
     <string name="head_title_video_history">视频历史记录</string>
     <string name="head_title_other">其他</string>
@@ -57,7 +58,7 @@
     <string name="toast_msg_video_play_failure">视频地址获取失败,可能视频不存在</string>
     <string name="bilibili_scan_qr_code_login">BiliBili扫码登录</string>
     <string name="loading">加载中…</string>
-    <string name="bilibili_history_refresh">刷新历史记录</string>
+    <string name="bilibili_refresh">刷新</string>
     <string name="logout">注销</string>
     <string name="login_timeout">登录超时，请重新扫码</string>
     <string name="setting">设置</string>

@@ -22,6 +22,7 @@ import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
+import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.util.ApiUtil;
@@ -221,5 +222,13 @@ public class BilibiliLiveApiClient {
         return list.stream()
                 .sorted(Comparator.comparingInt(DanmakuElem::getProgress))
                 .collect(Collectors.toList());
+    }
+
+    public BilibiliResponse<BilibiliPageInfo<VideoData>> popular(int pageNum, int pageSize)
+            throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.POPULAR, pageNum, pageSize);
+        return httpJsonClient.getJson(url,
+                new TypeReference<BilibiliResponse<BilibiliPageInfo<VideoData>>>() {},
+                requestHeader);
     }
 }
