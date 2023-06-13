@@ -73,6 +73,11 @@ public class BilibiliLiveApiClient {
         updateHeaderCookie();
     }
 
+    public void clearCookie() {
+        simpleCookie.clear();
+        updateHeaderCookie();
+    }
+
     private void updateHeaderCookie(){
         Iterator<Map.Entry<String, String>> iterator = simpleCookie.entrySet().iterator();
         StringBuilder sb = new StringBuilder();

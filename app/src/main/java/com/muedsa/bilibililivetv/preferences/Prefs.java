@@ -11,6 +11,10 @@ import java.util.Objects;
 
 
 public class Prefs {
+    public static DefaultValuePref<String> BILIBILI_COOKIE_JSON =  new DefaultValuePref<>("BILIBILI_COOKIE_JSON", "{}");
+
+    public static DefaultValuePref<String> BILIBILI_REFRESH_TOKEN =  new DefaultValuePref<>("BILIBILI_REFRESH_TOKEN", "");
+
     public static DefaultValuePref<String> SESS_DATA = new DefaultValuePref<>(BilibiliApiContainer.COOKIE_KEY_SESSDATA, "");
     public static DefaultValuePref<Integer> DANMAKU_SCALE_TEXT_SIZE = new DefaultValuePref<>("SCALE_TEXT_SIZE", 120);
     public static DefaultValuePref<Integer> DANMAKU_TRANSPARENCY = new DefaultValuePref<>("DANMAKU_TRANSPARENCY", 85);

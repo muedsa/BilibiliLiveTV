@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.UrlQuerySanitizer;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -25,29 +26,28 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.alibaba.fastjson2.JSON;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.muedsa.bilibililiveapiclient.BilibiliApiContainer;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililivetv.GlideApp;
-import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
+import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.bilibililivetv.request.HttpRequestException;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
@@ -200,9 +200,10 @@ public class LoginFragment extends Fragment {
                                     Log.d(TAG, "login success: " + loginInfo.getData().getUrl());
                                     releaseTimer();
                                     listCompositeDisposable.clear();
-                                    String sessData = getSessData(loginInfo.getData().getUrl());
-                                    Prefs.putString(Prefs.SESS_DATA, sessData);
-                                    BilibiliLiveApi.login(sessData);
+                                    Map<String, String> cookieMap = getLoginCookie(loginInfo.getData().getUrl());
+                                    Prefs.putString(Prefs.BILIBILI_COOKIE_JSON, JSON.toJSONString(cookieMap));
+                                    Prefs.putString(Prefs.BILIBILI_REFRESH_TOKEN, loginInfo.getData().getRefreshToken());
+                                    BilibiliLiveApi.login(cookieMap);
                                     checkLogin();
                                 }
                             }, throwable -> {
@@ -215,16 +216,21 @@ public class LoginFragment extends Fragment {
         }, 1500, 1500);
     }
 
-    private static final Pattern regex = Pattern.compile("\\S*SESSDATA=(\\S*)&bili_jct\\S*");
-    private static String getSessData(String loginUrl) throws UnsupportedEncodingException {
-        String sessData = "";
-        Matcher matcher = regex.matcher(loginUrl);
-        if(matcher.matches()){
-            sessData = matcher.group(1);
-            URLDecoder.decode(sessData, StandardCharsets.UTF_8.name());
+    private static Map<String, String> getLoginCookie(String url) {
+        UrlQuerySanitizer query = new UrlQuerySanitizer(url);
+        Map<String, String> map = new HashMap<>(4);
+        fillCookie(map, query, BilibiliApiContainer.COOKIE_KEY_USER_ID);
+        fillCookie(map, query, BilibiliApiContainer.COOKIE_KEY_USER_ID_HSAH);
+        fillCookie(map, query, BilibiliApiContainer.COOKIE_KEY_SESSDATA);
+        fillCookie(map, query, BilibiliApiContainer.COOKIE_KEY_BILI_JCT);
+        return map;
+    }
+
+    private static void fillCookie(Map<String, String> map, UrlQuerySanitizer query, String key) {
+        String value = query.getValue(key);
+        if(value != null){
+            map.put(key, value);
         }
-        Log.d(TAG, "SESSDATA:" + sessData);
-        return sessData;
     }
 
     private void releaseTimer() {
