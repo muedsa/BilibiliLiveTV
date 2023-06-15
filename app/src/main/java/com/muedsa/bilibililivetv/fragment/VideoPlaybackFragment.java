@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
 
@@ -33,6 +34,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.MimeTypes;
+import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoSubtitle;
 import com.muedsa.bilibililivetv.EnvConfig;
 import com.muedsa.bilibililivetv.R;
@@ -44,6 +46,7 @@ import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleDecoder;
 import com.muedsa.bilibililivetv.player.video.BilibiliVideoPlaybackTransportControlGlue;
+import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.HttpClientContainer;
 
@@ -51,8 +54,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.DanmakuTimer;
@@ -77,6 +83,10 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     private SubtitleView subtitleView;
 
     private Dialog subtitleTrackSelectionDialog;
+
+    private Timer heartbeatTimer;
+
+    private Heartbeat heartbeat;
 
     @Override
     public View onCreateView(
@@ -103,6 +113,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
             initDanmakuView();
             prepareVideo(videoPlayInfo);
             prepareDanmaku(videoPlayInfo);
+            prepareHeartbeatTimer(videoPlayInfo);
         }
         return root;
     }
@@ -302,6 +313,43 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         }
     }
 
+    private void prepareHeartbeatTimer(VideoPlayInfo videoPlayInfo) {
+        if(heartbeatTimer == null) {
+            heartbeatTimer = new Timer();
+            long current = System.currentTimeMillis() / 1000;
+            heartbeat = new Heartbeat();
+            heartbeat.setBvid(videoPlayInfo.getBv());
+            heartbeat.setCid(videoPlayInfo.getCid());
+            heartbeat.setType(3);
+            heartbeat.setQuality(videoPlayInfo.getQuality());
+            heartbeat.setVideoDuration(videoPlayInfo.getVideoDuration());
+            heartbeat.setStartTs(current);
+            heartbeat.setRealtime(0L);
+            heartbeatTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    FragmentActivity activity = getActivity();
+                    if(activity != null){
+                        activity.runOnUiThread(() -> {
+                            if(exoPlayer.isPlaying()){
+                                long progress = glue.getCurrentPosition() / 1000;
+                                heartbeat.setPlayedTime(progress);
+                                heartbeat.setLastPlayProgressTime(progress);
+                                heartbeat.setPlayType(0);
+                                Log.d(TAG, "heartbeat");
+                                RxRequestFactory.bilibiliVideoHeartbeat(heartbeat)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(Schedulers.io())
+                                        .subscribe()
+                                        .dispose();
+                            }
+                        });
+                    }
+                }
+            }, 15000, 15000);
+        }
+    }
+
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
@@ -341,6 +389,11 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         }
         if (Objects.nonNull(subtitleView)) {
             subtitleView = null;
+        }
+
+        if (Objects.nonNull(heartbeatTimer)) {
+            heartbeatTimer.cancel();
+            heartbeatTimer.purge();
         }
     }
 }

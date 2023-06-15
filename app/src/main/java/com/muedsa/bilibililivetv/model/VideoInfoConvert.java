@@ -45,6 +45,7 @@ public class VideoInfoConvert {
             videoPlayInfo.setQuality(video.getId());
             videoPlayInfo.setQualityDescription(qualityMap.getOrDefault(video.getId(), ""));
             videoPlayInfo.setCodecs(video.getCodecs().split("\\.")[0]);
+            videoPlayInfo.setVideoDuration(videoInfo.getVideoData().getDuration());
             videoPlayInfo.setVideoUrl(video.getBaseUrl());
             videoPlayInfo.setAudioUrl(audioOption.get().getBaseUrl());
             videoPlayInfo.setReferer(url);

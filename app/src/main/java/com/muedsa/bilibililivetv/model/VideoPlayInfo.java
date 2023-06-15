@@ -9,13 +9,13 @@ public class VideoPlayInfo implements Serializable {
 
     private String bv;
     private Long cid;
-
     private String title;
     private String subTitle;
 
     private Integer quality;
     private String qualityDescription;
     private String codecs;
+    private Long videoDuration;
 
     private String videoUrl;
     private String audioUrl;
@@ -80,6 +80,14 @@ public class VideoPlayInfo implements Serializable {
 
     public void setCodecs(String codecs) {
         this.codecs = codecs;
+    }
+
+    public Long getVideoDuration() {
+        return videoDuration;
+    }
+
+    public void setVideoDuration(Long videoDuration) {
+        this.videoDuration = videoDuration;
     }
 
     public String getVideoUrl() {

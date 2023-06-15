@@ -16,6 +16,7 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
@@ -120,6 +121,13 @@ public class RxRequestFactory {
         return Single.create(emitter -> {
             BilibiliResponse<BilibiliPageInfo<VideoData>> response = BilibiliLiveApi.client().popular(pageNum, pageSize);
             handleResponse(response, emitter, BilibiliPageInfo::getList, "BilibiliPopular", true, null);
+        });
+    }
+
+    public static Single<Void> bilibiliVideoHeartbeat(Heartbeat heartbeat) {
+        return Single.create(emitter -> {
+            BilibiliResponse<Void> response = BilibiliLiveApi.client().heartbeat(heartbeat);
+            handleResponse(response, emitter, Function.identity(), "BilibiliHeartbeat", false, null);
         });
     }
 
