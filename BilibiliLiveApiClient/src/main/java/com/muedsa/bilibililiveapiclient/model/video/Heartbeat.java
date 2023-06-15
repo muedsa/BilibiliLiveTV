@@ -32,6 +32,8 @@ public class Heartbeat {
 
     public static final String FIELD_PLAY_TYPE = "play_type";
 
+    public static final String FIELD_REFER_URL = "refer_url";
+
     public static final String FIELD_CSRF = "csrf";
 
     @JSONField(name = "bvid")

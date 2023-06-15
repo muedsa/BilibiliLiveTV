@@ -260,6 +260,7 @@ public class BilibiliLiveApiClient {
         params.put(Heartbeat.FIELD_LAST_PLAY_PROGRESS_TIME, heartbeat.getLastPlayProgressTime());
         params.put(Heartbeat.FIELD_MAX_PLAY_PROGRESS_TIME, heartbeat.getMaxPlayProgressTime());
         params.put(Heartbeat.FIELD_PLAY_TYPE, heartbeat.getPlayType());
+        params.put(Heartbeat.FIELD_REFER_URL, "https://www.bilibili.com/");
         params.put(Heartbeat.FIELD_CSRF, csrf);
         return httpJsonClient.postJson(ApiUrlContainer.VIDEO_HEARTBEAT, params,
                 new TypeReference<BilibiliResponse<Void>>() {}, requestHeader);
