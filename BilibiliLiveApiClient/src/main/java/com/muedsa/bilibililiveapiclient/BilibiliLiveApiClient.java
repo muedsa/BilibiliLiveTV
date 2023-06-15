@@ -21,6 +21,7 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
@@ -61,6 +62,10 @@ public class BilibiliLiveApiClient {
 
     public void putHeader(String k, String v){
         requestHeader.put(k, v);
+    }
+
+    public String getCookie(String k){
+        return simpleCookie.get(k);
     }
 
     public void putCookie(String k, String v){
@@ -235,5 +240,28 @@ public class BilibiliLiveApiClient {
         return httpJsonClient.getJson(url,
                 new TypeReference<BilibiliResponse<BilibiliPageInfo<VideoData>>>() {},
                 requestHeader);
+    }
+
+    public BilibiliResponse<Void> heartbeat(Heartbeat heartbeat) throws IOException {
+        String csrf = getCookie(BilibiliApiContainer.COOKIE_KEY_BILI_JCT);
+        String mid = getCookie(BilibiliApiContainer.COOKIE_KEY_USER_ID);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(Heartbeat.FIELD_BVID, heartbeat.getBvid());
+        params.put(Heartbeat.FIELD_CID, heartbeat.getCid());
+        params.put(Heartbeat.FIELD_MID, mid);
+        params.put(Heartbeat.FIELD_TYPE, heartbeat.getType());
+        params.put(Heartbeat.FIELD_SUB_TYPE, heartbeat.getSubType());
+        params.put(Heartbeat.FIELD_DT, 2);
+        params.put(Heartbeat.FIELD_QUALITY, heartbeat.getQuality());
+        params.put(Heartbeat.FIELD_VIDEO_DURATION, heartbeat.getVideoDuration());
+        params.put(Heartbeat.FIELD_PLAYED_TIME, heartbeat.getPlayedTime());
+        params.put(Heartbeat.FIELD_REALTIME, heartbeat.getRealtime());
+        params.put(Heartbeat.FIELD_START_TS, heartbeat.getStartTs());
+        params.put(Heartbeat.FIELD_LAST_PLAY_PROGRESS_TIME, heartbeat.getLastPlayProgressTime());
+        params.put(Heartbeat.FIELD_MAX_PLAY_PROGRESS_TIME, heartbeat.getMaxPlayProgressTime());
+        params.put(Heartbeat.FIELD_PLAY_TYPE, heartbeat.getPlayType());
+        params.put(Heartbeat.FIELD_CSRF, csrf);
+        return httpJsonClient.postJson(ApiUrlContainer.VIDEO_HEARTBEAT, params,
+                new TypeReference<BilibiliResponse<Void>>() {}, requestHeader);
     }
 }
