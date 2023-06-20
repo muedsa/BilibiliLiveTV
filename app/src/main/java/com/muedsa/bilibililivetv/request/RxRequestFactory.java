@@ -155,15 +155,7 @@ public class RxRequestFactory {
                 code = response.getCode();
             }
             if(code == ErrorCode.SUCCESS){
-                if(emptyValid && Objects.isNull(response.getData())){
-                    if(Objects.nonNull(response.getData())){
-                        handleResponseConverter(code, response, emitter, converter, tag, true, beforeSuccess);
-                    }else{
-                        emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
-                    }
-                }else{
-                    handleResponseConverter(code, response, emitter, converter, tag, emptyValid, beforeSuccess);
-                }
+                handleResponseConverter(code, response, emitter, converter, tag, emptyValid, beforeSuccess);
             }else{
                 emitter.onError(HttpRequestException.create(code, response.getMessage()));
             }
@@ -176,12 +168,18 @@ public class RxRequestFactory {
                                                       SingleEmitter<R> emitter, Function<T, R> converter,
                                                       String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
         R result = converter.apply(response.getData());
-        if(emptyValid && validEmpty(result)){
+        if(emptyValid){
+            if(validEmpty(result)) {
+                if(Objects.isNull(beforeSuccess) || !beforeSuccess.before(response, emitter)){
+                    emitter.onSuccess(result);
+                }
+            }else{
+                emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
+            }
+        }else{
             if(Objects.isNull(beforeSuccess) || !beforeSuccess.before(response, emitter)){
                 emitter.onSuccess(result);
             }
-        }else{
-            emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
         }
     }
 
