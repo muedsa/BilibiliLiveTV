@@ -345,7 +345,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(Schedulers.io())
                                         .subscribe(Functions.emptyConsumer(),
-                                                Functions.emptyConsumer(),
+                                                (throwable -> Log.d(TAG, "heartbeat error", throwable)),
                                                 disposable);
                             }
                         });
