@@ -155,15 +155,7 @@ public class RxRequestFactory {
                 code = response.getCode();
             }
             if(code == ErrorCode.SUCCESS){
-                if(emptyValid && Objects.isNull(response.getData())){
-                    if(Objects.nonNull(response.getData())){
-                        handleResponseConverter(code, response, emitter, converter, tag, true, beforeSuccess);
-                    }else{
-                        emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
-                    }
-                }else{
-                    handleResponseConverter(code, response, emitter, converter, tag, emptyValid, beforeSuccess);
-                }
+                handleResponseConverter(code, response, emitter, converter, tag, emptyValid, beforeSuccess);
             }else{
                 emitter.onError(HttpRequestException.create(code, response.getMessage()));
             }
