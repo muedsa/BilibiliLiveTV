@@ -39,6 +39,8 @@ public class RxRequestFactory {
 
     public static final String REQUEST_ERROR = "[%s] request error";
 
+    public static final Function<Void, Integer> VOID_TO_200 = ignore -> 200;
+
     public static Single<SearchResult> bilibiliSearchLive(String query) {
         return Single.create(emitter -> {
             BilibiliResponse<SearchAggregation<SearchResult>> response = BilibiliLiveApi.client().searchLive(query, 1, 10);
@@ -124,10 +126,10 @@ public class RxRequestFactory {
         });
     }
 
-    public static Single<Void> bilibiliVideoHeartbeat(Heartbeat heartbeat) {
+    public static Single<Integer> bilibiliVideoHeartbeat(Heartbeat heartbeat) {
         return Single.create(emitter -> {
             BilibiliResponse<Void> response = BilibiliLiveApi.client().heartbeat(heartbeat);
-            handleResponse(response, emitter, Function.identity(), "BilibiliHeartbeat", false, null);
+            handleResponse(response, emitter, VOID_TO_200, "BilibiliHeartbeat", false, null);
         });
     }
 
