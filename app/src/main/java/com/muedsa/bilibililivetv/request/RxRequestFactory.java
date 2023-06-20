@@ -168,14 +168,8 @@ public class RxRequestFactory {
                                                       SingleEmitter<R> emitter, Function<T, R> converter,
                                                       String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
         R result = converter.apply(response.getData());
-        if(emptyValid){
-            if(validEmpty(result)) {
-                if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, emitter)){
-                    emitter.onSuccess(result);
-                }
-            }else{
-                emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
-            }
+        if(emptyValid && !validEmpty(result)){
+            emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
         }else{
             if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, emitter)){
                 emitter.onSuccess(result);
