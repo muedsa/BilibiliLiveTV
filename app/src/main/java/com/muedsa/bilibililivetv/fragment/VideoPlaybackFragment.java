@@ -58,6 +58,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
@@ -87,6 +88,8 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     private Timer heartbeatTimer;
 
     private Heartbeat heartbeat;
+
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     public View onCreateView(
@@ -337,11 +340,10 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                                 heartbeat.setLastPlayProgressTime(progress);
                                 heartbeat.setPlayType(0);
                                 Log.d(TAG, "heartbeat");
-                                RxRequestFactory.bilibiliVideoHeartbeat(heartbeat)
+                                disposable.add(RxRequestFactory.bilibiliVideoHeartbeat(heartbeat)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(Schedulers.io())
-                                        .subscribe()
-                                        .dispose();
+                                        .subscribe());
                             }
                         });
                     }
@@ -394,6 +396,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         if (Objects.nonNull(heartbeatTimer)) {
             heartbeatTimer.cancel();
             heartbeatTimer.purge();
+        }
+        if (!disposable.isDisposed()) {
+            disposable.dispose();
         }
     }
 }
