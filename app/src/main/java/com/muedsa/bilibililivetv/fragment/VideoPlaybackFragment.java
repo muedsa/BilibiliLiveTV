@@ -59,6 +59,7 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.internal.functions.Functions;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import master.flame.danmaku.controller.DrawHandler;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
@@ -340,10 +341,12 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                                 heartbeat.setLastPlayProgressTime(progress);
                                 heartbeat.setPlayType(0);
                                 Log.d(TAG, "heartbeat");
-                                disposable.add(RxRequestFactory.bilibiliVideoHeartbeat(heartbeat)
+                                RxRequestFactory.bilibiliVideoHeartbeat(heartbeat)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(Schedulers.io())
-                                        .subscribe());
+                                        .subscribe(Functions.emptyConsumer(),
+                                                Functions.emptyConsumer(),
+                                                disposable);
                             }
                         });
                     }
