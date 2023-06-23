@@ -32,7 +32,7 @@ dependencies {
     def exoplayer_version = "2.18.7"
     def rxjava3_version = "3.1.6"
     def rxjava3_android_version = "3.0.2"
-    def room_version = "2.5.1"
+    def room_version = "2.5.2"
 
     implementation project(path: ':BilibiliLiveApiClient')
 
