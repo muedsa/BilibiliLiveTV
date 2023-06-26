@@ -2,16 +2,26 @@ plugins {
     id 'com.android.application'
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+Properties localProps = new Properties()
+File localPropsFile = project.rootProject.file('local.properties')
+if(localPropsFile.exists() && localPropsFile.canRead()){
+    localProps.load(localPropsFile.newDataInputStream())
+}
 
 android {
     signingConfigs {
         release {
-            storeFile file(properties.getProperty('bltv.signingConfig.storeFile'))
-            storePassword properties.getProperty('bltv.signingConfig.storePassword')
-            keyPassword properties.getProperty('bltv.signingConfig.keyPassword')
-            keyAlias properties.getProperty('bltv.signingConfig.keyAlias')
+            if(localProps.containsKey('bltv.signingConfig.storeFile')) {
+                storeFile file(localProps.getProperty('bltv.signingConfig.storeFile'))
+                storePassword localProps.getProperty('bltv.signingConfig.storePassword')
+                keyPassword localProps.getProperty('bltv.signingConfig.keyPassword')
+                keyAlias localProps.getProperty('bltv.signingConfig.keyAlias')
+            }else{
+                storeFile signingConfigs.debug.storeFile
+                storePassword signingConfigs.debug.storePassword
+                keyPassword signingConfigs.debug.keyPassword
+                keyAlias signingConfigs.debug.keyAlias
+            }
         }
     }
     compileSdk 34
