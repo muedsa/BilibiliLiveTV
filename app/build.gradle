@@ -2,7 +2,18 @@ plugins {
     id 'com.android.application'
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
+    signingConfigs {
+        release {
+            storeFile file(properties.getProperty('bltv.signingConfig.storeFile'))
+            storePassword properties.getProperty('bltv.signingConfig.storePassword')
+            keyPassword properties.getProperty('bltv.signingConfig.keyPassword')
+            keyAlias properties.getProperty('bltv.signingConfig.keyAlias')
+        }
+    }
     compileSdk 34
 
     defaultConfig {
@@ -14,10 +25,17 @@ android {
     }
 
     buildTypes {
+
+        debug {
+            minifyEnabled false
+            proguardFiles 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
     buildFeatures {
