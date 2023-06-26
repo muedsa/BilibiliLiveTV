@@ -29,7 +29,7 @@ android {
         debug {
             minifyEnabled false
             proguardFiles 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
 
         release {
