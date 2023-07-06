@@ -36,4 +36,6 @@ public class ApiUrlContainer {
     public static String POPULAR = "https://api.bilibili.com/x/web-interface/popular?pn=%d&ps=%d";
 
     public static String VIDEO_HEARTBEAT = "https://api.bilibili.com/x/click-interface/web/heartbeat";
+
+    public static String LIVE_USER_WEB_LIST = "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?page=%d&page_size=%d&_=%d";
 }

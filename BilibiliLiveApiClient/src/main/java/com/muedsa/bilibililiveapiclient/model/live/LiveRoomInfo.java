@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.annotation.JSONField;
 
 public class LiveRoomInfo {
 
-    @JSONField(name = "roomid")
+    @JSONField(name = "roomid", alternateNames = {"room_id"})
     private Long roomId;
 
     @JSONField(name = "uid")
@@ -13,19 +13,19 @@ public class LiveRoomInfo {
     @JSONField(name = "title")
     private String title;
 
-    @JSONField(name = "uname")
+    @JSONField(name = "uname", alternateNames = {"nickname"})
     private String uname;
 
     @JSONField(name = "online")
     private Long online;
 
-    @JSONField(name = "user_cover")
+    @JSONField(name = "user_cover", alternateNames = {"cover_from_user"})
     private String userCover;
 
     @JSONField(name = "user_cover_flag")
     private Integer userCoverFlag;
 
-    @JSONField(name = "system_cover")
+    @JSONField(name = "system_cover", alternateNames = {"keyframe"})
     private String systemCover;
 
     @JSONField(name = "cover")

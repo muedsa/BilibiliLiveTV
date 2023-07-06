@@ -37,6 +37,7 @@
     <string name="tv_channel_name">BilibiliLive</string>
     <string name="tv_uir_path_program">BilibiliLive</string>
     <string name="head_title_popular">推荐视频</string>
+    <string name="head_title_followed_living_rooms">正在直播</string>
     <string name="head_title_history">直播历史记录</string>
     <string name="head_title_video_history">视频历史记录</string>
     <string name="head_title_other">其他</string>

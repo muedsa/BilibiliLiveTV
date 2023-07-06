@@ -8,8 +8,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
+import androidx.room.util.StringUtil;
 
 import com.google.common.base.Strings;
+import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.search.SearchLiveRoom;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
@@ -55,6 +57,12 @@ public class LiveRoomCardPresenter extends AbstractImageCardPresenter {
             title = HtmlCompat.fromHtml(searchLiveRoom.getTitle(), HtmlCompat.FROM_HTML_MODE_COMPACT);
             content = HtmlCompat.fromHtml(searchLiveRoom.getUname(), HtmlCompat.FROM_HTML_MODE_COMPACT);
             url = LiveRoomConvert.getImageUrl(searchLiveRoom);
+        }else if(item instanceof LiveRoomInfo) {
+            LiveRoomInfo liveRoomInfo = (LiveRoomInfo) item;
+            title = liveRoomInfo.getTitle();
+            content = liveRoomInfo.getUname();
+            url = Strings.isNullOrEmpty(liveRoomInfo.getUserCover()) ?
+                    liveRoomInfo.getSystemCover() : liveRoomInfo.getUserCover();
         }
         if (!Strings.isNullOrEmpty(url)) {
             ImageCardView cardView = (ImageCardView) viewHolder.view;

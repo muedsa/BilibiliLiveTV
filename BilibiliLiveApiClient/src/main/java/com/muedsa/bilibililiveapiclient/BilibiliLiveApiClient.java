@@ -15,6 +15,7 @@ import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.live.Qn;
+import com.muedsa.bilibililiveapiclient.model.live.UserWebListResult;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginInfo;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
@@ -264,5 +265,12 @@ public class BilibiliLiveApiClient {
         params.put(Heartbeat.FIELD_CSRF, csrf);
         return httpJsonClient.postJson(ApiUrlContainer.VIDEO_HEARTBEAT, params,
                 new TypeReference<BilibiliResponse<Void>>() {}, requestHeader);
+    }
+
+    public BilibiliResponse<UserWebListResult> liveUserWebList(int pageNum, int pageSize) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.LIVE_USER_WEB_LIST, pageNum, pageSize, System.currentTimeMillis());
+        return httpJsonClient.getJson(url,
+                new TypeReference<BilibiliResponse<UserWebListResult>>() {},
+                requestHeader);
     }
 }

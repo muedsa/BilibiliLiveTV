@@ -23,6 +23,7 @@ import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.live.Qn;
 import com.muedsa.bilibililiveapiclient.model.live.RoomInfo;
+import com.muedsa.bilibililiveapiclient.model.live.UserWebListResult;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
@@ -365,5 +366,16 @@ public class BilibiliLiveApiClientTest {
             Assertions.assertNotNull(videoData.getOwner());
             logger.info("推荐视频:" + videoData.getTitle() + "[" + videoData.getBvid() + "]" + " " + videoData.getOwner().getName());
         }
+    }
+
+    @Test
+    public void liveUserWebListTest() throws IOException {
+        BilibiliResponse<UserWebListResult> response = client.liveUserWebList(1, 10);
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getCode());
+        // 需要Cookie
+//        Assertions.assertEquals(response.getCode(), ErrorCode.SUCCESS);
+//        UserWebListResult result = response.getData();
+//        Assertions.assertNotNull(result);
     }
 }

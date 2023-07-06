@@ -9,8 +9,10 @@ import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
+import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.live.Qn;
+import com.muedsa.bilibililiveapiclient.model.live.UserWebListResult;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
 import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
@@ -130,6 +132,13 @@ public class RxRequestFactory {
         return Single.create(emitter -> {
             BilibiliResponse<Void> response = BilibiliLiveApi.client().heartbeat(heartbeat);
             handleResponse(response, emitter, VOID_TO_200, "BilibiliHeartbeat", false, null);
+        });
+    }
+
+    public static Single<List<LiveRoomInfo>> bilibiliFollowedLivingRooms(int pageNum, int pageSize) {
+        return Single.create(emitter -> {
+            BilibiliResponse<UserWebListResult> response = BilibiliLiveApi.client().liveUserWebList(pageNum, pageSize);
+            handleResponse(response, emitter, UserWebListResult::getRooms, "BilibiliFollowedLivingRooms", true, null);
         });
     }
 
