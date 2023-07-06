@@ -68,6 +68,7 @@ public class BilibiliLiveApiClientTest {
     public static void init(){
         roomId = 3;
         client = new BilibiliLiveApiClient();
+        client.putCookie(BilibiliApiContainer.COOKIE_KEY_USER_ID, "2333");
     }
 
     @Test
