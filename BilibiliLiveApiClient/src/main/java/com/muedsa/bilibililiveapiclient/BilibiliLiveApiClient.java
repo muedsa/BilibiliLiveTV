@@ -9,6 +9,7 @@ import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
+import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicFlow;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
@@ -40,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -271,6 +273,15 @@ public class BilibiliLiveApiClient {
         String url = ApiUtil.fillUrl(ApiUrlContainer.LIVE_USER_WEB_LIST, pageNum, pageSize, System.currentTimeMillis());
         return httpJsonClient.getJson(url,
                 new TypeReference<BilibiliResponse<UserWebListResult>>() {},
+                requestHeader);
+    }
+
+    public BilibiliResponse<DynamicFlow> dynamicNew(List<Integer> typeList) throws IOException {
+        String mid = getCookie(BilibiliApiContainer.COOKIE_KEY_USER_ID);
+        String url = ApiUtil.fillUrl(ApiUrlContainer.DYNAMIC_NEW, Long.parseLong(mid), typeList.stream()
+                .map(Object::toString).collect(Collectors.joining(",")));
+        return httpJsonClient.getJson(url,
+                new TypeReference<BilibiliResponse<DynamicFlow>>() {},
                 requestHeader);
     }
 }

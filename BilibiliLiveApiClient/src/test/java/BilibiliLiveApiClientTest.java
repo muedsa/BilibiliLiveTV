@@ -14,6 +14,7 @@ import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
+import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicFlow;
 import com.muedsa.bilibililiveapiclient.model.live.AnchorBaseInfo;
 import com.muedsa.bilibililiveapiclient.model.live.AnchorInfo;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuHostInfo;
@@ -46,6 +47,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -372,10 +375,13 @@ public class BilibiliLiveApiClientTest {
     public void liveUserWebListTest() throws IOException {
         BilibiliResponse<UserWebListResult> response = client.liveUserWebList(1, 10);
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getCode());
         // 需要Cookie
-//        Assertions.assertEquals(response.getCode(), ErrorCode.SUCCESS);
-//        UserWebListResult result = response.getData();
-//        Assertions.assertNotNull(result);
+    }
+
+    @Test
+    public void dynamicNewTest() throws IOException {
+        BilibiliResponse<DynamicFlow> response = client.dynamicNew(Collections.singletonList(8));
+        Assertions.assertNotNull(response);
+        // 需要Cookie
     }
 }

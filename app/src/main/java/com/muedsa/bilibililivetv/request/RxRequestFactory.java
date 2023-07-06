@@ -1,11 +1,15 @@
 package com.muedsa.bilibililivetv.request;
 
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicFlow;
+import com.muedsa.bilibililiveapiclient.model.dynamic.VideoDynamicCard;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
@@ -26,10 +30,13 @@ import com.muedsa.bilibililivetv.container.GithubApi;
 import com.muedsa.github.model.BaseResponse;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleEmitter;
@@ -139,6 +146,18 @@ public class RxRequestFactory {
         return Single.create(emitter -> {
             BilibiliResponse<UserWebListResult> response = BilibiliLiveApi.client().liveUserWebList(pageNum, pageSize);
             handleResponse(response, emitter, UserWebListResult::getRooms, "BilibiliFollowedLivingRooms", true, null);
+        });
+    }
+
+    public static Single<List<VideoDynamicCard>> bilibiliVideoDynamic() {
+        return Single.create(emitter -> {
+            BilibiliResponse<DynamicFlow> response = BilibiliLiveApi.client().dynamicNew(Collections.singletonList(8));
+            handleResponse(response, emitter, resp -> resp.getCards().stream()
+                    .filter(card -> card.getDesc().getType() == 8).map(card -> {
+                VideoDynamicCard videoDynamicCard = JSON.parseObject(card.getCard(), new TypeReference<VideoDynamicCard>(){});
+                videoDynamicCard.setBvid(card.getDesc().getBvid());
+                return videoDynamicCard;
+            }).collect(Collectors.toList()), "BilibiliVideoDynamic", true, null);
         });
     }
 

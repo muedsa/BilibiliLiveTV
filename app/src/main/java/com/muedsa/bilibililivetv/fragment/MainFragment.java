@@ -43,6 +43,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.muedsa.bilibililiveapiclient.model.dynamic.VideoDynamicCard;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
 import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
@@ -88,13 +89,13 @@ public class MainFragment extends BrowseSupportFragment {
     private static final int GRID_ITEM_HEIGHT_DP = 100;
 
     private static final int HEAD_TITLE_POPULAR = 1;
-
     private static final int HEAD_TITLE_FOLLOWED_LIVING_ROOMS = 2;
-
     private static final int HEAD_TITLE_HISTORY = 3;
-    private static final int HEAD_TITLE_BILIBILI_HISTORY = 4;
-    private static final int HEAD_TITLE_OTHER = 5;
-    private static final int HEAD_TITLE_LATEST_VERSION = 6;
+
+    private static final int HEAD_TITLE_VIDEO_DYNAMIC = 4;
+    private static final int HEAD_TITLE_BILIBILI_HISTORY = 5;
+    private static final int HEAD_TITLE_OTHER = 6;
+    private static final int HEAD_TITLE_LATEST_VERSION = 7;
 
     private static final String VIDEO_BUSINESS = "archive";
 
@@ -113,12 +114,14 @@ public class MainFragment extends BrowseSupportFragment {
     private ArrayObjectAdapter videoPopularRowAdapter;
     private ArrayObjectAdapter followedLivingRoomsRowAdapter;
     private ArrayObjectAdapter liveHistoryRowAdapter;
+    private ArrayObjectAdapter bilibiliVideoDynamicRowAdapter;
     private ArrayObjectAdapter bilibiliVideoHistoryRowAdapter;
     private ArrayObjectAdapter versionRowAdapter;
 
     private DiffCallback<VideoData> bilibiliVideoPopularDiffCallback;
     private DiffCallback<LiveRoomInfo> bilibiliFollowedLivingRoomsDiffCallback;
     private DiffCallback<LiveRoom> liveRoomDiffCallback;
+    private DiffCallback<VideoDynamicCard> bilibiliVideoDynamicDiffCallback;
     private DiffCallback<HistoryRecord> bilibiliHistoryDiffCallback;
     private DiffCallback<GithubReleaseTagInfo> versionDiffCallback;
 
@@ -172,6 +175,12 @@ public class MainFragment extends BrowseSupportFragment {
         ListRow liveHistoryListRow = new ListRow(historyRecordHeader, liveHistoryRowAdapter);
         rowsAdapter.add(liveHistoryListRow);
 
+        // 动态-投稿视频
+        HeaderItem videoDynamicHeader = new HeaderItem(HEAD_TITLE_VIDEO_DYNAMIC,
+                getResources().getString(R.string.head_title_video_dynamic));
+        bilibiliVideoDynamicRowAdapter = new ArrayObjectAdapter(videoCardPresenter);
+        rowsAdapter.add(new ListRow(videoDynamicHeader, bilibiliVideoDynamicRowAdapter));
+
         // bilibili播放历史
         HeaderItem bilibiliHistoryHeaderItem = new HeaderItem(HEAD_TITLE_BILIBILI_HISTORY,
                 getResources().getString(R.string.head_title_video_history));
@@ -218,6 +227,7 @@ public class MainFragment extends BrowseSupportFragment {
                 }));
         runBilibiliVideoPopularRequest();
         runBilibiliFollowedLivingRoomsRequest();
+        runBilibiliVideoDynamicRequest();
         runBilibiliHistoryRequest();
         runLatestVersionTask();
     }
@@ -291,6 +301,23 @@ public class MainFragment extends BrowseSupportFragment {
         liveHistoryRowAdapter.setItems(list, liveRoomDiffCallback);
     }
 
+    private void updateVideoDynamicRows(List<VideoDynamicCard> list) {
+        if(Objects.isNull(bilibiliVideoDynamicDiffCallback)){
+            bilibiliVideoDynamicDiffCallback = new DiffCallback<VideoDynamicCard>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull VideoDynamicCard oldItem, @NonNull VideoDynamicCard newItem) {
+                    return oldItem.getAid().equals(newItem.getAid());
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull VideoDynamicCard oldItem, @NonNull VideoDynamicCard newItem) {
+                    return oldItem.getAid().equals(newItem.getAid());
+                }
+            };
+        }
+        bilibiliVideoDynamicRowAdapter.setItems(list, bilibiliVideoDynamicDiffCallback);
+    }
+
     private void updateBilibiliHistoryRows(List<HistoryRecord> list) {
         if(Objects.isNull(bilibiliHistoryDiffCallback)){
             bilibiliHistoryDiffCallback = new DiffCallback<HistoryRecord>() {
@@ -354,6 +381,21 @@ public class MainFragment extends BrowseSupportFragment {
                     }
                 }, throwable -> {
                     Log.e(TAG, "bilibiliVideoPopular error", throwable);
+                }, disposable);
+    }
+
+    private void runBilibiliVideoDynamicRequest() {
+        RxRequestFactory.bilibiliVideoDynamic()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> {
+                    if (Objects.nonNull(list)) {
+                        if (!list.isEmpty()) {
+                            updateVideoDynamicRows(list);
+                        }
+                    }
+                }, throwable -> {
+                    Log.e(TAG, "bilibiliVideoDynamic error", throwable);
                 }, disposable);
     }
 
@@ -474,6 +516,17 @@ public class MainFragment extends BrowseSupportFragment {
                                 VideoDetailsActivity.SHARED_ELEMENT_NAME)
                         .toBundle();
                 startActivity(intent, bundle);
+            } else if (item instanceof VideoDynamicCard) {
+                VideoDynamicCard videoDynamicCard = (VideoDynamicCard) item;
+                Intent intent = new Intent(activity, VideoDetailsActivity.class);
+                intent.putExtra(VideoDetailsActivity.VIDEO_BV, videoDynamicCard.getBvid());
+                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
+                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                activity,
+                                ((ImageCardView) itemViewHolder.view).getMainImageView(),
+                                VideoDetailsActivity.SHARED_ELEMENT_NAME)
+                        .toBundle();
+                startActivity(intent, bundle);
             } else if (item instanceof LiveRoomInfo) {
                 LiveRoomInfo liveRoomInfo = (LiveRoomInfo) item;
                 Log.d(TAG, "roomId: " + liveRoomInfo.getRoomId());
@@ -514,6 +567,7 @@ public class MainFragment extends BrowseSupportFragment {
                 if(desc.contains(getString(R.string.bilibili_refresh))) {
                     runBilibiliVideoPopularRequest();
                     runBilibiliFollowedLivingRoomsRequest();
+                    runBilibiliVideoDynamicRequest();
                     runBilibiliHistoryRequest();
                     runLatestVersionTask();
                 }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
@@ -569,6 +623,9 @@ public class MainFragment extends BrowseSupportFragment {
                 Row row) {
             if (item instanceof VideoData) {
                 mBackgroundUri = ((VideoData) item).getPic();
+                startBackgroundTimer();
+            }else if (item instanceof VideoDynamicCard) {
+                mBackgroundUri = ((VideoDynamicCard) item).getFirstFrame();
                 startBackgroundTimer();
             }else if (item instanceof LiveRoom) {
                 mBackgroundUri = ((LiveRoom) item).getBackgroundImageUrl();

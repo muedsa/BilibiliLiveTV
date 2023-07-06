@@ -6,6 +6,7 @@ import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.ImageCardView;
 
 import com.google.common.base.Strings;
+import com.muedsa.bilibililiveapiclient.model.dynamic.VideoDynamicCard;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.SectionEpisode;
@@ -56,6 +57,11 @@ public class VideoCardPresenter extends AbstractImageCardPresenter {
             title = episode.getTitle();
             //content = "";
             url = episode.getArc().getPic();
+        }else if (item instanceof VideoDynamicCard) {
+            VideoDynamicCard videoDynamicCard = (VideoDynamicCard) item;
+            title = videoDynamicCard.getTitle();
+            content = videoDynamicCard.getOwner().getName();
+            url = videoDynamicCard.getPic();
         }
         if (!Strings.isNullOrEmpty(url)) {
             ImageCardView cardView = (ImageCardView) viewHolder.view;
