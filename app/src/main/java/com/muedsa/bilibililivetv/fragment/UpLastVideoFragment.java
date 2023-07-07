@@ -13,14 +13,18 @@ import android.util.Log;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.VerticalGridSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.leanback.widget.ImageCardView;
+import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
@@ -31,15 +35,21 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
+import com.muedsa.bilibililiveapiclient.model.search.SearchLiveRoom;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
+import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
+import com.muedsa.bilibililivetv.model.LiveRoomConvert;
+import com.muedsa.bilibililivetv.model.LiveUser;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -82,6 +92,7 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
         if(mid > 0){
             prepareBackgroundManager();
             setOnItemViewSelectedListener(new ItemViewSelectedListener());
+            setOnItemViewClickedListener(new ItemViewClickedListener());
             listCompositeDisposable = new ListCompositeDisposable();
             setTitle(uname);
             setupRowAdapter();
@@ -185,6 +196,27 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
             if(item instanceof SearchVideoInfo){
                 mBackgroundUri = ((SearchVideoInfo) item).getPic();
                 startBackgroundTimer();
+            }
+        }
+    }
+
+    private final class ItemViewClickedListener implements OnItemViewClickedListener {
+        @Override
+        public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
+                                  RowPresenter.ViewHolder rowViewHolder, Row row) {
+            ImageView sharedElement = ((ImageCardView) itemViewHolder.view).getMainImageView();
+            if(item instanceof SearchVideoInfo){
+                SearchVideoInfo searchVideoInfo = (SearchVideoInfo) item;
+                FragmentActivity activity = requireActivity();
+                Intent intent = new Intent(activity, VideoDetailsActivity.class);
+                intent.putExtra(VideoDetailsActivity.VIDEO_BV, searchVideoInfo.getBvId());
+                intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
+                Bundle bundle = null;
+                if(Objects.nonNull(sharedElement)){
+                    bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement,
+                            VideoDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                }
+                requireActivity().startActivity(intent, bundle);
             }
         }
     }

@@ -221,7 +221,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 intent.putExtra(UpLastVideosActivity.UNAME, videoInfo.getVideoData().getOwner().getName());
                 startActivity(intent);
             } else if(Objects.nonNull(videoPlayInfoList)
-                    && action.getId() > 0
+                    && action.getId() >= 0
                     && action.getId() < videoPlayInfoList.size()) {
                 int index = (int) action.getId();
                 Intent intent = new Intent(activity, VideoPlaybackActivity.class);
