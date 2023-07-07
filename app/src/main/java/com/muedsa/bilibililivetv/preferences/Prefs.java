@@ -16,6 +16,9 @@ public class Prefs {
     public static DefaultValuePref<String> BILIBILI_REFRESH_TOKEN =  new DefaultValuePref<>("BILIBILI_REFRESH_TOKEN", "");
 
     public static DefaultValuePref<String> SESS_DATA = new DefaultValuePref<>(BilibiliApiContainer.COOKIE_KEY_SESSDATA, "");
+
+    public static DefaultValuePref<String> BILIBILI_WBI_KEY =  new DefaultValuePref<>("BILIBILI_WBI_KEY", "");
+    public static DefaultValuePref<Long> BILIBILI_WBI_KEY_TIME =  new DefaultValuePref<>("BILIBILI_WBI_KEY_TIME", 0L);
     public static DefaultValuePref<Integer> DANMAKU_SCALE_TEXT_SIZE = new DefaultValuePref<>("SCALE_TEXT_SIZE", 120);
     public static DefaultValuePref<Integer> DANMAKU_TRANSPARENCY = new DefaultValuePref<>("DANMAKU_TRANSPARENCY", 85);
     public static DefaultValuePref<Integer> DANMAKU_MARGIN = new DefaultValuePref<>("DANMAKU_MARGIN", 5);
@@ -60,6 +63,16 @@ public class Prefs {
         return SHARED_PREFERENCES.getInt(pref.key, pref.getValue());
     }
 
+    public static long getLong(Pref pref){
+        checkInit();
+        return SHARED_PREFERENCES.getLong(pref.key, 0);
+    }
+
+    public static long getLong(DefaultValuePref<Long> pref){
+        checkInit();
+        return SHARED_PREFERENCES.getLong(pref.key, pref.getValue());
+    }
+
     public static float getFloat(Pref pref){
         checkInit();
         return SHARED_PREFERENCES.getFloat(pref.key, 0);
@@ -88,6 +101,11 @@ public class Prefs {
     public static void putInt(Pref pref, int value){
         checkInit();
         SHARED_PREFERENCES.edit().putInt(pref.key, value).apply();
+    }
+
+    public static void putLong(Pref pref, long value){
+        checkInit();
+        SHARED_PREFERENCES.edit().putLong(pref.key, value).apply();
     }
 
     public static void putFloat(Pref pref, float value){

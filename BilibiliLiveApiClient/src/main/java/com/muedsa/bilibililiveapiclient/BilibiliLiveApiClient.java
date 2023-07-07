@@ -180,8 +180,7 @@ public class BilibiliLiveApiClient {
         VideoInfo videoInfo = null;
         Matcher matcher = VIDEO_INFO_PATTERN.matcher(html);
         if (matcher.matches()) {
-            videoInfo = JSON.parseObject(matcher.group(1), new TypeReference<VideoInfo>() {
-            });
+            videoInfo = JSON.parseObject(matcher.group(1), new TypeReference<VideoInfo>() {});
         } else {
             logger.warning("parseVideoInfo fail");
             logger.warning("\n" + html);
@@ -195,8 +194,7 @@ public class BilibiliLiveApiClient {
         BilibiliResponse<PlayInfo> playInfo = null;
         Matcher matcher = PLAY_INFO_PATTERN.matcher(html);
         if (matcher.matches()) {
-            playInfo = JSON.parseObject(matcher.group(1), new TypeReference<BilibiliResponse<PlayInfo>>() {
-            });
+            playInfo = JSON.parseObject(matcher.group(1), new TypeReference<BilibiliResponse<PlayInfo>>() {});
             if (Objects.isNull(playInfo.getData())) {
                 logger.warning("parsePlayInfo fail, data is null");
                 logger.warning("\n" + html);

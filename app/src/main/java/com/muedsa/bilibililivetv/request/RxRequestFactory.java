@@ -22,17 +22,22 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.space.SpaceSearchResult;
 import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
+import com.muedsa.bilibililiveapiclient.util.WbiUtil;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
 import com.muedsa.bilibililivetv.container.GithubApi;
+import com.muedsa.bilibililivetv.preferences.Prefs;
 import com.muedsa.github.model.BaseResponse;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -161,6 +166,39 @@ public class RxRequestFactory {
         });
     }
 
+    public static Single<List<SearchVideoInfo>> bilibiliSpaceSearchVideo(int pageNum, int pageSize, long mid){
+        return getWbiKey().map(wbiKey -> {
+            BilibiliResponse<SpaceSearchResult> response = BilibiliLiveApi.client().spaceSearch(pageNum, pageSize, mid, wbiKey);
+            return handleResponse(response, resp -> resp.getList().getVlist(), "BilibiliSpaceSearchVideo", true, null);
+        });
+    }
+
+    private static Single<String> getWbiKey() {
+        return Single.create(emitter -> {
+            String wbiKey = Prefs.getString(Prefs.BILIBILI_WBI_KEY);
+            long ms = Prefs.getLong(Prefs.BILIBILI_WBI_KEY_TIME);
+            LocalDateTime keyTime = LocalDateTime.ofInstant(new Date(ms).toInstant(), ZoneId.of("Asia/Shanghai"));
+            LocalDateTime currentTime = LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.of("Asia/Shanghai"));
+            if (!Strings.isNullOrEmpty(wbiKey)
+                    && keyTime.getYear() == currentTime.getYear()
+                    && keyTime.getMonthValue() == currentTime.getMonthValue()
+                    && keyTime.getDayOfMonth() == currentTime.getDayOfMonth()) {
+                emitter.onSuccess(wbiKey);
+            } else {
+                BilibiliResponse<UserNav> response = BilibiliLiveApi.client().nav();
+                handleResponse(response, emitter,
+                        nav -> WbiUtil.getMixinKey(nav.getWbiImg().getImgKey(), nav.getWbiImg().getSubKey()),
+                        "BilibiliNav wbi key", true,
+                        (resp, result) -> {
+                            Prefs.putString(Prefs.BILIBILI_WBI_KEY, result);
+                            Prefs.putLong(Prefs.BILIBILI_WBI_KEY_TIME, System.currentTimeMillis());
+                            return true;
+                        }
+                );
+            }
+        });
+    }
+
     public static Single<GithubReleaseTagInfo> githubLatestRelease() {
         return Single.create(emitter -> {
             BaseResponse<GithubReleaseTagInfo> response = GithubApi.client().getLatestReleaseInfo(GithubApi.GITHUB_USER, GithubApi.GITHUB_REPO);
@@ -201,7 +239,7 @@ public class RxRequestFactory {
         if(emptyValid && !validEmpty(result)){
             emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
         }else{
-            if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, emitter)){
+            if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, result)){
                 emitter.onSuccess(result);
             }
         }
@@ -217,8 +255,44 @@ public class RxRequestFactory {
         }
     }
 
+    public static <T,R> R handleResponse(BilibiliResponse<T> response,
+                                            Function<T, R> converter,
+                                            String tag,
+                                            boolean emptyValid,
+                                            BeforeSuccess<T, R> beforeSuccess) {
+        long code = ErrorCode.UNKNOWN;
+        if(Objects.nonNull(response)){
+            if(Objects.nonNull(response.getCode())) {
+                code = response.getCode();
+            }
+            if(code == ErrorCode.SUCCESS){
+                return handleResponseConverter(code, response, converter, tag, emptyValid, beforeSuccess);
+            }else{
+                throw HttpRequestException.create(code, response.getMessage());
+            }
+        }else{
+            throw HttpRequestException.create(code, String.format(REQUEST_ERROR, tag));
+        }
+    }
+
+    private static <T,R> R handleResponseConverter(long code, BilibiliResponse<T> response,
+                                                      Function<T, R> converter,
+                                                      String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
+        R result = converter.apply(response.getData());
+        if(emptyValid && !validEmpty(result)){
+            throw HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag));
+        }else{
+            if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, result)){
+                return result;
+            }else{
+                throw new IllegalStateException("not success for beforeSuccess call");
+            }
+        }
+    }
+
+
     @FunctionalInterface
     interface BeforeSuccess<T, R> {
-         boolean before(BilibiliResponse<T> response, SingleEmitter<R> emitter);
+         boolean before(BilibiliResponse<T> response, R result);
     }
 }

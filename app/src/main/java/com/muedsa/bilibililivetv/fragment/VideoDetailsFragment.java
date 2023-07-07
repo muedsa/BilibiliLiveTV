@@ -39,6 +39,7 @@ import com.muedsa.bilibililiveapiclient.model.video.VideoPage;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.MainActivity;
+import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.activity.VideoPlaybackActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
@@ -82,6 +83,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     private DetailsSupportFragmentBackgroundController mDetailsBackground;
 
     private ListCompositeDisposable listCompositeDisposable;
+
+    private static final Long ACTION_ID_UP_LAST_VIDEOS = -1L;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -212,7 +215,14 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
         detailsPresenter.setOnActionClickedListener(action -> {
             FragmentActivity activity = requireActivity();
-            if (Objects.nonNull(videoPlayInfoList) && action.getId() < videoPlayInfoList.size()) {
+            if(action.getId() == ACTION_ID_UP_LAST_VIDEOS) {
+                Intent intent = new Intent(activity, UpLastVideosActivity.class);
+                intent.putExtra(UpLastVideosActivity.MID, videoInfo.getVideoData().getOwner().getMid());
+                intent.putExtra(UpLastVideosActivity.UNAME, videoInfo.getVideoData().getOwner().getName());
+                startActivity(intent);
+            } else if(Objects.nonNull(videoPlayInfoList)
+                    && action.getId() > 0
+                    && action.getId() < videoPlayInfoList.size()) {
                 int index = (int) action.getId();
                 Intent intent = new Intent(activity, VideoPlaybackActivity.class);
                 intent.putExtra(VideoDetailsActivity.PLAY_INFO, videoPlayInfoList.get(index));
@@ -230,6 +240,11 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             for (int i = 0; i < videoPlayInfoList.size(); i++) {
                 VideoPlayInfo videoPlayInfo = videoPlayInfoList.get(i);
                 Action action = new Action(i, videoPlayInfo.getQualityDescription(), videoPlayInfo.getCodecs());
+                actionAdapter.add(action);
+            }
+            FragmentActivity activity = getActivity();
+            if(activity != null){
+                Action action = new Action(ACTION_ID_UP_LAST_VIDEOS, activity.getString(R.string.action_up_last_videos));
                 actionAdapter.add(action);
             }
             detailsOverviewRow.setActionsAdapter(actionAdapter);
@@ -265,24 +280,22 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         videoInfo.getVideoData().getPages().stream()
                 .filter(p -> p.getPage() == page)
                 .findFirst()
-                .ifPresent(videoPage -> {
-                    GlideApp.with(requireActivity())
-                            .asBitmap()
-                            .centerCrop()
-                            .error(R.drawable.default_background)
-                            .load(videoPage.getFirstFrame())
-                            .into(new CustomTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap bitmap,
-                                                            @Nullable Transition<? super Bitmap> transition) {
-                                    mDetailsBackground.setCoverBitmap(bitmap);
-                                    mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
-                                }
+                .ifPresent(videoPage -> GlideApp.with(requireActivity())
+                        .asBitmap()
+                        .centerCrop()
+                        .error(R.drawable.default_background)
+                        .load(videoPage.getFirstFrame())
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull Bitmap bitmap,
+                                                        @Nullable Transition<? super Bitmap> transition) {
+                                mDetailsBackground.setCoverBitmap(bitmap);
+                                mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+                            }
 
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {}
-                            });
-                });
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {}
+                        }));
     }
 
     private void initializeBackground() {
