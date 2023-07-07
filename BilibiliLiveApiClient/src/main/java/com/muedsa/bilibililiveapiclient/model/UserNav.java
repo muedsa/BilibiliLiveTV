@@ -13,7 +13,10 @@ public class UserNav {
     private String face;
 
     @JSONField(name = "uname")
-    public String uname;
+    private String uname;
+
+    @JSONField(name = "wbi_img")
+    private WbiImg wbiImg;
 
     // todo more field
 
@@ -47,5 +50,17 @@ public class UserNav {
 
     public void setUname(String uname) {
         this.uname = uname;
+    }
+
+    public Boolean getLogin() {
+        return isLogin;
+    }
+
+    public WbiImg getWbiImg() {
+        return wbiImg;
+    }
+
+    public void setWbiImg(WbiImg wbiImg) {
+        this.wbiImg = wbiImg;
     }
 }

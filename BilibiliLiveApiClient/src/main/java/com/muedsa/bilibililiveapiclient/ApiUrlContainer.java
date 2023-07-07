@@ -40,4 +40,6 @@ public class ApiUrlContainer {
     public static String LIVE_USER_WEB_LIST = "https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?page=%d&page_size=%d&_=%d";
 
     public static String DYNAMIC_NEW = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=%d&type_list=%s";
+
+    public static String SPACE_SEARCH = "https://api.bilibili.com/x/space/wbi/arc/search";
 }

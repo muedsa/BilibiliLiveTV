@@ -23,12 +23,14 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.space.SpaceSearchResult;
 import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.util.ApiUtil;
+import com.muedsa.bilibililiveapiclient.util.WbiUtil;
 import com.muedsa.httpjsonclient.HttpClientContainer;
 import com.muedsa.httpjsonclient.HttpJsonClient;
 
@@ -41,7 +43,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -282,6 +283,23 @@ public class BilibiliLiveApiClient {
                 .map(Object::toString).collect(Collectors.joining(",")));
         return httpJsonClient.getJson(url,
                 new TypeReference<BilibiliResponse<DynamicFlow>>() {},
+                requestHeader);
+    }
+
+    public BilibiliResponse<SpaceSearchResult> spaceSearch(int pageNum, int pageSize, long mid, String mixinKey)
+            throws IOException {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(BilibiliApiContainer.QUERY_KEY_MID, mid);
+        params.put(BilibiliApiContainer.QUERY_KEY_PN, pageNum);
+        params.put(BilibiliApiContainer.QUERY_KEY_PS, pageSize);
+        params.put(BilibiliApiContainer.QUERY_KEY_INDEX, 1);
+        params.put(BilibiliApiContainer.QUERY_KEY_ORDER, BilibiliApiContainer.ORDER_BY_PUBLIC_DATE);
+        params.put(BilibiliApiContainer.QUERY_KEY_ORDER_AVOIDED, this);
+        params.put(BilibiliApiContainer.QUERY_KEY_PLATFORM, BilibiliApiContainer.PLATFORM_WEB);
+        params.put(BilibiliApiContainer.QUERY_KEY_WEB_LOCATION, BilibiliApiContainer.WEB_LOCATION_SPACE);
+        WbiUtil.fillWbiParams(params, mixinKey);
+        return httpJsonClient.getJson(ApiUtil.buildUrlWithParams(ApiUrlContainer.SPACE_SEARCH, params),
+                new TypeReference<BilibiliResponse<SpaceSearchResult>>() {},
                 requestHeader);
     }
 }

@@ -11,6 +11,7 @@ import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
+import com.muedsa.bilibililiveapiclient.model.WbiImg;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
@@ -30,6 +31,7 @@ import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.space.SpaceSearchResult;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDash;
 import com.muedsa.bilibililiveapiclient.model.video.PlayDashInfo;
 import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
@@ -40,6 +42,7 @@ import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.util.ApiUtil;
+import com.muedsa.bilibililiveapiclient.util.WbiUtil;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -384,5 +387,28 @@ public class BilibiliLiveApiClientTest {
         BilibiliResponse<DynamicFlow> response = client.dynamicNew(Collections.singletonList(8));
         Assertions.assertNotNull(response);
         // 需要Cookie
+    }
+
+    @Test
+    public void spaceSearchTest() throws IOException {
+        BilibiliResponse<UserNav> navResponse = client.nav();
+        Assertions.assertNotNull(navResponse);
+        Assertions.assertNotNull(navResponse.getData());
+        WbiImg wbiImg = navResponse.getData().getWbiImg();
+        Assertions.assertNotNull(wbiImg);
+        BilibiliResponse<SpaceSearchResult> response = client.spaceSearch(1, 25, 423895,
+                WbiUtil.getMixinKey(wbiImg.getImgKey(), wbiImg.getSubKey()));
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.getData());
+        Assertions.assertNotNull(response.getData().getList());
+        List<SearchVideoInfo> list = response.getData().getList().getVlist();
+        if(list != null){
+            for (SearchVideoInfo video : list) {
+                String message = String.format("BV:%s, title:%s, author:%s", video.getBvId(),
+                        ApiUtil.removeSearchHighlight(video.getTitle()),
+                        ApiUtil.removeSearchHighlight(video.getAuthor()));
+                logger.info(message);
+            }
+        }
     }
 }
