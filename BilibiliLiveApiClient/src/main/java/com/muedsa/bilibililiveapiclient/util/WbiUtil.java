@@ -1,17 +1,8 @@
 package com.muedsa.bilibililiveapiclient.util;
 
-import com.google.common.escape.Escaper;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
-import com.google.common.net.UrlEscapers;
+import org.apache.commons.codec.digest.DigestUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.StringJoiner;
 
 public class WbiUtil {
     private static final int[] MIXIN_KEY_ENC_TABLE = new int[]{
@@ -23,8 +14,6 @@ public class WbiUtil {
 
     public static final String QUERY_KEY_WTS = "wts";
     public static final String QUERY_KEY_W_RID = "w_rid";
-
-    private static final HashFunction MD5 = Hashing.md5();
 
     public static String getMixinKey(String imgKey, String subKey) {
         String s = imgKey + subKey;
@@ -42,8 +31,6 @@ public class WbiUtil {
 
     public static void fillWbiParams(Map<String, Object> params, String mixinKey) {
         params.put(QUERY_KEY_WTS, System.currentTimeMillis() / 1000);
-        HashCode hashCode = MD5.hashString(ApiUtil.stringSortedParams(params) + mixinKey,
-                StandardCharsets.UTF_8);
-        params.put(QUERY_KEY_W_RID, hashCode.toString());
+        params.put(QUERY_KEY_W_RID, DigestUtils.md5Hex(ApiUtil.stringSortedParams(params) + mixinKey));
     }
 }

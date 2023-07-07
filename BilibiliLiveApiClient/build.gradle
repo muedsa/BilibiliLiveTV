@@ -12,7 +12,7 @@ dependencies {
     implementation 'org.java-websocket:Java-WebSocket:1.5.3'
     api 'com.google.protobuf:protobuf-javalite:4.0.0-rc-2'
 
-    api 'com.google.guava:guava:32.1.1-android'
+    implementation 'commons-codec:commons-codec:1.16.0'
 
     testImplementation platform('org.junit:junit-bom:5.9.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
