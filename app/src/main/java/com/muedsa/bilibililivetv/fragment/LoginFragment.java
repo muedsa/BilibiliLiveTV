@@ -95,6 +95,8 @@ public class LoginFragment extends Fragment {
         }
         button.setOnClickListener(v -> {
             Log.d(TAG, "logout");
+            Prefs.remove(Prefs.BILIBILI_COOKIE_JSON);
+            Prefs.remove(Prefs.BILIBILI_REFRESH_TOKEN);
             Prefs.remove(Prefs.SESS_DATA);
             BilibiliLiveApi.logout();
             checkLogin();
