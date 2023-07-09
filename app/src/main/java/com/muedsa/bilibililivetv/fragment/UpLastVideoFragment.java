@@ -168,7 +168,7 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
     }
 
     private void runRequest() {
-        RxRequestFactory.bilibiliSpaceSearchVideo(1, 25, mid)
+        RxRequestFactory.bilibiliSpaceSearchVideo(1, 50, mid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateRows, throwable -> {

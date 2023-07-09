@@ -370,7 +370,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void runBilibiliVideoPopularRequest() {
-        RxRequestFactory.bilibiliVideoPopular(1, 20)
+        RxRequestFactory.bilibiliVideoPopular(1, 50)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {

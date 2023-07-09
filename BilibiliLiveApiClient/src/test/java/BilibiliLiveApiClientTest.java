@@ -360,7 +360,7 @@ public class BilibiliLiveApiClientTest {
 
     @Test
     public void popularTest() throws IOException {
-        BilibiliResponse<BilibiliPageInfo<VideoData>> response = client.popular(1, 20);
+        BilibiliResponse<BilibiliPageInfo<VideoData>> response = client.popular(1, 50);
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.getCode());
         Assertions.assertEquals(response.getCode(), ErrorCode.SUCCESS);
@@ -396,7 +396,7 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertNotNull(navResponse.getData());
         WbiImg wbiImg = navResponse.getData().getWbiImg();
         Assertions.assertNotNull(wbiImg);
-        BilibiliResponse<SpaceSearchResult> response = client.spaceSearch(1, 25, 423895,
+        BilibiliResponse<SpaceSearchResult> response = client.spaceSearch(1, 50, 423895,
                 WbiUtil.getMixinKey(wbiImg.getImgKey(), wbiImg.getSubKey()));
         Assertions.assertNotNull(response);
         Assertions.assertNotNull(response.getData());
