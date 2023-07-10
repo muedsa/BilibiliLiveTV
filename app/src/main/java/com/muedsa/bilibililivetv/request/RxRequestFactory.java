@@ -173,6 +173,13 @@ public class RxRequestFactory {
         });
     }
 
+    public static Single<SpaceSearchResult> bilibiliSpaceSearchVideos(int pageNum, int pageSize, long mid){
+        return getWbiKey().map(wbiKey -> {
+            BilibiliResponse<SpaceSearchResult> response = BilibiliLiveApi.client().spaceSearch(pageNum, pageSize, mid, wbiKey);
+            return handleResponse(response, Function.identity(), "BilibiliSpaceSearchVideos", true, null);
+        });
+    }
+
     private static Single<String> getWbiKey() {
         return Single.create(emitter -> {
             String wbiKey = Prefs.getString(Prefs.BILIBILI_WBI_KEY);

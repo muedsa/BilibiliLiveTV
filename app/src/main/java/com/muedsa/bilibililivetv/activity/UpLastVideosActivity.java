@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.fragment.UpLastVideoFragment;
+import com.muedsa.bilibililivetv.fragment.UpLastVideosFragment;
 
 public class UpLastVideosActivity extends FragmentActivity {
 
@@ -18,7 +18,7 @@ public class UpLastVideosActivity extends FragmentActivity {
         setContentView(R.layout.activity_up_last_videos);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.up_last_videos_fragment, new UpLastVideoFragment())
+                    .replace(R.id.up_last_videos_fragment, new UpLastVideosFragment())
                     .commitNow();
         }
     }

@@ -30,36 +30,38 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.leanback.widget.VerticalGridPresenter;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
+import com.muedsa.bilibililiveapiclient.model.space.SpacePageInfo;
+import com.muedsa.bilibililiveapiclient.model.space.SpaceSearchResult;
+import com.muedsa.bilibililiveapiclient.model.space.SpaceUpList;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
+import com.muedsa.bilibililivetv.model.RMessage;
+import com.muedsa.bilibililivetv.model.RxRequestViewModelFactory;
+import com.muedsa.bilibililivetv.model.UpLastVideosViewModel;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
-import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-public class UpLastVideoFragment extends VerticalGridSupportFragment {
-    private static final String TAG = UpLastVideoFragment.class.getSimpleName();
+public class UpLastVideosFragment extends VerticalGridSupportFragment {
+    private static final String TAG = UpLastVideosFragment.class.getSimpleName();
+
+    private static final int NUM_OF_COLS = 6;
 
     private ArrayObjectAdapter mAdapter;
-
-    private ListCompositeDisposable listCompositeDisposable;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static final int BACKGROUND_UPDATE_DELAY = 300;
@@ -72,6 +74,14 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
 
     private long mid;
     private String uname;
+
+    private int pageNum = 1;
+
+    private static final int PAGE_SIZE = 50;
+
+    private boolean loading = false;
+
+    private UpLastVideosViewModel upLastVideosViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,10 +99,9 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
             prepareBackgroundManager();
             setOnItemViewSelectedListener(new ItemViewSelectedListener());
             setOnItemViewClickedListener(new ItemViewClickedListener());
-            listCompositeDisposable = new ListCompositeDisposable();
             setTitle(uname);
             setupRowAdapter();
-            runRequest();
+            setupViewModel();
         }
     }
 
@@ -143,7 +152,7 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
             mBackgroundTimer.cancel();
         }
         mBackgroundTimer = new Timer();
-        mBackgroundTimer.schedule(new UpLastVideoFragment.UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
+        mBackgroundTimer.schedule(new UpLastVideosFragment.UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
     }
 
     private class UpdateBackgroundTask extends TimerTask {
@@ -155,7 +164,7 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
 
     private void setupRowAdapter() {
         VerticalGridPresenter verticalGridPresenter = new VerticalGridPresenter();
-        verticalGridPresenter.setNumberOfColumns(6);
+        verticalGridPresenter.setNumberOfColumns(NUM_OF_COLS);
         setGridPresenter(verticalGridPresenter);
 
         VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
@@ -163,23 +172,42 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
         setAdapter(mAdapter);
     }
 
-    private void runRequest() {
-        RxRequestFactory.bilibiliSpaceSearchVideo(1, 50, mid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::updateRows, throwable -> {
-                    Log.e(TAG, "bilibiliVideoDetail error:", throwable);
-                    FragmentActivity activity = requireActivity();
-                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_up_last_videos_failure) + ":" +throwable.getMessage());
-                }, listCompositeDisposable);
+    private void setupViewModel() {
+        upLastVideosViewModel = new ViewModelProvider(UpLastVideosFragment.this,
+                new RxRequestViewModelFactory())
+                .get(UpLastVideosViewModel.class);
 
-    }
+        upLastVideosViewModel.getResult().observe(this, m -> {
+            if(m.getStatus() == RMessage.Status.LOADING) {
+                loading = true;
+            }else if(m.getStatus() == RMessage.Status.SUCCESS) {
+                SpaceSearchResult result = m.getData();
+                if(result != null){
+                    SpacePageInfo page = result.getPage();
+                    SpaceUpList spaceUpList = result.getList();
+                    if(spaceUpList != null && spaceUpList.getVlist() != null) {
+                        mAdapter.addAll(mAdapter.size(), spaceUpList.getVlist());
+                        if(spaceUpList.getVlist().size() < PAGE_SIZE){
+                            pageNum = -1;
+                        }else{
+                            pageNum = page.getPn();
+                        }
+                    }
+                }
+                loading = false;
+            }else if(m.getStatus() == RMessage.Status.ERROR) {
+                loading = false;
+                Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
+                FragmentActivity activity = requireActivity();
+                String error = activity.getString(R.string.toast_msg_up_last_videos_failure);
+                if(m.getError() != null){
+                    error += ":" + m.getError().getMessage();
+                }
+                ToastUtil.showLongToast(activity,  error);
+            }
+        });
 
-    private void updateRows(List<SearchVideoInfo> list){
-        if(list != null){
-            mAdapter.clear();
-            mAdapter.addAll(0, list);
-        }
+        upLastVideosViewModel.loadVideos(pageNum, PAGE_SIZE, mid);
     }
 
     private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
@@ -192,8 +220,17 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
             if(item instanceof SearchVideoInfo){
                 mBackgroundUri = ((SearchVideoInfo) item).getPic();
                 startBackgroundTimer();
+                int index = mAdapter.indexOf(item);
+                if(pageNum > 0 && !loading && shouldNextPage(index)) {
+                    upLastVideosViewModel.loadVideos(pageNum + 1, PAGE_SIZE, mid);
+                }
             }
         }
+    }
+
+    private boolean shouldNextPage(int index){
+        int size = mAdapter.size();
+        return index >= size - (size % NUM_OF_COLS) - NUM_OF_COLS;
     }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
