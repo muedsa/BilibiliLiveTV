@@ -133,6 +133,8 @@ public class MainFragment extends BrowseSupportFragment {
         setupUIElements();
         setupEventListeners();
         setupRows();
+        registerRows();
+        loadRows();
     }
 
     private void setupRows(){
@@ -214,17 +216,17 @@ public class MainFragment extends BrowseSupportFragment {
         setAdapter(rowsAdapter);
     }
 
-    private void loadRows(){
+    private void registerRows(){
         liveRoomViewModel = new ViewModelProvider(MainFragment.this,
                 new LiveRoomViewModel.Factory(((App) requireActivity().getApplication()).getDatabase().getLiveRoomDaoWrapper()))
                 .get(LiveRoomViewModel.class);
-        disposable.add(liveRoomViewModel.getLiveRooms()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(liveRooms -> {
-                    Log.d(TAG, "load liveRooms size: " + liveRooms.size());
-                    updateLiveHistoryRows(liveRooms);
-                }));
+
+        liveRoomViewModel.getLiveRooms().observe(MainFragment.this,
+                this::updateLiveHistoryRows);
+    }
+
+    private void loadRows(){
+        liveRoomViewModel.fetchLiveRooms();
         runBilibiliVideoPopularRequest();
         runBilibiliFollowedLivingRoomsRequest();
         runBilibiliVideoDynamicRequest();
@@ -435,7 +437,7 @@ public class MainFragment extends BrowseSupportFragment {
         mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
         WindowManager windowManager = activity.getWindowManager();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             defaultWidth = bounds.width() - insets.left - insets.right;
@@ -565,11 +567,7 @@ public class MainFragment extends BrowseSupportFragment {
             } else if (item instanceof String) {
                 String desc = (String) item;
                 if(desc.contains(getString(R.string.bilibili_refresh))) {
-                    runBilibiliVideoPopularRequest();
-                    runBilibiliFollowedLivingRoomsRequest();
-                    runBilibiliVideoDynamicRequest();
-                    runBilibiliHistoryRequest();
-                    runLatestVersionTask();
+                    loadRows();
                 }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
                     Intent intent = new Intent(activity, LoginActivity.class);
                     startActivity(intent);

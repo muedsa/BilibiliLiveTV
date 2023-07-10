@@ -78,7 +78,7 @@ public class LoginFragment extends Fragment {
         WindowManager windowManager = activity.getWindowManager();
         int height;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             height = bounds.height() - insets.top - insets.bottom;

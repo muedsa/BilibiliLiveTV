@@ -24,6 +24,7 @@ import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -34,6 +35,7 @@ import com.muedsa.bilibililiveapiclient.model.video.PlayInfo;
 import com.muedsa.bilibililiveapiclient.model.video.Season;
 import com.muedsa.bilibililiveapiclient.model.video.SeasonSection;
 import com.muedsa.bilibililiveapiclient.model.video.SectionEpisode;
+import com.muedsa.bilibililiveapiclient.model.video.VideoDetail;
 import com.muedsa.bilibililiveapiclient.model.video.VideoInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoPage;
 import com.muedsa.bilibililivetv.GlideApp;
@@ -43,22 +45,20 @@ import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.activity.VideoPlaybackActivity;
 import com.muedsa.bilibililivetv.container.BilibiliLiveApi;
+import com.muedsa.bilibililivetv.model.RMessage;
 import com.muedsa.bilibililivetv.model.VideoInfoConvert;
 import com.muedsa.bilibililivetv.model.VideoPlayInfo;
+import com.muedsa.bilibililivetv.model.bilibili.VideoDetailViewModel;
+import com.muedsa.bilibililivetv.model.factory.BilibiliRequestViewModelFactory;
 import com.muedsa.bilibililivetv.presenter.DefaultPositionListRow;
 import com.muedsa.bilibililivetv.presenter.DefaultPositionListRowPresenter;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
-import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
 import java.util.Objects;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class VideoDetailsFragment extends DetailsSupportFragment {
     private static final String TAG = VideoDetailsFragment.class.getSimpleName();
@@ -81,8 +81,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     private ClassPresenterSelector mPresenterSelector;
 
     private DetailsSupportFragmentBackgroundController mDetailsBackground;
-
-    private ListCompositeDisposable listCompositeDisposable;
+    private VideoDetailViewModel videoDetailViewModel;
 
     private static final Long ACTION_ID_UP_LAST_VIDEOS = -1L;
 
@@ -95,7 +94,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         bv = activity.getIntent().getStringExtra(VideoDetailsActivity.VIDEO_BV);
         page = activity.getIntent().getIntExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
         if (!Strings.isNullOrEmpty(bv) && bv.startsWith(BilibiliLiveApi.VIDEO_BV_PREFIX)) {
-            listCompositeDisposable = new ListCompositeDisposable();
             mPresenterSelector = new ClassPresenterSelector();
             mPresenterSelector.addClassPresenter(ListRow.class, new DefaultPositionListRowPresenter());
             mAdapter = new ArrayObjectAdapter(mPresenterSelector);
@@ -111,46 +109,49 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     }
 
     private void initVideoDetail() {
-        RxRequestFactory.bilibiliVideoDetail(bv, page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(videoDetail -> {
-                    FragmentActivity activity = requireActivity();
-                    if (Objects.nonNull(videoDetail.getVideoInfo())
-                            && Objects.nonNull(videoDetail.getVideoInfo().getVideoData())) {
-                        //视频信息 封面图
-                        videoInfo = videoDetail.getVideoInfo();
-                        url = videoDetail.getUrl();
-                        setupDetailsOverviewRow();
-                        setupVideoPagesRow();
-                        setupVideoSeasonRows();
-                        updateCardImage();
-                        updateBackground();
-                        //播放按钮
-                        BilibiliResponse<PlayInfo> playInfoResponse = videoDetail.getPlayInfoResponse();
-                        if (Objects.nonNull(playInfoResponse)) {
-                            if (Objects.nonNull(playInfoResponse.getCode()) &&
-                                    ErrorCode.SUCCESS == playInfoResponse.getCode()) {
-                                videoPlayInfoList = VideoInfoConvert.buildVideoPlayInfoList(videoInfo, playInfoResponse.getData(), url);
-                                updateDetailsOverviewActions();
-                            } else {
-                                ToastUtil.showLongToast(activity, Objects.nonNull(playInfoResponse.getMessage())?
-                                        playInfoResponse.getMessage() : activity.getString(R.string.toast_msg_jump_video_detail_error));
-                            }
+        videoDetailViewModel = new ViewModelProvider(VideoDetailsFragment.this,
+                BilibiliRequestViewModelFactory.getInstance())
+                .get(VideoDetailViewModel.class);
+        videoDetailViewModel.getResult().observe(VideoDetailsFragment.this, m -> {
+            if(RMessage.Status.SUCCESS == m.getStatus()) {
+                FragmentActivity activity = requireActivity();
+                VideoDetail videoDetail = m.getData();
+                if (Objects.nonNull(videoDetail)
+                        && Objects.nonNull(videoDetail.getVideoInfo())
+                        && Objects.nonNull(videoDetail.getVideoInfo().getVideoData())) {
+                    //视频信息 封面图
+                    videoInfo = videoDetail.getVideoInfo();
+                    url = videoDetail.getUrl();
+                    setupDetailsOverviewRow();
+                    setupVideoPagesRow();
+                    setupVideoSeasonRows();
+                    updateCardImage();
+                    updateBackground();
+                    //播放按钮
+                    BilibiliResponse<PlayInfo> playInfoResponse = videoDetail.getPlayInfoResponse();
+                    if (Objects.nonNull(playInfoResponse)) {
+                        if (Objects.nonNull(playInfoResponse.getCode()) &&
+                                ErrorCode.SUCCESS == playInfoResponse.getCode()) {
+                            videoPlayInfoList = VideoInfoConvert.buildVideoPlayInfoList(videoInfo, playInfoResponse.getData(), url);
+                            updateDetailsOverviewActions();
                         } else {
-                            ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error));
+                            ToastUtil.showLongToast(activity, Objects.nonNull(playInfoResponse.getMessage())?
+                                    playInfoResponse.getMessage() : activity.getString(R.string.toast_msg_jump_video_detail_error));
                         }
-                        mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
                     } else {
                         ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error));
                     }
-
-                }, throwable -> {
-                    Log.e(TAG, "bilibiliVideoDetail error:", throwable);
-                    FragmentActivity activity = requireActivity();
-                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error) + ":" +throwable.getMessage());
-                }, listCompositeDisposable);
-
+                    mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+                } else {
+                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error));
+                }
+            } else if(RMessage.Status.ERROR == m.getStatus()) {
+                Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
+                FragmentActivity activity = requireActivity();
+                ToastUtil.error(activity, activity.getString(R.string.toast_msg_jump_video_detail_error), m.getError());
+            }
+        });
+        videoDetailViewModel.fetchVideoDetail(bv, page);
     }
 
     private void setupDetailsOverviewRow() {

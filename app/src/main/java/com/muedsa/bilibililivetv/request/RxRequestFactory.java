@@ -64,7 +64,7 @@ public class RxRequestFactory {
 
     public static Single<List<SearchVideoInfo>> bilibiliSearchVideo(String query) {
         return Single.create(emitter -> {
-            BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = BilibiliLiveApi.client().searchVideo(query, 1, 10);
+            BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = BilibiliLiveApi.client().searchVideo(query, 1, 25);
             handleResponse(response, emitter, SearchAggregation::getResult, "BilibiliSearchVideo", true, null);
         });
     }
@@ -163,13 +163,6 @@ public class RxRequestFactory {
                 videoDynamicCard.setBvid(card.getDesc().getBvid());
                 return videoDynamicCard;
             }).collect(Collectors.toList()), "BilibiliVideoDynamic", true, null);
-        });
-    }
-
-    public static Single<List<SearchVideoInfo>> bilibiliSpaceSearchVideo(int pageNum, int pageSize, long mid){
-        return getWbiKey().map(wbiKey -> {
-            BilibiliResponse<SpaceSearchResult> response = BilibiliLiveApi.client().spaceSearch(pageNum, pageSize, mid, wbiKey);
-            return handleResponse(response, resp -> resp.getList().getVlist(), "BilibiliSpaceSearchVideo", true, null);
         });
     }
 

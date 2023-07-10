@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.live.Durl;
+import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
 import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
@@ -40,8 +41,10 @@ import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
+import com.muedsa.bilibililivetv.model.RMessage;
+import com.muedsa.bilibililivetv.model.bilibili.LiveRoomInfoViewModel;
+import com.muedsa.bilibililivetv.model.factory.BilibiliRequestViewModelFactory;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
-import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
@@ -78,6 +81,8 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
 
     private LiveRoomViewModel liveRoomViewModel;
 
+    private LiveRoomInfoViewModel liveRoomInfoViewModel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate DetailsFragment");
@@ -94,6 +99,9 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
             liveRoomViewModel = new ViewModelProvider(LiveRoomDetailsFragment.this,
                     new LiveRoomViewModel.Factory(((App) activity.getApplication()).getDatabase().getLiveRoomDaoWrapper()))
                     .get(LiveRoomViewModel.class);
+            liveRoomInfoViewModel = new ViewModelProvider(LiveRoomDetailsFragment.this,
+                    BilibiliRequestViewModelFactory.getInstance())
+                    .get(LiveRoomInfoViewModel.class);
 
             mPresenterSelector = new ClassPresenterSelector();
             mAdapter = new ArrayObjectAdapter(mPresenterSelector);
@@ -106,7 +114,7 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
             mSelectedLiveRoom.setLiveStatus(0);
             mSelectedLiveRoom.setOnlineNum(0);
             mSelectedLiveRoom.setPlayUrlArr(new String[0]);
-            initializePlayUrl();
+
             initializeLiveRoomInfo();
         } else {
             Intent intent = new Intent(activity, MainActivity.class);
@@ -120,62 +128,38 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
     }
 
     private void initializeLiveRoomInfo() {
-        RxRequestFactory.bilibiliDanmuRoomInfo(mSelectedLiveRoom.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(largeRoomInfo -> {
-                            LiveRoomConvert.updateRoomInfo(mSelectedLiveRoom, largeRoomInfo);
-                            liveRoomViewModel
-                                    .sync(mSelectedLiveRoom)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe();
-                            BilibiliLiveChannel.sync(requireActivity(), mSelectedLiveRoom);
-                            updateCardImage();
-                            updateBackground();
-                            liveStatusAction.setLabel2(mSelectedLiveRoom.getLiveStatusDesc(getResources()));
-                            onlineNumAction.setLabel2(String.valueOf(mSelectedLiveRoom.getOnlineNum()));
-                        },
-                        throwable -> {
-                            FragmentActivity activity = requireActivity();
-                            String errorMsg = String.format(activity.getString(R.string.live_room_info_failure),
-                                    throwable.getMessage());
-                            ToastUtil.showLongToast(activity, errorMsg);
-                            Log.e(TAG, errorMsg, throwable);
-                        },
-                        listCompositeDisposable);
 
-        RxRequestFactory.bilibiliDanmuToken(mSelectedLiveRoom.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(token -> mSelectedLiveRoom.setDanmuWsToken(token),
-                        throwable -> {
-                            FragmentActivity activity = requireActivity();
-                            String errorMsg = String.format(activity.getString(R.string.live_danmu_ws_token_failure),
-                                    throwable.getMessage());
-                            ToastUtil.showLongToast(activity, errorMsg);
-                            Log.e(TAG, errorMsg, throwable);
-                        },
-                        listCompositeDisposable);
-    }
+        liveRoomInfoViewModel.getResult().observe(this, m -> {
+            if(RMessage.Status.LOADING == m.getStatus()){
+                playAction.setLabel2(getResources().getString(R.string.watch_trailer_loading));
+            } else if(RMessage.Status.SUCCESS == m.getStatus()) {
+                LiveRoomInfoViewModel.LiveRoomAllInfo data = m.getData();
+                if(data != null){
+                    LargeInfo largeRoomInfo = data.getLargeInfo();
+                    LiveRoomConvert.updateRoomInfo(mSelectedLiveRoom, largeRoomInfo);
+                    liveRoomViewModel
+                            .sync(mSelectedLiveRoom)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+                    BilibiliLiveChannel.sync(requireActivity(), mSelectedLiveRoom);
+                    updateCardImage();
+                    updateBackground();
+                    liveStatusAction.setLabel2(mSelectedLiveRoom.getLiveStatusDesc(getResources()));
+                    onlineNumAction.setLabel2(String.valueOf(mSelectedLiveRoom.getOnlineNum()));
 
-    private void initializePlayUrl() {
-        playAction.setLabel2(getResources().getString(R.string.watch_trailer_loading));
-        RxRequestFactory.bilibiliPlayUrlMessage(mSelectedLiveRoom.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(playUrlData -> {
-                            mSelectedLiveRoom.setPlayUrlArr(playUrlData.getDurl().stream().map(Durl::getUrl).toArray(String[]::new));
-                            playAction.setLabel2(getResources().getString(R.string.watch_trailer_play));
-                        },
-                        throwable -> {
-                            FragmentActivity activity = requireActivity();
-                            String errorMsg = String.format(activity.getString(R.string.live_play_failure),
-                                    throwable.getMessage());
-                            ToastUtil.showLongToast(activity, errorMsg);
-                            Log.e(TAG, errorMsg, throwable);
-                        },
-                        listCompositeDisposable);
+                    mSelectedLiveRoom.setDanmuWsToken(data.getToken());
+
+                    mSelectedLiveRoom.setPlayUrlArr(data.getPlayUrlData()
+                            .getDurl().stream().map(Durl::getUrl).toArray(String[]::new));
+                    playAction.setLabel2(getResources().getString(R.string.watch_trailer_play));
+                }
+            } else if(RMessage.Status.ERROR == m.getStatus()) {
+                FragmentActivity activity = requireActivity();
+                ToastUtil.error(activity, activity.getString(R.string.live_room_info_failure), m.getError());
+            }
+        });
+        liveRoomInfoViewModel.fetchAllInfo(mSelectedLiveRoom.getId());
     }
 
     private void initializeBackground() {
@@ -272,7 +256,7 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
             FragmentActivity activity = requireActivity();
             if (action.getId() == ACTION_WATCH_TRAILER) {
                 if (mSelectedLiveRoom.getPlayUrlArr() == null || mSelectedLiveRoom.getPlayUrlArr().length == 0) {
-                    ToastUtil.showLongToast(activity, activity.getString(R.string.live_play_failure));
+                    ToastUtil.error(activity, activity.getString(R.string.live_play_failure), null);
                 } else {
                     Intent intent = new Intent(activity, LiveStreamPlaybackActivity.class);
                     intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, mSelectedLiveRoom);

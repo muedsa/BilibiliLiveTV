@@ -45,8 +45,8 @@ import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
 import com.muedsa.bilibililivetv.model.RMessage;
-import com.muedsa.bilibililivetv.model.RxRequestViewModelFactory;
-import com.muedsa.bilibililivetv.model.UpLastVideosViewModel;
+import com.muedsa.bilibililivetv.model.bilibili.UpLastVideosViewModel;
+import com.muedsa.bilibililivetv.model.factory.BilibiliRequestViewModelFactory;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
@@ -112,7 +112,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
         mBackgroundManager.attach(activity.getWindow());
         WindowManager windowManager = activity.getWindowManager();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             defaultWidth = bounds.width() - insets.left - insets.right;
@@ -174,7 +174,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
 
     private void setupViewModel() {
         upLastVideosViewModel = new ViewModelProvider(UpLastVideosFragment.this,
-                new RxRequestViewModelFactory())
+                BilibiliRequestViewModelFactory.getInstance())
                 .get(UpLastVideosViewModel.class);
 
         upLastVideosViewModel.getResult().observe(this, m -> {
@@ -199,11 +199,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 loading = false;
                 Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
                 FragmentActivity activity = requireActivity();
-                String error = activity.getString(R.string.toast_msg_up_last_videos_failure);
-                if(m.getError() != null){
-                    error += ":" + m.getError().getMessage();
-                }
-                ToastUtil.showLongToast(activity,  error);
+                ToastUtil.error(activity, activity.getString(R.string.toast_msg_up_last_videos_failure), m.getError());
             }
         });
 

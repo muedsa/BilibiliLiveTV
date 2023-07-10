@@ -50,7 +50,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -171,7 +170,7 @@ public class BilibiliLiveApiClientTest {
 
     @Test
     public void searchVideo() throws IOException {
-        BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = client.searchVideo("原神", 1, 10);
+        BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = client.searchVideo("原神", 1, 25);
         Assertions.assertEquals(0L, response.getCode(), response::getMessage);
         SearchAggregation<List<SearchVideoInfo>> searchAggregation = response.getData();
         Assertions.assertNotNull(searchAggregation);

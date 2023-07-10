@@ -56,4 +56,11 @@ public class ToastUtil {
             showLongToast(contextSupplier.get(), textSupplier.get());
         }
     }
+
+    public static void error(@Nullable Context context, CharSequence text, @Nullable Throwable throwable) {
+        if(throwable != null){
+            text += ":" + throwable.getMessage();
+        }
+        showLongToast(context, text);
+    }
 }

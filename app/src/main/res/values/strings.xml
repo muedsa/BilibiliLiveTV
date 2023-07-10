@@ -20,9 +20,8 @@
     <string name="room_no_live">未开播</string>
     <string name="room_online_num">热度</string>
     <string name="liveRoom">liveRoom</string>
-    <string name="live_play_failure">主播未开播或获取直播地址失败:%s</string>
-    <string name="live_room_info_failure">获取直播间信息失败:%s</string>
-    <string name="live_danmu_ws_token_failure">获取弹幕Token失败:%s</string>
+    <string name="live_play_failure">主播未开播或获取直播地址失败</string>
+    <string name="live_room_info_failure">获取直播间信息失败</string>
     <string name="action_up_last_videos">近期投稿</string>
     <string name="playback_controls_danmu_play">弹幕开</string>
     <string name="playback_controls_danmu_stop">弹幕关</string>

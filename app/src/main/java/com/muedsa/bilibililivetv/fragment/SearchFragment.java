@@ -110,7 +110,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         mBackgroundManager.attach(activity.getWindow());
         WindowManager windowManager = activity.getWindowManager();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             defaultWidth = bounds.width() - insets.left - insets.right;
