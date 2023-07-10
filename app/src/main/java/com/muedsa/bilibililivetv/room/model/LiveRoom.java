@@ -32,6 +32,9 @@ public class LiveRoom extends BaseModel implements Serializable {
     @ColumnInfo(name = "title")
     private String title;
 
+    @ColumnInfo(name = "uid")
+    private Long uid;
+
     @ColumnInfo(name = "uname")
     private String uname;
 
@@ -85,6 +88,14 @@ public class LiveRoom extends BaseModel implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
     }
 
     public String getUname() {

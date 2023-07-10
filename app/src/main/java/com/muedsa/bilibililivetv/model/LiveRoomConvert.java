@@ -28,6 +28,8 @@ public final class LiveRoomConvert {
         liveRoom.setTitle(roomInfo.getTitle());
         liveRoom.setDescription(roomInfo.getDescription());
 
+        liveRoom.setUid(roomInfo.getUid());
+
         if(!Strings.isNullOrEmpty(roomInfo.getKeyframe())){
             liveRoom.setSystemCoverImageUrl(roomInfo.getKeyframe());
         }

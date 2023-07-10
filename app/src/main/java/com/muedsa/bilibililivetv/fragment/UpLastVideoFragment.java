@@ -35,17 +35,13 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.common.base.Strings;
-import com.muedsa.bilibililiveapiclient.model.search.SearchLiveRoom;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
-import com.muedsa.bilibililivetv.model.LiveRoomConvert;
-import com.muedsa.bilibililivetv.model.LiveUser;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
-import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.List;
@@ -174,7 +170,7 @@ public class UpLastVideoFragment extends VerticalGridSupportFragment {
                 .subscribe(this::updateRows, throwable -> {
                     Log.e(TAG, "bilibiliVideoDetail error:", throwable);
                     FragmentActivity activity = requireActivity();
-                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error) + ":" +throwable.getMessage());
+                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_up_last_videos_failure) + ":" +throwable.getMessage());
                 }, listCompositeDisposable);
 
     }

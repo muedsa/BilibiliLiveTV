@@ -36,6 +36,7 @@ import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
 import com.muedsa.bilibililivetv.activity.LiveStreamPlaybackActivity;
 import com.muedsa.bilibililivetv.activity.MainActivity;
+import com.muedsa.bilibililivetv.activity.UpLastVideosActivity;
 import com.muedsa.bilibililivetv.channel.BilibiliLiveChannel;
 import com.muedsa.bilibililivetv.model.LiveRoomConvert;
 import com.muedsa.bilibililivetv.model.LiveRoomViewModel;
@@ -54,6 +55,7 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
 
     private static final int ACTION_NOTHING = -1;
     private static final int ACTION_WATCH_TRAILER = 1;
+    private static final int ACTION_LAST_VIDEOS = 2;
 
     private static final int DETAIL_THUMB_WIDTH = 216;
     private static final int DETAIL_THUMB_HEIGHT = 136;
@@ -63,6 +65,8 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
     private Action playAction;
     private Action liveStatusAction;
     private Action onlineNumAction;
+    private Action lastVideosAction;
+
     private DetailsOverviewRow detailsOverviewRow;
 
     private ArrayObjectAdapter mAdapter;
@@ -216,6 +220,9 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
         onlineNumAction = new Action(ACTION_NOTHING, getResources().getString(R.string.room_online_num), String.valueOf(mSelectedLiveRoom.getOnlineNum()));
         actionAdapter.add(onlineNumAction);
         detailsOverviewRow.setActionsAdapter(actionAdapter);
+        lastVideosAction = new Action(ACTION_LAST_VIDEOS, getResources().getString(R.string.action_up_last_videos));
+        actionAdapter.add(lastVideosAction);
+        detailsOverviewRow.setActionsAdapter(actionAdapter);
 
         mAdapter.add(detailsOverviewRow);
     }
@@ -269,6 +276,15 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
                 } else {
                     Intent intent = new Intent(activity, LiveStreamPlaybackActivity.class);
                     intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, mSelectedLiveRoom);
+                    startActivity(intent);
+                }
+            } else if (action.getId() == ACTION_LAST_VIDEOS) {
+                if (mSelectedLiveRoom.getUid() == null) {
+                    ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_up_last_videos_failure));
+                } else {
+                    Intent intent = new Intent(activity, UpLastVideosActivity.class);
+                    intent.putExtra(UpLastVideosActivity.MID, mSelectedLiveRoom.getUid());
+                    intent.putExtra(UpLastVideosActivity.UNAME, mSelectedLiveRoom.getUname());
                     startActivity(intent);
                 }
             }
