@@ -33,6 +33,7 @@ public abstract class AppDatabase extends RoomDatabase {
             instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class,
                             "bilibili_live_tv_database")
                     .addMigrations(MIGRATION_1_2)
+                    .fallbackToDestructiveMigration()
                     .build();
             liveRoomDaoWrapper = new LiveRoomDao.Wrapper(instance.liveRoomDao());
         }

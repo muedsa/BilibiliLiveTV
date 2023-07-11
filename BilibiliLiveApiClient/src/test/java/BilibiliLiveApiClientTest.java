@@ -139,9 +139,9 @@ public class BilibiliLiveApiClientTest {
         DanmakuInfo danmakuInfo = response.getData();
         Assertions.assertNotNull(danmakuInfo);
         Assertions.assertNotNull(danmakuInfo.getToken());
-        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, danmakuInfo.getToken());
-        client.start();
-        Assertions.assertTrue(client.isOpen());
+        ChatBroadcastWsClient wsClient = new ChatBroadcastWsClient(roomId, danmakuInfo.getToken());
+        wsClient.start();
+        Assertions.assertTrue(wsClient.isOpen());
     }
 
     @Test
