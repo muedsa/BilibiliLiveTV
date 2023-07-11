@@ -25,7 +25,7 @@ public class VideoDetailViewModel extends ViewModel {
         RxRequestFactory.bilibiliVideoDetail(bv, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe((d) -> result.setValue(RMessage.loading()))
+                .doOnSubscribe(d -> result.setValue(RMessage.loading()))
                 .subscribe(videoDetail -> result.setValue(RMessage.success(videoDetail)),
                         throwable -> result.setValue(RMessage.error(throwable)),
                         disposables);

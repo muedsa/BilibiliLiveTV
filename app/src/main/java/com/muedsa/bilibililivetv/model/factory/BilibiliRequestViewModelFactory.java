@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.muedsa.bilibililivetv.model.bilibili.LiveRoomInfoViewModel;
+import com.muedsa.bilibililivetv.model.bilibili.SearchViewModel;
 import com.muedsa.bilibililivetv.model.bilibili.UpLastVideosViewModel;
 import com.muedsa.bilibililivetv.model.bilibili.VideoDetailViewModel;
 
@@ -30,6 +31,8 @@ public class BilibiliRequestViewModelFactory implements ViewModelProvider.Factor
             return (T) new VideoDetailViewModel();
         } else if(modelClass.isAssignableFrom(LiveRoomInfoViewModel.class)) {
             return (T) new LiveRoomInfoViewModel();
+        } else if(modelClass.isAssignableFrom(SearchViewModel.class)) {
+            return (T) new SearchViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

@@ -30,7 +30,7 @@ public class LiveRoomInfoViewModel extends ViewModel {
                         LiveRoomAllInfo::new)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe((d) -> result.setValue(RMessage.loading()))
+                .doOnSubscribe(d -> result.setValue(RMessage.loading()))
                 .subscribe(r -> result.setValue(RMessage.success(r)),
                         t -> result.setValue(RMessage.error(t)),
                         disposables);
