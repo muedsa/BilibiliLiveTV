@@ -2,6 +2,7 @@ package com.muedsa.bilibililivetv.room.model;
 
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -32,7 +33,8 @@ public class LiveRoom extends BaseModel implements Serializable {
     @ColumnInfo(name = "title")
     private String title;
 
-    @ColumnInfo(name = "uid")
+    @ColumnInfo(name = "uid", defaultValue = "0")
+    @NonNull
     private Long uid;
 
     @ColumnInfo(name = "uname")
