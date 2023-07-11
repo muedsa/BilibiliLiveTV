@@ -145,7 +145,7 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public void searchLive() throws IOException {
+    public void searchLiveTest() throws IOException {
         BilibiliResponse<SearchAggregation<SearchResult>> response = client.searchLive("1000", 1, 10);
         Assertions.assertEquals(0L, response.getCode());
         SearchAggregation<SearchResult> searchAggregation = response.getData();
@@ -169,7 +169,7 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public void searchVideo() throws IOException {
+    public void searchVideoTest() throws IOException {
         BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> response = client.searchVideo("原神", 1, 25);
         Assertions.assertEquals(0L, response.getCode(), response::getMessage);
         SearchAggregation<List<SearchVideoInfo>> searchAggregation = response.getData();
