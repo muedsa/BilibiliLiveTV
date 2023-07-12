@@ -14,7 +14,7 @@ public class GithubApi {
         static final GithubApiClient client = new GithubApiClient();
     }
 
-    public static GithubApiClient client(){
+    public static GithubApiClient client() {
         return ClientHolder.client;
     }
 }

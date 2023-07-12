@@ -33,9 +33,9 @@ public class LiveUser {
         this.shortId = shortId;
     }
 
-    public String getLiveStatusDesc(Resources resources){
+    public String getLiveStatusDesc(Resources resources) {
         String liveStatusDesc = resources.getString(R.string.room_no_live);
-        if(liveStatus == 1){
+        if (liveStatus == 1) {
             liveStatusDesc = resources.getString(R.string.room_living);
         }
         return liveStatusDesc;

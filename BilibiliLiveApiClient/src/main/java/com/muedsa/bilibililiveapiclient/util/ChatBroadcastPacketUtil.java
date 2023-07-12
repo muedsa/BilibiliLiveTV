@@ -23,7 +23,7 @@ public class ChatBroadcastPacketUtil {
     public final static int OPERATION_AUTH = 7;
     public final static int OPERATION_AUTH_SUCCESS = 8;
 
-    public static ByteBuffer encode(String content, int protocolVersion, int operation){
+    public static ByteBuffer encode(String content, int protocolVersion, int operation) {
         byte[] body = content.getBytes(StandardCharsets.UTF_8);
         ByteBuffer packet = ByteBuffer.allocate(16 + body.length);
         packet.putInt(16 + body.length);
@@ -38,8 +38,8 @@ public class ChatBroadcastPacketUtil {
         return packet;
     }
 
-    public static List<String> decode(ByteBuffer byteBuffer, List<String> msgList){
-        if(msgList == null){
+    public static List<String> decode(ByteBuffer byteBuffer, List<String> msgList) {
+        if (msgList == null) {
             msgList = new ArrayList<>();
         }
         int packetLength = byteBuffer.getInt(0);
@@ -51,7 +51,7 @@ public class ChatBroadcastPacketUtil {
 //            System.out.printf(Locale.CHINA, "[Rec] packetLength:%d, headerLength:%d, protocolVersion:%d, operation:%d, sequenceId:%d\n",
 //                    packetLength, headerLength, protocolVersion, operation, sequenceId);
 //        }
-        switch (protocolVersion){
+        switch (protocolVersion) {
             case PROTOCOL_JSON:
                 //System.out.println("Data: ");
                 byteBuffer.position(16);
@@ -59,7 +59,7 @@ public class ChatBroadcastPacketUtil {
                 CharBuffer charBuffer = StandardCharsets.UTF_8.decode(dataByteBuffer);
                 String[] msgArr = charBuffer.toString().split("[\\x00-\\x1f]+");
                 for (String msg : msgArr) {
-                    if(msg.length() > 1){
+                    if (msg.length() > 1) {
                         //System.out.println(msg);
                         msgList.add(msg);
                     }
@@ -70,7 +70,7 @@ public class ChatBroadcastPacketUtil {
                 byteBuffer.position(16);
                 byteBuffer.get(input);
                 byte[] output = InflateUtil.unZip(input);
-                if(output.length > 0){
+                if (output.length > 0) {
                     ByteBuffer unzipByteBuffer = ByteBuffer.wrap(output);
                     decode(unzipByteBuffer, msgList);
                 }

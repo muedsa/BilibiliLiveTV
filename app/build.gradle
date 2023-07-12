@@ -4,19 +4,19 @@ plugins {
 
 Properties localProps = new Properties()
 File localPropsFile = project.rootProject.file('local.properties')
-if(localPropsFile.exists() && localPropsFile.canRead()){
+if (localPropsFile.exists() && localPropsFile.canRead()) {
     localProps.load(localPropsFile.newDataInputStream())
 }
 
 android {
     signingConfigs {
         release {
-            if(localProps.containsKey('bltv.signingConfig.storeFile')) {
+            if (localProps.containsKey('bltv.signingConfig.storeFile')) {
                 storeFile file(localProps.getProperty('bltv.signingConfig.storeFile'))
                 storePassword localProps.getProperty('bltv.signingConfig.storePassword')
                 keyPassword localProps.getProperty('bltv.signingConfig.keyPassword')
                 keyAlias localProps.getProperty('bltv.signingConfig.keyAlias')
-            }else{
+            } else {
                 storeFile signingConfigs.debug.storeFile
                 storePassword signingConfigs.debug.storePassword
                 keyPassword signingConfigs.debug.keyPassword
@@ -57,7 +57,7 @@ android {
 dependencies {
     def leanback_version = "1.2.0-alpha02"
     def glide_version = "4.15.1"
-    def exoplayer_version = "2.19.0"
+    def media3_version = "1.1.0"
     def rxjava3_version = "3.1.6"
     def rxjava3_android_version = "3.0.2"
     def room_version = "2.5.2"
@@ -70,16 +70,16 @@ dependencies {
     implementation "androidx.leanback:leanback:$leanback_version"
     implementation "androidx.leanback:leanback-preference:$leanback_version"
 
-    implementation ("com.github.bumptech.glide:glide:$glide_version") {
+    implementation("com.github.bumptech.glide:glide:$glide_version") {
         exclude group: "com.android.support"
     }
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
-    //implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
-    implementation "com.google.android.exoplayer:extension-leanback:$exoplayer_version"
-    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+    implementation "androidx.media3:media3-exoplayer:$media3_version"
+    //implementation "androidx.media3:media3-exoplayer-dash:$media3_version"
+    implementation "androidx.media3:media3-ui-leanback:$media3_version"
+    implementation "androidx.media3:media3-ui:$media3_version"
 
     implementation project(path: ':repository:DanmakuFlameMaster')
     implementation 'com.github.ctiao:ndkbitmap-armv7a:0.9.24'

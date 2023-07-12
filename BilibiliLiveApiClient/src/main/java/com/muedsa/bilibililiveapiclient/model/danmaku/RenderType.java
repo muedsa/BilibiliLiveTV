@@ -98,11 +98,9 @@ public enum RenderType
         }
     }
 
-    ;
-
     private final int value;
 
-    private RenderType(int value) {
+    RenderType(int value) {
         this.value = value;
     }
 

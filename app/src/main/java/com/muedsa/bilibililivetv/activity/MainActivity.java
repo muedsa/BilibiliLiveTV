@@ -28,7 +28,7 @@ public class MainActivity extends FragmentActivity {
                     .commitNow();
         }
 
-        if(Intent.ACTION_VIEW.equals(getIntent().getAction())) {
+        if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
             if (getIntent().getData() != null) {
                 List<String> pathSegments = getIntent().getData().getPathSegments();
                 if (pathSegments.size() > 0) {

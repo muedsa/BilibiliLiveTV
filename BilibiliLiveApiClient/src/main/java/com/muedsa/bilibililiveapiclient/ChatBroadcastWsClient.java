@@ -22,9 +22,9 @@ import java.util.TimerTask;
 
 public class ChatBroadcastWsClient {
 
-    private long roomId;
+    private final long roomId;
 
-    private String token;
+    private final String token;
 
     private WebSocketClient webSocketClient;
 
@@ -32,25 +32,25 @@ public class ChatBroadcastWsClient {
 
     private CallBack callBack;
 
-    public ChatBroadcastWsClient(long roomId, String token){
+    public ChatBroadcastWsClient(long roomId, String token) {
         this.roomId = roomId;
         this.token = token;
         webSocketClient = new WebSocketClient(URI.create(ApiUrlContainer.WS_CHAT), new Draft_6455()) {
             @Override
             public void onOpen(ServerHandshake handshakeData) {
-                if(callBack != null) callBack.onStart();
+                if (callBack != null) callBack.onStart();
             }
 
             @Override
             public void onMessage(ByteBuffer byteBuffer) {
-                if(callBack != null){
+                if (callBack != null) {
                     List<String> msgList = ChatBroadcastPacketUtil.decode(byteBuffer, null);
-                    if(!msgList.isEmpty()){
+                    if (!msgList.isEmpty()) {
                         for (String msg : msgList) {
-                            try{
+                            try {
                                 JSONObject jsonObject = JSON.parseObject(msg);
                                 String cmd = jsonObject.getString("cmd");
-                                if(ChatBroadcast.CMD_DANMU_MSG.equals(cmd)){
+                                if (ChatBroadcast.CMD_DANMU_MSG.equals(cmd)) {
                                     JSONArray infoJsonArray = jsonObject.getJSONArray("info");
                                     JSONArray propertyJsonArray = infoJsonArray.getJSONArray(0);
                                     float textSize = propertyJsonArray.getFloatValue(2);
@@ -58,25 +58,24 @@ public class ChatBroadcastWsClient {
                                     boolean textShadowTransparent = "true".equalsIgnoreCase(propertyJsonArray.getString(11));
                                     String text = infoJsonArray.getString(1);
                                     callBack.onReceiveDanmu(text, textSize, textColor, textShadowTransparent, msg);
-                                }else if(ChatBroadcast.CMD_SUPER_CHAT_MESSAGE.equals(cmd) || ChatBroadcast.CMD_SUPER_CHAT_MESSAGE_JPN.equals(cmd)){
+                                } else if (ChatBroadcast.CMD_SUPER_CHAT_MESSAGE.equals(cmd) || ChatBroadcast.CMD_SUPER_CHAT_MESSAGE_JPN.equals(cmd)) {
                                     JSONObject dataJsonData = jsonObject.getJSONObject("data");
                                     String message = dataJsonData.getString("message");
                                     String messageFontColor = dataJsonData.getString("message_font_color");
                                     JSONObject userInfoJsonObject = dataJsonData.getJSONObject("user_info");
                                     String uname = userInfoJsonObject.getString("uname");
                                     callBack.onReceiveSuperChatMessage(message, messageFontColor, uname, msg);
-                                }else if(ChatBroadcast.CMD_SEND_GIFT.equals(cmd)){
+                                } else if (ChatBroadcast.CMD_SEND_GIFT.equals(cmd)) {
                                     JSONObject dataJsonData = jsonObject.getJSONObject("data");
                                     String action = dataJsonData.getString("action");
                                     String giftName = dataJsonData.getString("giftName");
                                     Integer num = dataJsonData.getInteger("num");
                                     String uname = dataJsonData.getString("uname");
-                                    callBack.onReceiveSendGift(action, giftName, num, uname , msg);
-                                }else{
+                                    callBack.onReceiveSendGift(action, giftName, num, uname, msg);
+                                } else {
                                     callBack.onReceiveOtherMessage(msg);
                                 }
-                            }
-                            catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -92,7 +91,7 @@ public class ChatBroadcastWsClient {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                if(callBack != null){
+                if (callBack != null) {
                     callBack.onClose(code, reason, remote);
                 }
             }
@@ -104,18 +103,18 @@ public class ChatBroadcastWsClient {
         };
     }
 
-    public void start() throws InterruptedException  {
-        if(!webSocketClient.isOpen()){
+    public void start() throws InterruptedException {
+        if (!webSocketClient.isOpen()) {
             webSocketClient.connectBlocking();
             String joinRoomJson = String.format(Locale.CHINA, ChatBroadcastPacketUtil.ROOM_AUTH_JSON, roomId, token);
             webSocketClient.send(ChatBroadcastPacketUtil.encode(joinRoomJson, 1, ChatBroadcastPacketUtil.OPERATION_AUTH));
         }
-        if(heartTimer == null){
+        if (heartTimer == null) {
             heartTimer = new Timer();
             heartTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if(webSocketClient.isOpen()){
+                    if (webSocketClient.isOpen()) {
                         webSocketClient.send(ChatBroadcastPacketUtil.HEART_PACKET);
                     }
                 }
@@ -123,22 +122,22 @@ public class ChatBroadcastWsClient {
         }
     }
 
-    public void close(){
-        if(heartTimer != null){
+    public void close() {
+        if (heartTimer != null) {
             heartTimer.cancel();
             heartTimer = null;
         }
-        if(webSocketClient != null){
+        if (webSocketClient != null) {
             webSocketClient.close();
             webSocketClient = null;
         }
     }
 
-    public boolean isClosed(){
-       return webSocketClient.isClosed();
+    public boolean isClosed() {
+        return webSocketClient.isClosed();
     }
 
-    public boolean isOpen(){
+    public boolean isOpen() {
         return webSocketClient.isOpen();
     }
 
@@ -146,7 +145,7 @@ public class ChatBroadcastWsClient {
         this.callBack = callBack;
     }
 
-    public interface CallBack{
+    public interface CallBack {
         void onStart();
 
         void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent, String origin);

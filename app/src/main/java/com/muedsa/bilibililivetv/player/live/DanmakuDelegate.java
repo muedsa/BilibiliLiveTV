@@ -30,7 +30,7 @@ public class DanmakuDelegate {
     private final LiveStreamPlaybackFragment fragment;
     private final LiveRoom liveRoom;
 
-    private IDanmakuView danmakuView;
+    private final IDanmakuView danmakuView;
     private DanmakuContext danmakuContext;
     private BaseDanmakuParser danmakuParser;
     private GiftDanmakuManager giftDanmakuManager;
@@ -46,7 +46,7 @@ public class DanmakuDelegate {
         this.liveRoom = liveRoom;
     }
 
-    public void init(){
+    public void init() {
         danmakuContext = DefaultDanmakuContext.create();
         danmakuParser = new BaseDanmakuParser() {
             @Override
@@ -81,7 +81,7 @@ public class DanmakuDelegate {
         danmakuView.prepare(danmakuParser, danmakuContext);
     }
 
-    private void initChatBroadcast(){
+    private void initChatBroadcast() {
         chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId(), liveRoom.getDanmuWsToken());
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
@@ -99,16 +99,16 @@ public class DanmakuDelegate {
 
             @Override
             public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname, String msg) {
-                if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
+                if (scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
                         || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
                         || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
                         || scDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
                         || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
                     String text = uname + ":" + message;
                     int color;
-                    if(Strings.isNullOrEmpty(message)){
+                    if (Strings.isNullOrEmpty(message)) {
                         color = Color.WHITE;
-                    }else{
+                    } else {
                         color = Color.parseColor(messageFontColor);
                     }
                     addDanmaku(text, 25, color, false, scDanmakuType);
@@ -117,7 +117,7 @@ public class DanmakuDelegate {
 
             @Override
             public void onReceiveSendGift(String action, String giftName, Integer num, String uname, String msg) {
-                if(giftDanmakuEnable && giftDanmakuManager != null){
+                if (giftDanmakuEnable && giftDanmakuManager != null) {
                     giftDanmakuManager.add(uname + action + giftName + "X" + num);
                 }
             }
@@ -137,12 +137,11 @@ public class DanmakuDelegate {
         startChatBroadcastWsClient();
     }
 
-    private void startChatBroadcastWsClient(){
-        if(chatBroadcastWsClient != null){
+    private void startChatBroadcastWsClient() {
+        if (chatBroadcastWsClient != null) {
             try {
                 chatBroadcastWsClient.start();
-            }
-            catch (Exception error){
+            } catch (Exception error) {
                 Log.d(TAG, "startChatBroadcastWsClient: ", error);
                 FragmentActivity activity = fragment.requireActivity();
                 ToastUtil.showShortToast(
@@ -157,19 +156,19 @@ public class DanmakuDelegate {
         addDanmaku(content, textSize, textColor, textShadowTransparent, BaseDanmaku.TYPE_SCROLL_RL);
     }
 
-    private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent, int type){
-        if(danmakuContext != null && danmakuParser !=null && danmakuView.isPrepared()){
+    private void addDanmaku(String content, float textSize, int textColor, boolean textShadowTransparent, int type) {
+        if (danmakuContext != null && danmakuParser != null && danmakuView.isPrepared()) {
             BaseDanmaku danmaku = danmakuContext.mDanmakuFactory.createDanmaku(type);
             if (danmaku != null) {
                 textSize = textSize * (danmakuParser.getDisplayer().getDensity() - 0.6f);
                 danmaku.text = content;
-                if(type == BaseDanmaku.TYPE_FIX_BOTTOM){
+                if (type == BaseDanmaku.TYPE_FIX_BOTTOM) {
                     int width = danmakuContext.getDisplayer().getWidth();
                     int maxSize = (int) (width / textSize) - 10;
                     int textLength = content.length();
                     int lineLength = (textLength + maxSize - 1) / maxSize;
                     String[] lines = new String[lineLength];
-                    for(int i = 0; i < lineLength; i++){
+                    for (int i = 0; i < lineLength; i++) {
                         lines[i] = content.substring(i * maxSize, Math.min(i * maxSize + maxSize, textLength));
                     }
                     danmaku.lines = lines;
@@ -186,86 +185,86 @@ public class DanmakuDelegate {
         }
     }
 
-    public void pause(){
-        if(danmakuContext != null && !danmakuView.isPaused()){
+    public void pause() {
+        if (danmakuContext != null && !danmakuView.isPaused()) {
             danmakuView.pause();
         }
     }
 
-    public void resume(){
+    public void resume() {
         if (danmakuContext != null) {
-            if(danmakuView.isPrepared() && danmakuView.isPaused()){
+            if (danmakuView.isPrepared() && danmakuView.isPaused()) {
                 danmakuView.resume();
             }
-        }else{
+        } else {
             init();
         }
     }
 
-    public void setPlayer(boolean isPlaying){
-        if(isPlaying){
-            if(danmakuContext != null && danmakuView.isPaused()){
+    public void setPlayer(boolean isPlaying) {
+        if (isPlaying) {
+            if (danmakuContext != null && danmakuView.isPaused()) {
                 danmakuView.resume();
             }
-        }else{
+        } else {
             pause();
         }
     }
 
-    public void danmakuReleaseToggle(boolean enable){
+    public void danmakuReleaseToggle(boolean enable) {
         FragmentActivity activity = fragment.requireActivity();
-        if(enable) {
-            if(danmakuContext == null){
+        if (enable) {
+            if (danmakuContext == null) {
                 init();
             }
             ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_danmu_on));
         } else {
-            if(danmakuContext != null){
+            if (danmakuContext != null) {
                 release();
             }
             ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_danmu_off));
         }
     }
 
-    public void danmakuSuperChatToggle(boolean enable){
+    public void danmakuSuperChatToggle(boolean enable) {
         FragmentActivity activity = fragment.requireActivity();
-        if(enable) {
+        if (enable) {
             scDanmakuType = BaseDanmaku.TYPE_FIX_BOTTOM;
             ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_sc_on));
-        }else{
-            if(scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
+        } else {
+            if (scDanmakuType == BaseDanmaku.TYPE_FIX_BOTTOM
                     || scDanmakuType == BaseDanmaku.TYPE_FIX_TOP
                     || scDanmakuType == BaseDanmaku.TYPE_SCROLL_RL
                     || scDanmakuType == BaseDanmaku.TYPE_SCROLL_LR
-                    || scDanmakuType == BaseDanmaku.TYPE_SPECIAL){
+                    || scDanmakuType == BaseDanmaku.TYPE_SPECIAL) {
                 scDanmakuType = 0;
             }
             ToastUtil.showShortToast(activity, activity.getString(R.string.toast_msg_sc_off));
         }
     }
 
-    public void danmakuGiftToggle(boolean enable){
+    public void danmakuGiftToggle(boolean enable) {
         FragmentActivity activity = fragment.requireActivity();
         giftDanmakuEnable = enable;
-        String toastMsg = enable ? activity.getString(R.string.toast_msg_gift_on):
+        String toastMsg = enable ? activity.getString(R.string.toast_msg_gift_on) :
                 activity.getString(R.string.toast_msg_gift_off);
         ToastUtil.showShortToast(activity, toastMsg);
     }
 
-    public void release(){
-        if(chatBroadcastWsClient != null){
+    public void release() {
+        if (chatBroadcastWsClient != null) {
             chatBroadcastWsClient.close();
             chatBroadcastWsClient = null;
         }
-        if(danmakuView.isPrepared()){
+        if (danmakuView.isPrepared()) {
             danmakuView.hide();
             danmakuView.removeAllDanmakus(true);
             danmakuView.release();
         }
-        if(danmakuContext != null){
+        if (danmakuContext != null) {
             danmakuContext = null;
         }
-        if(danmakuParser != null){
+        if (danmakuParser != null) {
             danmakuParser = null;
         }
     }

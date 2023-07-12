@@ -67,7 +67,7 @@ public class BilibiliLiveApiClientTest {
     private static final Logger logger = Logger.getGlobal();
 
     @BeforeAll
-    public static void init(){
+    public static void init() {
         roomId = 3;
         client = new BilibiliLiveApiClient();
         client.putCookie(BilibiliApiContainer.COOKIE_KEY_USER_ID, "2333");
@@ -150,18 +150,18 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertEquals(0L, response.getCode());
         SearchAggregation<SearchResult> searchAggregation = response.getData();
         Assertions.assertNotNull(searchAggregation);
-        if(Objects.nonNull(searchAggregation.getResult())){
-            if(Objects.nonNull(searchAggregation.getResult().getLiveRoom())){
+        if (Objects.nonNull(searchAggregation.getResult())) {
+            if (Objects.nonNull(searchAggregation.getResult().getLiveRoom())) {
                 logger.info("liveRoom search result:");
                 searchAggregation.getResult().getLiveRoom().forEach(liveRoom -> {
                     String message = String.format("roomId:%d, title:%s", liveRoom.getRoomId(), ApiUtil.removeSearchHighlight(liveRoom.getTitle()));
                     logger.info(message);
                 });
             }
-            if(Objects.nonNull(searchAggregation.getResult().getLiveUser())){
+            if (Objects.nonNull(searchAggregation.getResult().getLiveUser())) {
                 logger.info("liveUser search result:");
                 searchAggregation.getResult().getLiveUser().forEach(liveUser -> {
-                    String message = String.format("roomId:%d, uname:%s", liveUser.getRoomId(),  ApiUtil.removeSearchHighlight(liveUser.getUname()));
+                    String message = String.format("roomId:%d, uname:%s", liveUser.getRoomId(), ApiUtil.removeSearchHighlight(liveUser.getUname()));
                     logger.info(message);
                 });
             }
@@ -175,7 +175,7 @@ public class BilibiliLiveApiClientTest {
         SearchAggregation<List<SearchVideoInfo>> searchAggregation = response.getData();
         Assertions.assertNotNull(searchAggregation);
         List<SearchVideoInfo> videoInfoList = searchAggregation.getResult();
-        if(Objects.nonNull(videoInfoList)){
+        if (Objects.nonNull(videoInfoList)) {
             logger.info("video search result:");
             videoInfoList.forEach(video -> {
                 String message = String.format("BV:%s, title:%s, author:%s", video.getBvId(), ApiUtil.removeSearchHighlight(video.getTitle()), ApiUtil.removeSearchHighlight(video.getAuthor()));
@@ -237,17 +237,17 @@ public class BilibiliLiveApiClientTest {
             String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvid(), videoData.getTitle(), videoData.getDesc());
             logger.info(videoDataMessage);
             Season season = videoData.getUgcSeason();
-            if(Objects.nonNull(season)){
+            if (Objects.nonNull(season)) {
                 String seasonMessage = String.format("Season title:%s, intro:%s, cover:%s", season.getTitle(), season.getIntro(), season.getCover());
                 logger.info(seasonMessage);
-                if(Objects.nonNull(season.getSections())){
+                if (Objects.nonNull(season.getSections())) {
                     for (SeasonSection section : season.getSections()) {
                         String sectionMessage = String.format("Section title:%s, type:%d, isActive:%b", section.getTitle(), section.getType(), section.getActive());
                         logger.info(sectionMessage);
-                        if(Objects.nonNull(section.getEpisodes())){
+                        if (Objects.nonNull(section.getEpisodes())) {
                             for (SectionEpisode episode : section.getEpisodes()) {
                                 String episodeMessage = String.format("Episode title:%s, bv:%s", episode.getTitle(), episode.getBvId());
-                                if(Objects.nonNull(episode.getArc())){
+                                if (Objects.nonNull(episode.getArc())) {
                                     episodeMessage += String.format(", arc.pic:%s", episode.getArc().getPic());
                                 }
                                 logger.info(episodeMessage);
@@ -401,7 +401,7 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertNotNull(response.getData());
         Assertions.assertNotNull(response.getData().getList());
         List<SearchVideoInfo> list = response.getData().getList().getVlist();
-        if(list != null){
+        if (list != null) {
             for (SearchVideoInfo video : list) {
                 String message = String.format("BV:%s, title:%s, author:%s", video.getBvId(),
                         ApiUtil.removeSearchHighlight(video.getTitle()),

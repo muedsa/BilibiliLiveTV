@@ -20,7 +20,7 @@ public class SimpleHttpClient {
     }
 
     private void setHeader(URLConnection urlConnection, Map<String, String> headers) {
-        Map<String, String > newHeaders;
+        Map<String, String> newHeaders;
         if (headers != null) {
             newHeaders = new HashMap<>(headers);
         } else {
@@ -49,7 +49,7 @@ public class SimpleHttpClient {
 
     public String post(String url, Map<String, Object> params, Map<String, String> headers) throws IOException {
         StringBuilder postData = new StringBuilder();
-        if(params != null){
+        if (params != null) {
             for (Map.Entry<String, Object> param : params.entrySet()) {
                 if (postData.length() != 0) {
                     postData.append('&');

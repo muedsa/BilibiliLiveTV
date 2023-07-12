@@ -23,17 +23,17 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import androidx.media3.common.C;
+import androidx.media3.common.Format;
+import androidx.media3.common.Player;
+import androidx.media3.common.TrackGroup;
+import androidx.media3.common.TrackSelectionOverride;
+import androidx.media3.common.TrackSelectionParameters;
+import androidx.media3.common.Tracks;
+import androidx.media3.ui.TrackNameProvider;
+import androidx.media3.ui.TrackSelectionDialogBuilder.DialogCallback;
+import androidx.media3.ui.TrackSelectionView;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Tracks;
-import com.google.android.exoplayer2.source.TrackGroup;
-import com.google.android.exoplayer2.trackselection.TrackSelectionOverride;
-import com.google.android.exoplayer2.trackselection.TrackSelectionParameters;
-import com.google.android.exoplayer2.ui.TrackNameProvider;
-import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder.DialogCallback;
-import com.google.android.exoplayer2.ui.TrackSelectionView;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -58,15 +58,16 @@ public class TrackSelectionDialogBuilder {
     private TrackNameProvider trackNameProvider;
     private boolean isDisabled;
     private Map<TrackGroup, TrackSelectionOverride> overrides;
-    @Nullable private Comparator<Format> trackFormatComparator;
+    @Nullable
+    private Comparator<Format> trackFormatComparator;
 
     /**
      * Creates a builder for a track selection dialog.
      *
-     * @param context The context of the dialog.
-     * @param title The title of the dialog.
+     * @param context     The context of the dialog.
+     * @param title       The title of the dialog.
      * @param trackGroups The {@link Tracks.Group track groups}.
-     * @param callback The {@link DialogCallback} invoked when a track selection has been made.
+     * @param callback    The {@link DialogCallback} invoked when a track selection has been made.
      */
     public TrackSelectionDialogBuilder(
             Context context,
@@ -83,9 +84,9 @@ public class TrackSelectionDialogBuilder {
     /**
      * Creates a builder for a track selection dialog.
      *
-     * @param context The context of the dialog.
-     * @param title The title of the dialog.
-     * @param player The {@link Player} whose tracks should be selected.
+     * @param context   The context of the dialog.
+     * @param title     The title of the dialog.
+     * @param player    The {@link Player} whose tracks should be selected.
      * @param trackType The type of tracks to show for selection.
      */
     public TrackSelectionDialogBuilder(
@@ -224,7 +225,9 @@ public class TrackSelectionDialogBuilder {
         return this;
     }
 
-    /** Builds the dialog. */
+    /**
+     * Builds the dialog.
+     */
     public Dialog build() {
         return buildForPlatform();
     }
@@ -234,7 +237,7 @@ public class TrackSelectionDialogBuilder {
 
         // Inflate with the builder's context to ensure the correct style is used.
         LayoutInflater dialogInflater = LayoutInflater.from(builder.getContext());
-        View dialogView = dialogInflater.inflate(com.google.android.exoplayer2.ui.R.layout.exo_track_selection_dialog, /* root= */ null);
+        View dialogView = dialogInflater.inflate(androidx.media3.ui.R.layout.exo_track_selection_dialog, /* root= */ null);
         Dialog.OnClickListener okClickListener = setUpDialogView(dialogView);
 
         return builder
@@ -246,7 +249,7 @@ public class TrackSelectionDialogBuilder {
     }
 
     private Dialog.OnClickListener setUpDialogView(View dialogView) {
-        TrackSelectionView selectionView = dialogView.findViewById(com.google.android.exoplayer2.ui.R.id.exo_track_selection_view);
+        TrackSelectionView selectionView = dialogView.findViewById(androidx.media3.ui.R.id.exo_track_selection_view);
         selectionView.setAllowMultipleOverrides(allowMultipleOverrides);
         selectionView.setAllowAdaptiveSelections(allowAdaptiveSelections);
         selectionView.setShowDisableOption(showDisableOption);

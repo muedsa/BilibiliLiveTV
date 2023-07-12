@@ -7,12 +7,11 @@ public enum Qn {
     BD(400),
     UHD(250),
     HD(150),
-    SD(80)
-    ;
+    SD(80);
 
     private final Long code;
 
-    Qn(long code){
+    Qn(long code) {
         this.code = code;
     }
 

@@ -57,27 +57,27 @@ public class BilibiliLiveApiClient {
 
     private final HashMap<String, String> simpleCookie = new HashMap<>();
 
-    public BilibiliLiveApiClient(){
+    public BilibiliLiveApiClient() {
         httpJsonClient = new HttpJsonClient();
         putHeader(HttpClientContainer.HEADER_KEY_USER_AGENT, HttpClientContainer.HEADER_VALUE_USER_AGENT);
         putHeader(HttpClientContainer.HEADER_KEY_ACCEPT_ENCODING, HttpClientContainer.HEADER_VALUE_PART_ENCODING_IDENTITY);
         putCookie(BilibiliApiContainer.COOKIE_KEY_BUVID3, BilibiliApiContainer.COOKIE_VALUE_BUVID3);
     }
 
-    public void putHeader(String k, String v){
+    public void putHeader(String k, String v) {
         requestHeader.put(k, v);
     }
 
-    public String getCookie(String k){
+    public String getCookie(String k) {
         return simpleCookie.get(k);
     }
 
-    public void putCookie(String k, String v){
+    public void putCookie(String k, String v) {
         simpleCookie.put(k, v);
         updateHeaderCookie();
     }
 
-    public void removeCookie(String k){
+    public void removeCookie(String k) {
         simpleCookie.remove(k);
         updateHeaderCookie();
     }
@@ -87,7 +87,7 @@ public class BilibiliLiveApiClient {
         updateHeaderCookie();
     }
 
-    private void updateHeaderCookie(){
+    private void updateHeaderCookie() {
         Iterator<Map.Entry<String, String>> iterator = simpleCookie.entrySet().iterator();
         StringBuilder sb = new StringBuilder();
         while (iterator.hasNext()) {
@@ -118,34 +118,40 @@ public class BilibiliLiveApiClient {
 
     public BilibiliResponse<LargeInfo> getLargeInfo(Long roomId) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.GET_INFO, roomId);
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<LargeInfo>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<LargeInfo>>() {
+        }, requestHeader);
     }
 
     public BilibiliResponse<DanmakuInfo> getDanmuInfo(Long roomId) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.GET_DANMU_INFO, roomId);
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<DanmakuInfo>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<DanmakuInfo>>() {
+        }, requestHeader);
     }
 
     public BilibiliResponse<SearchAggregation<SearchResult>> searchLive(String keyword, int page, int pageSize) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.SEARCH_LIVE, page, pageSize, keyword);
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation<SearchResult>>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation<SearchResult>>>() {
+        }, requestHeader);
     }
 
     public BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>> searchVideo(String keyword, int page, int pageSize) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.SEARCH_VIDEO, page, pageSize, keyword);
-        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>>>(){}, requestHeader);
+        return httpJsonClient.getJson(url, new TypeReference<BilibiliResponse<SearchAggregation<List<SearchVideoInfo>>>>() {
+        }, requestHeader);
     }
 
     public BilibiliResponse<LoginUrl> getLoginUrl() throws IOException {
-        return httpJsonClient.getJson(ApiUrlContainer.GET_LOGIN_URL, new TypeReference<BilibiliResponse<LoginUrl>>(){}, requestHeader);
+        return httpJsonClient.getJson(ApiUrlContainer.GET_LOGIN_URL, new TypeReference<BilibiliResponse<LoginUrl>>() {
+        }, requestHeader);
     }
 
     public LoginResponse getLoginInfo(String oauthKey) throws IOException {
         String json = httpJsonClient.post(ApiUrlContainer.GET_LOGIN_INFO,
                 Collections.singletonMap("oauthKey", oauthKey), requestHeader);
         JSONObject jsonObject = JSON.parseObject(json);
-        LoginResponse response = jsonObject.to(new TypeReference<LoginResponse>(){});
-        if(response.getStatus()){
+        LoginResponse response = jsonObject.to(new TypeReference<LoginResponse>() {
+        });
+        if (response.getStatus()) {
             response.setData(jsonObject.getObject("data", LoginInfo.class));
         } else {
             response.setIntData(jsonObject.getIntValue("data"));
@@ -180,7 +186,8 @@ public class BilibiliLiveApiClient {
         VideoInfo videoInfo = null;
         Matcher matcher = VIDEO_INFO_PATTERN.matcher(html);
         if (matcher.matches()) {
-            videoInfo = JSON.parseObject(matcher.group(1), new TypeReference<VideoInfo>() {});
+            videoInfo = JSON.parseObject(matcher.group(1), new TypeReference<VideoInfo>() {
+            });
         } else {
             logger.warning("parseVideoInfo fail");
             logger.warning("\n" + html);
@@ -194,7 +201,8 @@ public class BilibiliLiveApiClient {
         BilibiliResponse<PlayInfo> playInfo = null;
         Matcher matcher = PLAY_INFO_PATTERN.matcher(html);
         if (matcher.matches()) {
-            playInfo = JSON.parseObject(matcher.group(1), new TypeReference<BilibiliResponse<PlayInfo>>() {});
+            playInfo = JSON.parseObject(matcher.group(1), new TypeReference<BilibiliResponse<PlayInfo>>() {
+            });
             if (Objects.isNull(playInfo.getData())) {
                 logger.warning("parsePlayInfo fail, data is null");
                 logger.warning("\n" + html);
@@ -240,7 +248,8 @@ public class BilibiliLiveApiClient {
             throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.POPULAR, pageNum, pageSize);
         return httpJsonClient.getJson(url,
-                new TypeReference<BilibiliResponse<BilibiliPageInfo<VideoData>>>() {},
+                new TypeReference<BilibiliResponse<BilibiliPageInfo<VideoData>>>() {
+                },
                 requestHeader);
     }
 
@@ -265,13 +274,15 @@ public class BilibiliLiveApiClient {
         params.put(Heartbeat.FIELD_REFER_URL, "https://www.bilibili.com/");
         params.put(Heartbeat.FIELD_CSRF, csrf);
         return httpJsonClient.postJson(ApiUrlContainer.VIDEO_HEARTBEAT, params,
-                new TypeReference<BilibiliResponse<Void>>() {}, requestHeader);
+                new TypeReference<BilibiliResponse<Void>>() {
+                }, requestHeader);
     }
 
     public BilibiliResponse<UserWebListResult> liveUserWebList(int pageNum, int pageSize) throws IOException {
         String url = ApiUtil.fillUrl(ApiUrlContainer.LIVE_USER_WEB_LIST, pageNum, pageSize, System.currentTimeMillis());
         return httpJsonClient.getJson(url,
-                new TypeReference<BilibiliResponse<UserWebListResult>>() {},
+                new TypeReference<BilibiliResponse<UserWebListResult>>() {
+                },
                 requestHeader);
     }
 
@@ -280,7 +291,8 @@ public class BilibiliLiveApiClient {
         String url = ApiUtil.fillUrl(ApiUrlContainer.DYNAMIC_NEW, Long.parseLong(mid), typeList.stream()
                 .map(Object::toString).collect(Collectors.joining(",")));
         return httpJsonClient.getJson(url,
-                new TypeReference<BilibiliResponse<DynamicFlow>>() {},
+                new TypeReference<BilibiliResponse<DynamicFlow>>() {
+                },
                 requestHeader);
     }
 
@@ -297,7 +309,8 @@ public class BilibiliLiveApiClient {
         params.put(BilibiliApiContainer.QUERY_KEY_WEB_LOCATION, BilibiliApiContainer.WEB_LOCATION_SPACE);
         WbiUtil.fillWbiParams(params, mixinKey);
         return httpJsonClient.getJson(ApiUtil.buildUrlWithParams(ApiUrlContainer.SPACE_SEARCH, params),
-                new TypeReference<BilibiliResponse<SpaceSearchResult>>() {},
+                new TypeReference<BilibiliResponse<SpaceSearchResult>>() {
+                },
                 requestHeader);
     }
 }

@@ -1,20 +1,25 @@
 <resources>
+
     <style name="Theme.BilibiliLiveTV" parent="@style/Theme.Leanback">
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="searchOrbViewStyle">@style/CustomSearchOrbView</item>
     </style>
+
     <style name="CustomSearchOrbView" parent="@style/Widget.Leanback.SearchOrbViewStyle">
         <item name="searchOrbColor">@color/search_opaque</item>
         <item name="searchOrbIconColor">@color/search_orb_icon_color</item>
     </style>
+
     <style name="LiveUserImageCardTheme" parent="@style/Theme.BilibiliLiveTV">
         <item name="imageCardViewStyle">@style/LiveUserImageCardViewStyle</item>
     </style>
+
     <style name="LiveUserImageCardViewStyle" parent="@style/Widget.Leanback.ImageCardViewStyle">
         <item name="lbImageCardViewType">Title</item>
     </style>
+
     <style name="LeanbackPreferences" parent="@style/Theme.Leanback">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Leanback</item>
         <item name="android:windowIsTranslucent">true</item>

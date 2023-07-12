@@ -91,11 +91,11 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
         Intent intent = activity.getIntent();
         mid = intent.getLongExtra(UpLastVideosActivity.MID, 0);
         uname = intent.getStringExtra(UpLastVideosActivity.UNAME);
-        if(Strings.isNullOrEmpty(uname)){
+        if (Strings.isNullOrEmpty(uname)) {
             uname = activity.getString(R.string.action_up_last_videos);
         }
 
-        if(mid > 0){
+        if (mid > 0) {
             prepareBackgroundManager();
             setOnItemViewSelectedListener(new ItemViewSelectedListener());
             setOnItemViewClickedListener(new ItemViewClickedListener());
@@ -105,7 +105,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
         }
     }
 
-    private void prepareBackgroundManager(){
+    private void prepareBackgroundManager() {
         mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
         FragmentActivity activity = requireActivity();
         mBackgroundManager = BackgroundManager.getInstance(activity);
@@ -116,7 +116,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             defaultWidth = bounds.width() - insets.left - insets.right;
-            defaultHeight = bounds.height()- insets.top - insets.bottom;
+            defaultHeight = bounds.height() - insets.top - insets.bottom;
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -178,24 +178,24 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 .get(UpLastVideosViewModel.class);
 
         upLastVideosViewModel.getResult().observe(this, m -> {
-            if(m.getStatus() == RMessage.Status.LOADING) {
+            if (m.getStatus() == RMessage.Status.LOADING) {
                 loading = true;
-            }else if(m.getStatus() == RMessage.Status.SUCCESS) {
+            } else if (m.getStatus() == RMessage.Status.SUCCESS) {
                 SpaceSearchResult result = m.getData();
-                if(result != null){
+                if (result != null) {
                     SpacePageInfo page = result.getPage();
                     SpaceUpList spaceUpList = result.getList();
-                    if(spaceUpList != null && spaceUpList.getVlist() != null) {
+                    if (spaceUpList != null && spaceUpList.getVlist() != null) {
                         mAdapter.addAll(mAdapter.size(), spaceUpList.getVlist());
-                        if(spaceUpList.getVlist().size() < PAGE_SIZE){
+                        if (spaceUpList.getVlist().size() < PAGE_SIZE) {
                             pageNum = -1;
-                        }else{
+                        } else {
                             pageNum = page.getPn();
                         }
                     }
                 }
                 loading = false;
-            }else if(m.getStatus() == RMessage.Status.ERROR) {
+            } else if (m.getStatus() == RMessage.Status.ERROR) {
                 loading = false;
                 Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
                 FragmentActivity activity = requireActivity();
@@ -213,18 +213,18 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
-            if(item instanceof SearchVideoInfo){
+            if (item instanceof SearchVideoInfo) {
                 mBackgroundUri = ((SearchVideoInfo) item).getPic();
                 startBackgroundTimer();
                 int index = mAdapter.indexOf(item);
-                if(pageNum > 0 && !loading && shouldNextPage(index)) {
+                if (pageNum > 0 && !loading && shouldNextPage(index)) {
                     upLastVideosViewModel.loadVideos(pageNum + 1, PAGE_SIZE, mid);
                 }
             }
         }
     }
 
-    private boolean shouldNextPage(int index){
+    private boolean shouldNextPage(int index) {
         int size = mAdapter.size();
         return index >= size - (size % NUM_OF_COLS) - NUM_OF_COLS;
     }
@@ -234,14 +234,14 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
             ImageView sharedElement = ((ImageCardView) itemViewHolder.view).getMainImageView();
-            if(item instanceof SearchVideoInfo){
+            if (item instanceof SearchVideoInfo) {
                 SearchVideoInfo searchVideoInfo = (SearchVideoInfo) item;
                 FragmentActivity activity = requireActivity();
                 Intent intent = new Intent(activity, VideoDetailsActivity.class);
                 intent.putExtra(VideoDetailsActivity.VIDEO_BV, searchVideoInfo.getBvId());
                 intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
                 Bundle bundle = null;
-                if(Objects.nonNull(sharedElement)){
+                if (Objects.nonNull(sharedElement)) {
                     bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement,
                             VideoDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
                 }

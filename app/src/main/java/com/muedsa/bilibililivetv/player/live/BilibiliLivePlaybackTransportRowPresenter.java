@@ -28,14 +28,15 @@ public class BilibiliLivePlaybackTransportRowPresenter extends PlaybackTransport
         vh.setOnKeyListener(keyListener);
         PlaybackTransportRowPresenter.ViewHolder mvh = (PlaybackTransportRowPresenter.ViewHolder) vh;
         TextView durationView = mvh.getDurationView();
-        if(timer == null) {
+        if (timer == null) {
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm",
                         context.getResources().getConfiguration().getLocales().get(0));
+
                 @Override
                 public void run() {
-                    if(durationView != null) {
+                    if (durationView != null) {
                         final String clock = sdf.format(new Date());
                         vh.view.post(() -> durationView.setText(clock));
                     }
@@ -43,11 +44,12 @@ public class BilibiliLivePlaybackTransportRowPresenter extends PlaybackTransport
             }, 100, 100);
         }
     }
+
     @Override
     protected void onUnbindRowViewHolder(RowPresenter.ViewHolder vh) {
         super.onUnbindRowViewHolder(vh);
         vh.setOnKeyListener(null);
-        if(timer != null) {
+        if (timer != null) {
             timer.cancel();
             timer = null;
         }

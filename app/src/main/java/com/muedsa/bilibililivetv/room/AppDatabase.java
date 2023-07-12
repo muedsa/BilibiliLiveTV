@@ -19,7 +19,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String TAG = AppDatabase.class.getSimpleName();
 
     abstract LiveRoomDao liveRoomDao();
-    
+
     private static LiveRoomDao.Wrapper liveRoomDaoWrapper;
 
     public LiveRoomDao getLiveRoomDaoWrapper() {
@@ -43,7 +43,7 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE 'live_room' ADD COLUMN 'uid' INTEGER NOT NULL DEFAULT 0");
-            Log.d(TAG,"Migration 1 to 2");
+            Log.d(TAG, "Migration 1 to 2");
         }
     };
 }

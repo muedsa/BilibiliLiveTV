@@ -22,7 +22,8 @@ public class App extends Application {
         Prefs.init(getApplicationContext());
         String json = Prefs.getString(Prefs.BILIBILI_COOKIE_JSON);
         if (!Strings.isNullOrEmpty(json)) {
-            BilibiliLiveApi.login(JSON.parseObject(json, new TypeReference<Map<String, String>>(){}));
+            BilibiliLiveApi.login(JSON.parseObject(json, new TypeReference<Map<String, String>>() {
+            }));
         }
     }
 

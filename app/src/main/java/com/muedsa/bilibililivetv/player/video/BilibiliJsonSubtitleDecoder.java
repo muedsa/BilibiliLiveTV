@@ -1,12 +1,12 @@
 package com.muedsa.bilibililivetv.player.video;
 
+import androidx.media3.common.text.Cue;
+import androidx.media3.common.util.LongArray;
+import androidx.media3.extractor.text.SimpleSubtitleDecoder;
+import androidx.media3.extractor.text.Subtitle;
+
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.google.android.exoplayer2.text.Cue;
-import com.google.android.exoplayer2.text.SimpleSubtitleDecoder;
-import com.google.android.exoplayer2.text.Subtitle;
-import com.google.android.exoplayer2.text.SubtitleDecoderException;
-import com.google.android.exoplayer2.util.LongArray;
 import com.muedsa.bilibililivetv.model.BilibiliSubtitle;
 import com.muedsa.bilibililivetv.model.BilibiliSubtitleInfo;
 
@@ -17,14 +17,15 @@ import java.util.List;
 public class BilibiliJsonSubtitleDecoder extends SimpleSubtitleDecoder {
     private static final String TAG = BilibiliJsonSubtitleDecoder.class.getSimpleName();
 
-    public BilibiliJsonSubtitleDecoder(){
+    public BilibiliJsonSubtitleDecoder() {
         super("BilibiliJsonSubtitleDecoder");
     }
 
     @Override
-    protected Subtitle decode(byte[] data, int size, boolean reset) throws SubtitleDecoderException {
+    protected Subtitle decode(byte[] data, int size, boolean reset) {
         String json = new String(data, StandardCharsets.UTF_8);
-        BilibiliSubtitleInfo  bilibiliSubtitleInfo = JSON.parseObject(json, new TypeReference<BilibiliSubtitleInfo>(){});
+        BilibiliSubtitleInfo bilibiliSubtitleInfo = JSON.parseObject(json, new TypeReference<BilibiliSubtitleInfo>() {
+        });
         List<BilibiliSubtitle> list = bilibiliSubtitleInfo.getBody();
         List<Cue> cues = new ArrayList<>(list.size());
         LongArray cueTimesUs = new LongArray(list.size());
@@ -41,5 +42,6 @@ public class BilibiliJsonSubtitleDecoder extends SimpleSubtitleDecoder {
     }
 
     @Override
-    public void setPositionUs(long positionUs) {}
+    public void setPositionUs(long positionUs) {
+    }
 }

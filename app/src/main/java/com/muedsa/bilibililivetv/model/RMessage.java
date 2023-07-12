@@ -18,15 +18,15 @@ public class RMessage<T> {
     @Nullable
     public final Throwable error;
 
-    public static <T> RMessage<T> loading(){
+    public static <T> RMessage<T> loading() {
         return new RMessage<>(Status.LOADING, null, null);
     }
 
-    public static <T> RMessage<T> success(T data){
+    public static <T> RMessage<T> success(T data) {
         return new RMessage<>(Status.SUCCESS, data, null);
     }
 
-    public static <T> RMessage<T> error(Throwable throwable){
+    public static <T> RMessage<T> error(Throwable throwable) {
         return new RMessage<>(Status.ERROR, null, throwable);
     }
 

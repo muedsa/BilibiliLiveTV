@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.DanmakuTestFragment;
+
 public class DanmakuTestActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

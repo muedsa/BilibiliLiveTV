@@ -48,12 +48,12 @@ public class DanmakuTestFragment extends Fragment {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_danmaku_test, container, false);
         danmakuView = (DanmakuSurfaceView) LayoutInflater.from(getContext()).inflate(
                 R.layout.danmaku_surface, root, false);
-        if(root != null) root.addView(danmakuView, 0);
+        if (root != null) root.addView(danmakuView, 0);
         init();
         return root;
     }
 
-    public void init(){
+    public void init() {
         // 设置最大显示行数
         HashMap<Integer, Integer> maxLinesPair = new HashMap<>();
         maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 5);
@@ -109,7 +109,7 @@ public class DanmakuTestFragment extends Fragment {
         danmakuView.prepare(danmakuParser, danmakuContext);
     }
 
-    private void timer1(){
+    private void timer1() {
         timer1 = new Timer();
         timer1.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -119,7 +119,7 @@ public class DanmakuTestFragment extends Fragment {
         }, 1000, 200);
     }
 
-    private void initChatBroadcast(){
+    private void initChatBroadcast() {
         chatBroadcastWsClient = new ChatBroadcastWsClient(8864977, "null");
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
@@ -140,7 +140,8 @@ public class DanmakuTestFragment extends Fragment {
 
             @Override
             public void onReceiveSendGift(String action, String giftName, Integer num, String uname, String msg) {
-                if(giftDanmakuManager != null) giftDanmakuManager.add(uname + action + giftName + "X" + num);
+                if (giftDanmakuManager != null)
+                    giftDanmakuManager.add(uname + action + giftName + "X" + num);
             }
 
             @Override
@@ -154,8 +155,7 @@ public class DanmakuTestFragment extends Fragment {
         });
         try {
             chatBroadcastWsClient.start();
-        }
-        catch (Exception error){
+        } catch (Exception error) {
             Log.d(TAG, "startChatBroadcastWsClient: ", error);
             FragmentActivity activity = requireActivity();
             ToastUtil.showShortToast(
@@ -168,6 +168,7 @@ public class DanmakuTestFragment extends Fragment {
     static final String CC = "zxcvbnmlkjhgfdsaqwertyuiopQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
     static final int CC_LENGTH = CC.length();
     static final Random random = new Random();
+
     private static String randStr(int length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -182,7 +183,7 @@ public class DanmakuTestFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        if(danmakuView != null) {
+        if (danmakuView != null) {
             danmakuView.resume();
         }
     }
@@ -191,7 +192,7 @@ public class DanmakuTestFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onResume");
-        if(danmakuView != null) {
+        if (danmakuView != null) {
             danmakuView.pause();
         }
     }
@@ -200,17 +201,17 @@ public class DanmakuTestFragment extends Fragment {
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView");
         super.onDestroyView();
-        if(danmakuView != null) {
+        if (danmakuView != null) {
             danmakuView.release();
             danmakuView = null;
             danmakuContext = null;
             danmakuParser = null;
         }
-        if(timer1 != null){
+        if (timer1 != null) {
             timer1.cancel();
             timer1 = null;
         }
-        if(chatBroadcastWsClient != null){
+        if (chatBroadcastWsClient != null) {
             chatBroadcastWsClient.close();
         }
     }

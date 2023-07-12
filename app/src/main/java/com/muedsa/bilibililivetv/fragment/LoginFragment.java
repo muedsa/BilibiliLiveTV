@@ -90,8 +90,8 @@ public class LoginFragment extends Fragment {
         imageSize = height / 2;
         int mTop = (height - imageSize) / 2;
         ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        if(layoutParams instanceof LinearLayout.LayoutParams){
-            ((LinearLayout.LayoutParams)layoutParams).topMargin = mTop;
+        if (layoutParams instanceof LinearLayout.LayoutParams) {
+            ((LinearLayout.LayoutParams) layoutParams).topMargin = mTop;
         }
         button.setOnClickListener(v -> {
             Log.d(TAG, "logout");
@@ -137,15 +137,15 @@ public class LoginFragment extends Fragment {
                 }, throwable -> {
                     //todo handler throwable
                     Log.d(TAG, "bilibiliNav: ", throwable);
-                    if(throwable instanceof HttpRequestException){
-                        if(((HttpRequestException) throwable).getCode() == ErrorCode.NOT_LOGIN){
+                    if (throwable instanceof HttpRequestException) {
+                        if (((HttpRequestException) throwable).getCode() == ErrorCode.NOT_LOGIN) {
                             prepareLogin();
                         }
                     }
                 }, listCompositeDisposable);
     }
 
-    private void prepareLogin(){
+    private void prepareLogin() {
         Log.d(TAG, "prepareLogin");
         button.setVisibility(View.GONE);
         listCompositeDisposable.clear();
@@ -187,18 +187,18 @@ public class LoginFragment extends Fragment {
             @Override
             public void run() {
                 FragmentActivity activity = requireActivity();
-                if(timerCount > 40){
+                if (timerCount > 40) {
                     releaseTimer();
                     listCompositeDisposable.clear();
                     ToastUtil.showLongToast(activity, activity.getString(R.string.login_timeout));
                     prepareLogin();
-                }else{
+                } else {
                     Log.d(TAG, "bilibiliLoginInfo: oauthKey=" + oauthKey);
                     RxRequestFactory.bilibiliLoginInfo(oauthKey)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(loginInfo -> {
-                                if(loginInfo.getStatus()) {
+                                if (loginInfo.getStatus()) {
                                     Log.d(TAG, "login success: " + loginInfo.getData().getUrl());
                                     releaseTimer();
                                     listCompositeDisposable.clear();
@@ -230,13 +230,13 @@ public class LoginFragment extends Fragment {
 
     private static void fillCookie(Map<String, String> map, UrlQuerySanitizer query, String key) {
         String value = query.getValue(key);
-        if(value != null){
+        if (value != null) {
             map.put(key, value);
         }
     }
 
     private void releaseTimer() {
-        if(Objects.nonNull(timer)) {
+        if (Objects.nonNull(timer)) {
             timer.cancel();
             timer = null;
         }

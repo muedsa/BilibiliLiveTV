@@ -31,6 +31,7 @@
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
@@ -70,14 +71,14 @@
             android:exported="false" />
         <activity
             android:name=".activity.UpLastVideosActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".activity.SettingsActivity"
             android:exported="false"
-            android:theme="@style/LeanbackPreferences"/>
+            android:theme="@style/LeanbackPreferences" />
         <activity
             android:name=".activity.DanmakuTestActivity"
             android:exported="false" />

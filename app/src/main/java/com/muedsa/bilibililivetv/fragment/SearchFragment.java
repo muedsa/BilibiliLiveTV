@@ -100,16 +100,16 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
                 BilibiliRequestViewModelFactory.getInstance())
                 .get(SearchViewModel.class);
         searchViewModel.getResult().observe(this, m -> {
-            if(RMessage.Status.LOADING.equals(m.getStatus())) {
+            if (RMessage.Status.LOADING.equals(m.getStatus())) {
                 mRowsAdapter.clear();
-            } else if(RMessage.Status.SUCCESS.equals(m.getStatus())) {
+            } else if (RMessage.Status.SUCCESS.equals(m.getStatus())) {
                 SearchResult searchResult = m.getData();
-                if(searchResult != null){
+                if (searchResult != null) {
                     loadVideoSearchData(searchResult.getVideo());
                     loadLiveUserSearchData(searchResult.getLiveUser());
                     loadLiveRoomSearchData(searchResult.getLiveRoom());
                 }
-            } else if(RMessage.Status.ERROR.equals(m.getStatus())) {
+            } else if (RMessage.Status.ERROR.equals(m.getStatus())) {
                 Log.e(TAG, "bilibiliSearchLive error", m.getError());
                 ToastUtil.error(requireActivity(), "search error", m.getError());
             }
@@ -127,7 +127,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             defaultWidth = bounds.width() - insets.left - insets.right;
-            defaultHeight = bounds.height()- insets.top - insets.bottom;
+            defaultHeight = bounds.height() - insets.top - insets.bottom;
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -191,7 +191,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     }
 
     private void loadVideoSearchData(List<SearchVideoInfo> searchVideoInfoList) {
-        if(Objects.isNull(searchVideoInfoList) || searchVideoInfoList.isEmpty()){
+        if (Objects.isNull(searchVideoInfoList) || searchVideoInfoList.isEmpty()) {
             return;
         }
         VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
@@ -205,7 +205,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     }
 
     private void loadLiveUserSearchData(List<SearchLiveUser> searchLiveUserList) {
-        if(searchLiveUserList == null || searchLiveUserList.isEmpty()){
+        if (searchLiveUserList == null || searchLiveUserList.isEmpty()) {
             return;
         }
         LiveUserCardPresenter liveUserCardPresenter = new LiveUserCardPresenter();
@@ -220,7 +220,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     }
 
     private void loadLiveRoomSearchData(List<SearchLiveRoom> searchLiveRoomList) {
-        if(searchLiveRoomList == null || searchLiveRoomList.isEmpty()){
+        if (searchLiveRoomList == null || searchLiveRoomList.isEmpty()) {
             return;
         }
         LiveRoomCardPresenter liveRoomCardPresenter = new LiveRoomCardPresenter(null);
@@ -238,15 +238,15 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
             ImageView sharedElement = ((ImageCardView) itemViewHolder.view).getMainImageView();
-            if(item instanceof LiveUser){
+            if (item instanceof LiveUser) {
                 LiveUser liveUser = (LiveUser) item;
                 LiveRoom liveRoom = LiveRoomConvert.buildWithRoomId(liveUser.getRoomId());
                 jumpLiveRoomDetailsActivity(liveRoom, sharedElement);
-            }else if(item instanceof SearchLiveRoom){
+            } else if (item instanceof SearchLiveRoom) {
                 SearchLiveRoom searchLiveRoom = (SearchLiveRoom) item;
                 LiveRoom liveRoom = LiveRoomConvert.buildWithRoomId(searchLiveRoom.getRoomId());
                 jumpLiveRoomDetailsActivity(liveRoom, sharedElement);
-            }else if(item instanceof SearchVideoInfo){
+            } else if (item instanceof SearchVideoInfo) {
                 SearchVideoInfo searchVideoInfo = (SearchVideoInfo) item;
                 jumpVideoDetailsActivity(searchVideoInfo.getBvId(), sharedElement);
             }
@@ -254,14 +254,14 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
     }
 
     private void jumpLiveRoomDetailsActivity(LiveRoom liveRoom, View sharedElement) {
-        if(Objects.nonNull(liveRoom)){
+        if (Objects.nonNull(liveRoom)) {
             FragmentActivity activity = requireActivity();
             Intent intent = new Intent(activity, LiveRoomDetailsActivity.class);
             intent.putExtra(LiveRoomDetailsActivity.LIVE_ROOM, liveRoom);
             Bundle bundle = null;
-            if(Objects.nonNull(sharedElement)){
+            if (Objects.nonNull(sharedElement)) {
                 bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement,
-                                LiveRoomDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
+                        LiveRoomDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
             }
             activity.startActivity(intent, bundle);
         }
@@ -273,7 +273,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         intent.putExtra(VideoDetailsActivity.VIDEO_BV, bv);
         intent.putExtra(VideoDetailsActivity.VIDEO_PAGE, 1);
         Bundle bundle = null;
-        if(Objects.nonNull(sharedElement)){
+        if (Objects.nonNull(sharedElement)) {
             bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, sharedElement,
                     VideoDetailsActivity.SHARED_ELEMENT_NAME).toBundle();
         }
@@ -290,10 +290,10 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
             if (item instanceof LiveUser) {
                 mBackgroundUri = ((LiveUser) item).getUface();
                 startBackgroundTimer();
-            }else if(item instanceof SearchLiveRoom){
+            } else if (item instanceof SearchLiveRoom) {
                 mBackgroundUri = LiveRoomConvert.getImageUrl(((SearchLiveRoom) item));
                 startBackgroundTimer();
-            }else if(item instanceof SearchVideoInfo){
+            } else if (item instanceof SearchVideoInfo) {
                 mBackgroundUri = ((SearchVideoInfo) item).getPic();
                 startBackgroundTimer();
             }

@@ -27,15 +27,15 @@ public class ToastUtil {
     }
 
     public static void debug(@Nullable Context context, CharSequence text) {
-        if(EnvConfig.DEBUG){
+        if (EnvConfig.DEBUG) {
             showLongToast(context, text);
         }
     }
 
     private static void showToast(Context context, CharSequence text, int duration) {
-        if(isContextValid(context)) {
+        if (isContextValid(context)) {
             handler.post(() -> Toast.makeText(context, text, duration).show());
-        }else{
+        } else {
             Log.d(TAG, "Skipping toast, context is invalid: " + context);
             Log.d(TAG, "Skipping toast, text: " + text);
         }
@@ -46,19 +46,19 @@ public class ToastUtil {
     }
 
     public static void debug(Supplier<Context> contextSupplier, CharSequence text) {
-        if(EnvConfig.DEBUG){
+        if (EnvConfig.DEBUG) {
             showLongToast(contextSupplier.get(), text);
         }
     }
 
     public static void debug(Supplier<Context> contextSupplier, Supplier<CharSequence> textSupplier) {
-        if(EnvConfig.DEBUG){
+        if (EnvConfig.DEBUG) {
             showLongToast(contextSupplier.get(), textSupplier.get());
         }
     }
 
     public static void error(@Nullable Context context, CharSequence text, @Nullable Throwable throwable) {
-        if(throwable != null){
+        if (throwable != null) {
             text += ":" + throwable.getMessage();
         }
         showLongToast(context, text);

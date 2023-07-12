@@ -159,14 +159,15 @@ public class RxRequestFactory {
             BilibiliResponse<DynamicFlow> response = BilibiliLiveApi.client().dynamicNew(Collections.singletonList(8));
             handleResponse(response, emitter, resp -> resp.getCards().stream()
                     .filter(card -> card.getDesc().getType() == 8).map(card -> {
-                VideoDynamicCard videoDynamicCard = JSON.parseObject(card.getCard(), new TypeReference<VideoDynamicCard>(){});
-                videoDynamicCard.setBvid(card.getDesc().getBvid());
-                return videoDynamicCard;
-            }).collect(Collectors.toList()), "BilibiliVideoDynamic", true, null);
+                        VideoDynamicCard videoDynamicCard = JSON.parseObject(card.getCard(), new TypeReference<VideoDynamicCard>() {
+                        });
+                        videoDynamicCard.setBvid(card.getDesc().getBvid());
+                        return videoDynamicCard;
+                    }).collect(Collectors.toList()), "BilibiliVideoDynamic", true, null);
         });
     }
 
-    public static Single<SpaceSearchResult> bilibiliSpaceSearchVideos(int pageNum, int pageSize, long mid){
+    public static Single<SpaceSearchResult> bilibiliSpaceSearchVideos(int pageNum, int pageSize, long mid) {
         return getWbiKey().map(wbiKey -> {
             BilibiliResponse<SpaceSearchResult> response = BilibiliLiveApi.client().spaceSearch(pageNum, pageSize, mid, wbiKey);
             return handleResponse(response, Function.identity(), "BilibiliSpaceSearchVideos", true, null);
@@ -208,83 +209,83 @@ public class RxRequestFactory {
                 } else {
                     emitter.onError(HttpRequestException.create(response.getMsg()));
                 }
-            }else{
+            } else {
                 emitter.onError(HttpRequestException.create(String.format(RESPONSE_DATA_EMPTY, "GithubLatestRelease")));
             }
         });
     }
 
-    public static <T,R> void handleResponse(BilibiliResponse<T> response, SingleEmitter<R> emitter,
-                                            Function<T, R> converter, String tag, boolean emptyValid,
-                                            BeforeSuccess<T, R> beforeSuccess) {
+    public static <T, R> void handleResponse(BilibiliResponse<T> response, SingleEmitter<R> emitter,
+                                             Function<T, R> converter, String tag, boolean emptyValid,
+                                             BeforeSuccess<T, R> beforeSuccess) {
         long code = ErrorCode.UNKNOWN;
-        if(Objects.nonNull(response)){
-            if(Objects.nonNull(response.getCode())) {
+        if (Objects.nonNull(response)) {
+            if (Objects.nonNull(response.getCode())) {
                 code = response.getCode();
             }
-            if(code == ErrorCode.SUCCESS){
+            if (code == ErrorCode.SUCCESS) {
                 handleResponseConverter(code, response, emitter, converter, tag, emptyValid, beforeSuccess);
-            }else{
+            } else {
                 emitter.onError(HttpRequestException.create(code, response.getMessage()));
             }
-        }else{
+        } else {
             emitter.onError(HttpRequestException.create(code, String.format(REQUEST_ERROR, tag)));
         }
     }
 
-    private static <T,R> void handleResponseConverter(long code, BilibiliResponse<T> response,
-                                                      SingleEmitter<R> emitter, Function<T, R> converter,
-                                                      String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
+    private static <T, R> void handleResponseConverter(long code, BilibiliResponse<T> response,
+                                                       SingleEmitter<R> emitter, Function<T, R> converter,
+                                                       String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
         R result = converter.apply(response.getData());
-        if(emptyValid && !validEmpty(result)){
+        if (emptyValid && !validEmpty(result)) {
             emitter.onError(HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag)));
-        }else{
-            if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, result)){
+        } else {
+            if (Objects.isNull(beforeSuccess) || beforeSuccess.before(response, result)) {
                 emitter.onSuccess(result);
             }
         }
     }
 
-    private static boolean validEmpty(Object object){
-        if(object instanceof String){
+    private static boolean validEmpty(Object object) {
+        if (object instanceof String) {
             return !Strings.isNullOrEmpty((String) object);
-        }else if(object instanceof Collection){
+        } else if (object instanceof Collection) {
             return !((Collection<?>) object).isEmpty();
-        }else{
+        } else {
             return Objects.nonNull(object);
         }
     }
 
-    public static <T,R> R handleResponse(BilibiliResponse<T> response,
-                                            Function<T, R> converter,
-                                            String tag,
-                                            boolean emptyValid,
-                                            BeforeSuccess<T, R> beforeSuccess) {
+    public static <T, R> R handleResponse(BilibiliResponse<T> response,
+                                          Function<T, R> converter,
+                                          String tag,
+                                          boolean emptyValid,
+                                          BeforeSuccess<T, R> beforeSuccess) {
         long code = ErrorCode.UNKNOWN;
-        if(Objects.nonNull(response)){
-            if(Objects.nonNull(response.getCode())) {
+        if (Objects.nonNull(response)) {
+            if (Objects.nonNull(response.getCode())) {
                 code = response.getCode();
             }
-            if(code == ErrorCode.SUCCESS){
+            if (code == ErrorCode.SUCCESS) {
                 return handleResponseConverter(code, response, converter, tag, emptyValid, beforeSuccess);
-            }else{
+            } else {
                 throw HttpRequestException.create(code, response.getMessage());
             }
-        }else{
+        } else {
             throw HttpRequestException.create(code, String.format(REQUEST_ERROR, tag));
         }
     }
 
-    private static <T,R> R handleResponseConverter(long code, BilibiliResponse<T> response,
-                                                      Function<T, R> converter,
-                                                      String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
+    private static <T, R> R handleResponseConverter(long code, BilibiliResponse<T> response,
+                                                    Function<T, R> converter,
+                                                    String tag, boolean emptyValid, BeforeSuccess<T, R> beforeSuccess) {
         R result = converter.apply(response.getData());
-        if(emptyValid && !validEmpty(result)){
+        if (emptyValid && !validEmpty(result)) {
             throw HttpRequestException.create(code, String.format(RESPONSE_DATA_EMPTY, tag));
-        }else{
-            if(Objects.isNull(beforeSuccess) || beforeSuccess.before(response, result)){
+        } else {
+            if (Objects.isNull(beforeSuccess) || beforeSuccess.before(response, result)) {
                 return result;
-            }else{
+            } else {
                 throw new IllegalStateException("not success for beforeSuccess call");
             }
         }
@@ -293,6 +294,6 @@ public class RxRequestFactory {
 
     @FunctionalInterface
     interface BeforeSuccess<T, R> {
-         boolean before(BilibiliResponse<T> response, R result);
+        boolean before(BilibiliResponse<T> response, R result);
     }
 }

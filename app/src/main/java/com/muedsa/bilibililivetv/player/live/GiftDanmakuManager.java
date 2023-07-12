@@ -25,14 +25,14 @@ public class GiftDanmakuManager {
     private final Long[] lastEndTimePreLine = new Long[maxGiftDanmakuLine];
     private int willEndIndex = 0;
 
-    public GiftDanmakuManager(IDanmakuView danmakuView){
+    public GiftDanmakuManager(IDanmakuView danmakuView) {
         this.danmakuView = danmakuView;
         Arrays.fill(lastEndTimePreLine, 0L);
     }
 
-    public void prepare(){
-        if(GIFT_DANMAKU_POINT_HEIGHT == 0){
-            BaseDanmaku danmaku  = buildBaseDanmaku(" ", 0, 0);
+    public void prepare() {
+        if (GIFT_DANMAKU_POINT_HEIGHT == 0) {
+            BaseDanmaku danmaku = buildBaseDanmaku(" ", 0, 0);
             if (danmaku != null) {
                 danmakuView.getConfig().getDisplayer().measure(danmaku, true);
                 GIFT_DANMAKU_POINT_HEIGHT = (int) Math.ceil(danmaku.paintHeight);
@@ -46,39 +46,39 @@ public class GiftDanmakuManager {
         long duration = GIFT_DURATION;
         int useLineIndex = willEndIndex;
         long lastGiftDanmakuEndTime = lastEndTimePreLine[useLineIndex];
-        if(lastGiftDanmakuEndTime > originalTime) {
+        if (lastGiftDanmakuEndTime > originalTime) {
             time = lastGiftDanmakuEndTime + 1;
             long timeDelta = time - originalTime;
-            if(timeDelta < MAX_DANMAKU_TIME_DELTA){
+            if (timeDelta < MAX_DANMAKU_TIME_DELTA) {
                 duration = duration * ((MAX_DANMAKU_TIME_DELTA - timeDelta) / MAX_DANMAKU_TIME_DELTA);
-                if(duration < MIN_DURATION){
+                if (duration < MIN_DURATION) {
                     duration = MIN_DURATION;
                 }
                 lastEndTimePreLine[useLineIndex] = time + duration;
                 flushWillEndIndex();
                 addDanmaku(danmakuContent, time, duration, useLineIndex + 1);
-            }else{
+            } else {
                 Log.d(TAG, "ignore: " + danmakuContent);
             }
-        }else{
+        } else {
             lastEndTimePreLine[useLineIndex] = time + duration;
             flushWillEndIndex();
             addDanmaku(danmakuContent, time, duration, useLineIndex + 1);
         }
     }
 
-    private void flushWillEndIndex(){
+    private void flushWillEndIndex() {
         int index = 0;
         for (int r = 1; r < lastEndTimePreLine.length; r++) {
-            if(lastEndTimePreLine[r] < lastEndTimePreLine[index]) {
+            if (lastEndTimePreLine[r] < lastEndTimePreLine[index]) {
                 index = r;
             }
         }
         willEndIndex = index;
     }
 
-    private void addDanmaku(String content, long time, long duration, int lineNum){
-        BaseDanmaku danmaku  = buildBaseDanmaku(content, time, duration);
+    private void addDanmaku(String content, long time, long duration, int lineNum) {
+        BaseDanmaku danmaku = buildBaseDanmaku(content, time, duration);
         if (danmaku != null) {
             DanmakuContext danmakuContext = danmakuView.getConfig();
             int y = danmakuContext.mDanmakuFactory.CURRENT_DISP_HEIGHT - GIFT_DANMAKU_POINT_HEIGHT * lineNum;
@@ -93,9 +93,9 @@ public class GiftDanmakuManager {
         }
     }
 
-    private BaseDanmaku buildBaseDanmaku(String content, long time, long duration){
+    private BaseDanmaku buildBaseDanmaku(String content, long time, long duration) {
         BaseDanmaku danmaku = null;
-        if(danmakuView != null && danmakuView.getConfig() != null && danmakuView.getConfig().getDisplayer() != null) {
+        if (danmakuView != null && danmakuView.getConfig() != null && danmakuView.getConfig().getDisplayer() != null) {
             DanmakuContext danmakuContext = danmakuView.getConfig();
             danmaku = danmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SPECIAL);
             if (danmaku != null) {

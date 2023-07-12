@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
-import androidx.room.util.StringUtil;
 
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
@@ -27,7 +26,7 @@ public class LiveRoomCardPresenter extends AbstractImageCardPresenter {
 
     private Drawable mDefaultCardImage;
 
-    private CardLongClickListener cardLongClickListener;
+    private final CardLongClickListener cardLongClickListener;
 
     public LiveRoomCardPresenter(CardLongClickListener cardLongClickListener) {
         super(0);
@@ -47,17 +46,17 @@ public class LiveRoomCardPresenter extends AbstractImageCardPresenter {
         CharSequence title = "";
         CharSequence content = "";
         String url = null;
-        if(item instanceof LiveRoom){
+        if (item instanceof LiveRoom) {
             LiveRoom liveRoom = (LiveRoom) item;
             title = liveRoom.getTitle();
             content = liveRoom.getUname();
             url = liveRoom.getCoverImageUrl();
-        }else if(item instanceof SearchLiveRoom) {
+        } else if (item instanceof SearchLiveRoom) {
             SearchLiveRoom searchLiveRoom = (SearchLiveRoom) item;
             title = HtmlCompat.fromHtml(searchLiveRoom.getTitle(), HtmlCompat.FROM_HTML_MODE_COMPACT);
             content = HtmlCompat.fromHtml(searchLiveRoom.getUname(), HtmlCompat.FROM_HTML_MODE_COMPACT);
             url = LiveRoomConvert.getImageUrl(searchLiveRoom);
-        }else if(item instanceof LiveRoomInfo) {
+        } else if (item instanceof LiveRoomInfo) {
             LiveRoomInfo liveRoomInfo = (LiveRoomInfo) item;
             title = liveRoomInfo.getTitle();
             content = liveRoomInfo.getUname();
@@ -71,9 +70,9 @@ public class LiveRoomCardPresenter extends AbstractImageCardPresenter {
             int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
             int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_HEIGHT_DP);
             cardView.setMainImageDimensions(width, height);
-            if(cardLongClickListener != null && item instanceof LiveRoom) {
+            if (cardLongClickListener != null && item instanceof LiveRoom) {
                 cardView.setOnLongClickListener(v -> {
-                    if(cardLongClickListener != null) {
+                    if (cardLongClickListener != null) {
                         cardLongClickListener.onLongClick((LiveRoom) item);
                     }
                     return true;

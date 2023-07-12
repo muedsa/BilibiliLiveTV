@@ -12,28 +12,28 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
+import androidx.media3.common.C;
+import androidx.media3.common.Format;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MimeTypes;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.common.text.CueGroup;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.MergingMediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
+import androidx.media3.exoplayer.util.EventLogger;
+import androidx.media3.extractor.Extractor;
+import androidx.media3.extractor.ExtractorsFactory;
+import androidx.media3.extractor.text.SubtitleExtractor;
+import androidx.media3.ui.SubtitleView;
+import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
-import com.google.android.exoplayer2.extractor.Extractor;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.MergingMediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.text.CueGroup;
-import com.google.android.exoplayer2.text.SubtitleExtractor;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.ui.SubtitleView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.util.EventLogger;
-import com.google.android.exoplayer2.util.MimeTypes;
 import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoSubtitle;
 import com.muedsa.bilibililivetv.EnvConfig;
@@ -104,7 +104,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         subtitleView.setUserDefaultStyle();
         if (Objects.nonNull(root)) {
             ViewGroup playbackRoot = root.findViewById(androidx.leanback.R.id.playback_fragment_root);
-            if(Objects.nonNull(playbackRoot)){
+            if (Objects.nonNull(playbackRoot)) {
                 playbackRoot.addView(subtitleLayout, 1);
                 playbackRoot.addView(danmakuView, 1);
             }
@@ -174,7 +174,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
             @Override
             public void onCues(@NonNull CueGroup cueGroup) {
                 Player.Listener.super.onCues(cueGroup);
-                if(Objects.nonNull(subtitleView) && Objects.nonNull(cueGroup)){
+                if (Objects.nonNull(subtitleView) && Objects.nonNull(cueGroup)) {
                     subtitleView.setCues(cueGroup.cues);
                 }
             }
@@ -248,7 +248,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
 
     private MediaSource buildSubtitleMediaSourceList(List<VideoSubtitle> subtitleList,
                                                      MediaSource videoMediaSource,
-                                                     MediaSource audioMediaSource){
+                                                     MediaSource audioMediaSource) {
         subtitleList = subtitleList.stream().filter(i -> !"ai-zh".equals(i.getLan())).collect(Collectors.toList());
         MediaSource[] arr = new MediaSource[subtitleList.size() + 2];
         arr[0] = videoMediaSource;
@@ -264,7 +264,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                             .setLabel(videoSubtitle.getLan_doc())
                             .setId(videoSubtitle.getIdStr())
                             .build();
-            ExtractorsFactory extractorsFactory =  () -> new Extractor[]{
+            ExtractorsFactory extractorsFactory = () -> new Extractor[]{
                     new SubtitleExtractor(new BilibiliJsonSubtitleDecoder(), format)};
             ProgressiveMediaSource.Factory subtitleMediaSourceFactory =
                     new ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory);
@@ -274,8 +274,8 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         return new MergingMediaSource(arr);
     }
 
-    private void showSubtitleDialog(){
-        if(Objects.isNull(subtitleTrackSelectionDialog) && Objects.nonNull(exoPlayer)){
+    private void showSubtitleDialog() {
+        if (Objects.isNull(subtitleTrackSelectionDialog) && Objects.nonNull(exoPlayer)) {
             subtitleTrackSelectionDialog = new TrackSelectionDialogBuilder(requireContext(),
                     "选择字幕", exoPlayer, C.TRACK_TYPE_TEXT)
                     .setShowDisableOption(true)
@@ -285,14 +285,14 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                     })
                     .build();
         }
-        if(Objects.nonNull(subtitleTrackSelectionDialog)){
+        if (Objects.nonNull(subtitleTrackSelectionDialog)) {
             subtitleTrackSelectionDialog.show();
         }
     }
 
     private void checkAllReadyAndStart() {
         long now = System.currentTimeMillis();
-        if(lastSyncTime < now && now - lastSyncTime > 100) {
+        if (lastSyncTime < now && now - lastSyncTime > 100) {
             lastSyncTime = now;
             requireActivity().runOnUiThread(() -> {
                 if (Objects.nonNull(exoPlayer)
@@ -308,8 +308,8 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         }
     }
 
-    private void changeSubtitle(String language){
-        if(Objects.nonNull(trackSelector)){
+    private void changeSubtitle(String language) {
+        if (Objects.nonNull(trackSelector)) {
             trackSelector.setParameters(trackSelector
                     .buildUponParameters()
                     .setPreferredTextLanguage(language)
@@ -318,7 +318,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     }
 
     private void prepareHeartbeatTimer(VideoPlayInfo videoPlayInfo) {
-        if(heartbeatTimer == null) {
+        if (heartbeatTimer == null) {
             heartbeatTimer = new Timer();
             long current = System.currentTimeMillis() / 1000;
             heartbeat = new Heartbeat();
@@ -333,9 +333,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                 @Override
                 public void run() {
                     FragmentActivity activity = getActivity();
-                    if(activity != null){
+                    if (activity != null) {
                         activity.runOnUiThread(() -> {
-                            if(exoPlayer.isPlaying()){
+                            if (exoPlayer.isPlaying()) {
                                 long progress = glue.getCurrentPosition() / 1000;
                                 heartbeat.setPlayedTime(progress);
                                 heartbeat.setLastPlayProgressTime(progress);

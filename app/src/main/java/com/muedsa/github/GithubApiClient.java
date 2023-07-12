@@ -12,12 +12,13 @@ public class GithubApiClient {
 
     private final HttpJsonClient httpJsonClient;
 
-    public GithubApiClient(){
+    public GithubApiClient() {
         httpJsonClient = new HttpJsonClient();
     }
 
     public BaseResponse<GithubReleaseTagInfo> getLatestReleaseInfo(String user, String repo) throws IOException {
         String url = ApiUtil.fillUrl(GithubApiUrlContainer.LATEST_RELEASE_TAG_INFO, user, repo);
-        return httpJsonClient.getJson(url, new TypeReference<BaseResponse<GithubReleaseTagInfo>>(){});
+        return httpJsonClient.getJson(url, new TypeReference<BaseResponse<GithubReleaseTagInfo>>() {
+        });
     }
 }

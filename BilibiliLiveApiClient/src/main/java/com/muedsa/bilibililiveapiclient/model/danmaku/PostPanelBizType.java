@@ -88,11 +88,9 @@ public enum PostPanelBizType
         }
     }
 
-    ;
-
     private final int value;
 
-    private PostPanelBizType(int value) {
+    PostPanelBizType(int value) {
         this.value = value;
     }
 

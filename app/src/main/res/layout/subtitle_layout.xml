@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.exoplayer2.ui.AspectRatioFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.media3.ui.AspectRatioFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center">
-    <com.google.android.exoplayer2.ui.SubtitleView
+
+    <androidx.media3.ui.SubtitleView
         android:id="@+id/subtitle_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
+        android:layout_height="match_parent" />
+</androidx.media3.ui.AspectRatioFrameLayout>

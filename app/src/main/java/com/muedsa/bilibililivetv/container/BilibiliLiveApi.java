@@ -18,7 +18,7 @@ public class BilibiliLiveApi {
         return ClientHolder.client;
     }
 
-    public static void login(Map<String,String> cookies) {
+    public static void login(Map<String, String> cookies) {
         BilibiliLiveApiClient client = BilibiliLiveApi.client();
         cookies.forEach(client::putCookie);
     }

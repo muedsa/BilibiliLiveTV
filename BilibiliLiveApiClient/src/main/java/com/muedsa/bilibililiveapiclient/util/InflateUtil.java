@@ -6,7 +6,7 @@ import java.util.zip.Inflater;
 
 public class InflateUtil {
 
-    public static byte[] unZip(byte[] input){
+    public static byte[] unZip(byte[] input) {
         Inflater inflater = new Inflater();
         inflater.setInput(input);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(input.length);

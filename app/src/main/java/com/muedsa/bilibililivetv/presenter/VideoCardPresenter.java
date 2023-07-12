@@ -57,7 +57,7 @@ public class VideoCardPresenter extends AbstractImageCardPresenter {
             title = episode.getTitle();
             //content = "";
             url = episode.getArc().getPic();
-        }else if (item instanceof VideoDynamicCard) {
+        } else if (item instanceof VideoDynamicCard) {
             VideoDynamicCard videoDynamicCard = (VideoDynamicCard) item;
             title = videoDynamicCard.getTitle();
             content = videoDynamicCard.getOwner().getName();

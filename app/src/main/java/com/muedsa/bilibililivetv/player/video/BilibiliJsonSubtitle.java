@@ -1,10 +1,10 @@
 package com.muedsa.bilibililivetv.player.video;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.text.Cue;
-import com.google.android.exoplayer2.text.Subtitle;
-import com.google.android.exoplayer2.util.Assertions;
-import com.google.android.exoplayer2.util.Util;
+import androidx.media3.common.C;
+import androidx.media3.common.text.Cue;
+import androidx.media3.common.util.Assertions;
+import androidx.media3.common.util.Util;
+import androidx.media3.extractor.text.Subtitle;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ public class BilibiliJsonSubtitle implements Subtitle {
     private final Cue[] cues;
     private final long[] cueTimesUs;
 
-    public BilibiliJsonSubtitle(Cue[] cues, long[] cueTimesUs){
+    public BilibiliJsonSubtitle(Cue[] cues, long[] cueTimesUs) {
         this.cues = cues;
         this.cueTimesUs = cueTimesUs;
     }

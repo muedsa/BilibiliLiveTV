@@ -113,7 +113,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 BilibiliRequestViewModelFactory.getInstance())
                 .get(VideoDetailViewModel.class);
         videoDetailViewModel.getResult().observe(VideoDetailsFragment.this, m -> {
-            if(RMessage.Status.SUCCESS == m.getStatus()) {
+            if (RMessage.Status.SUCCESS == m.getStatus()) {
                 FragmentActivity activity = requireActivity();
                 VideoDetail videoDetail = m.getData();
                 if (Objects.nonNull(videoDetail)
@@ -135,7 +135,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                             videoPlayInfoList = VideoInfoConvert.buildVideoPlayInfoList(videoInfo, playInfoResponse.getData(), url);
                             updateDetailsOverviewActions();
                         } else {
-                            ToastUtil.showLongToast(activity, Objects.nonNull(playInfoResponse.getMessage())?
+                            ToastUtil.showLongToast(activity, Objects.nonNull(playInfoResponse.getMessage()) ?
                                     playInfoResponse.getMessage() : activity.getString(R.string.toast_msg_jump_video_detail_error));
                         }
                     } else {
@@ -145,7 +145,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 } else {
                     ToastUtil.showLongToast(activity, activity.getString(R.string.toast_msg_jump_video_detail_error));
                 }
-            } else if(RMessage.Status.ERROR == m.getStatus()) {
+            } else if (RMessage.Status.ERROR == m.getStatus()) {
                 Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.toast_msg_jump_video_detail_error), m.getError());
@@ -216,12 +216,12 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
         detailsPresenter.setOnActionClickedListener(action -> {
             FragmentActivity activity = requireActivity();
-            if(action.getId() == ACTION_ID_UP_LAST_VIDEOS) {
+            if (action.getId() == ACTION_ID_UP_LAST_VIDEOS) {
                 Intent intent = new Intent(activity, UpLastVideosActivity.class);
                 intent.putExtra(UpLastVideosActivity.MID, videoInfo.getVideoData().getOwner().getMid());
                 intent.putExtra(UpLastVideosActivity.UNAME, videoInfo.getVideoData().getOwner().getName());
                 startActivity(intent);
-            } else if(Objects.nonNull(videoPlayInfoList)
+            } else if (Objects.nonNull(videoPlayInfoList)
                     && action.getId() >= 0
                     && action.getId() < videoPlayInfoList.size()) {
                 int index = (int) action.getId();
@@ -244,7 +244,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 actionAdapter.add(action);
             }
             FragmentActivity activity = getActivity();
-            if(activity != null){
+            if (activity != null) {
                 Action action = new Action(ACTION_ID_UP_LAST_VIDEOS, activity.getString(R.string.action_up_last_videos));
                 actionAdapter.add(action);
             }
@@ -271,7 +271,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {}
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
                 });
     }
 
@@ -295,7 +296,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                             }
 
                             @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {}
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                            }
                         }));
     }
 
@@ -318,7 +320,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 jumpBv = episode.getBvId();
                 jumPage = episode.getPage().getPage();
             }
-            if(!Strings.isNullOrEmpty(jumpBv)){
+            if (!Strings.isNullOrEmpty(jumpBv)) {
 //                FragmentActivity activity = requireActivity();
 //                Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
 //                intent.putExtra(VideoDetailsActivity.VIDEO_BV, jumpBv);

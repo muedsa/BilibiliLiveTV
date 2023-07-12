@@ -22,7 +22,7 @@ public final class LiveRoomConvert {
         return liveRoom;
     }
 
-    public static void updateRoomInfo(LiveRoom liveRoom, RoomInfo roomInfo){
+    public static void updateRoomInfo(LiveRoom liveRoom, RoomInfo roomInfo) {
         liveRoom.setId(roomInfo.getRoomId());
         liveRoom.setShortId(roomInfo.getShortId());
         liveRoom.setTitle(roomInfo.getTitle());
@@ -30,47 +30,47 @@ public final class LiveRoomConvert {
 
         liveRoom.setUid(roomInfo.getUid());
 
-        if(!Strings.isNullOrEmpty(roomInfo.getKeyframe())){
+        if (!Strings.isNullOrEmpty(roomInfo.getKeyframe())) {
             liveRoom.setSystemCoverImageUrl(roomInfo.getKeyframe());
         }
 
-        if(!Strings.isNullOrEmpty(roomInfo.getCover())){
+        if (!Strings.isNullOrEmpty(roomInfo.getCover())) {
             liveRoom.setCoverImageUrl(roomInfo.getCover());
-        }else if(Strings.isNullOrEmpty(liveRoom.getCoverImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())){
+        } else if (Strings.isNullOrEmpty(liveRoom.getCoverImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())) {
             liveRoom.setCoverImageUrl(liveRoom.getSystemCoverImageUrl());
         }
 
-        if(!Strings.isNullOrEmpty(roomInfo.getBackground())){
+        if (!Strings.isNullOrEmpty(roomInfo.getBackground())) {
             liveRoom.setBackgroundImageUrl(roomInfo.getBackground());
-        }else if(Strings.isNullOrEmpty(liveRoom.getBackgroundImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())){
+        } else if (Strings.isNullOrEmpty(liveRoom.getBackgroundImageUrl()) && !Strings.isNullOrEmpty(liveRoom.getSystemCoverImageUrl())) {
             liveRoom.setBackgroundImageUrl((liveRoom.getSystemCoverImageUrl()));
         }
 
-        if(!Objects.isNull(roomInfo.getLiveStatus())){
+        if (!Objects.isNull(roomInfo.getLiveStatus())) {
             liveRoom.setLiveStatus(roomInfo.getLiveStatus());
         }
 
-        if(!Objects.isNull(roomInfo.getOnline())){
+        if (!Objects.isNull(roomInfo.getOnline())) {
             liveRoom.setOnlineNum(roomInfo.getOnline());
         }
     }
 
-    public static void updateRoomInfo(LiveRoom liveRoom, LargeInfo largeInfo){
-        if(!Objects.isNull(largeInfo.getRoomInfo())){
+    public static void updateRoomInfo(LiveRoom liveRoom, LargeInfo largeInfo) {
+        if (!Objects.isNull(largeInfo.getRoomInfo())) {
             updateRoomInfo(liveRoom, largeInfo.getRoomInfo());
         }
 
-        if(!Objects.isNull(largeInfo.getAnchorInfo())
-                && !Objects.isNull(largeInfo.getAnchorInfo().getBaseInfo())){
+        if (!Objects.isNull(largeInfo.getAnchorInfo())
+                && !Objects.isNull(largeInfo.getAnchorInfo().getBaseInfo())) {
             liveRoom.setUname(largeInfo.getAnchorInfo().getBaseInfo().getUname());
         }
     }
 
     public static String getImageUrl(SearchLiveRoom searchLiveRoom) {
         String url = null;
-        if(!Strings.isNullOrEmpty(searchLiveRoom.getUserCover())){
+        if (!Strings.isNullOrEmpty(searchLiveRoom.getUserCover())) {
             url = searchLiveRoom.getUserCover();
-        }else if(!Strings.isNullOrEmpty(searchLiveRoom.getCover())){
+        } else if (!Strings.isNullOrEmpty(searchLiveRoom.getCover())) {
             url = searchLiveRoom.getUserCover();
         }
         return url;

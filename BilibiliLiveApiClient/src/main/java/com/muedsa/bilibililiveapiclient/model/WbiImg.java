@@ -27,19 +27,19 @@ public class WbiImg {
         this.subUrl = subUrl;
     }
 
-    public String getImgKey(){
+    public String getImgKey() {
         return parseKey(imgUrl);
     }
 
-    public String getSubKey(){
+    public String getSubKey() {
         return parseKey(subUrl);
     }
 
-    public static String parseKey(String url){
+    public static String parseKey(String url) {
         URI uri = URI.create(url);
         String[] splitPaths = uri.getPath().split("/");
         String endPath = splitPaths[splitPaths.length - 1];
-        if(endPath.endsWith(".png")){
+        if (endPath.endsWith(".png")) {
             return endPath.substring(0, endPath.length() - 4);
         }
         throw new IllegalArgumentException("not wbi url");

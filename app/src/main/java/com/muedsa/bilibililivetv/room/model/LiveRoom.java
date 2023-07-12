@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class LiveRoom extends BaseModel implements Serializable {
 
     @Ignore
-    public static final Pattern ID_PATTERN =  Pattern.compile("^\\d+$");
+    public static final Pattern ID_PATTERN = Pattern.compile("^\\d+$");
 
     @PrimaryKey
     @ColumnInfo(name = "id")
@@ -164,9 +164,9 @@ public class LiveRoom extends BaseModel implements Serializable {
         this.onlineNum = onlineNum;
     }
 
-    public String getLiveStatusDesc(Resources resources){
+    public String getLiveStatusDesc(Resources resources) {
         String liveStatusDesc = resources.getString(R.string.room_no_live);
-        if(liveStatus == 1){
+        if (liveStatus == 1) {
             liveStatusDesc = resources.getString(R.string.room_living);
         }
         return liveStatusDesc;

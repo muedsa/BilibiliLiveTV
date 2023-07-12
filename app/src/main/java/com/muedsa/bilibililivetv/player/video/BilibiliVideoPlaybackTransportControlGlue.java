@@ -5,8 +5,8 @@ import android.content.Context;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
-import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.muedsa.bilibililivetv.player.SubtitleToggleAction;
 
 import java.util.List;
@@ -28,20 +28,20 @@ public class BilibiliVideoPlaybackTransportControlGlue extends PlaybackTransport
 
     @Override
     public void onActionClicked(Action action) {
-        if(action instanceof SubtitleToggleAction) {
+        if (action instanceof SubtitleToggleAction) {
             dispatchActionCallback(action);
-        }else {
+        } else {
             super.onActionClicked(action);
         }
     }
 
-    private void dispatchActionCallback(Action action){
+    private void dispatchActionCallback(Action action) {
         List<PlayerCallback> callbacks = getPlayerCallbacks();
-        if(Objects.nonNull(callbacks)){
+        if (Objects.nonNull(callbacks)) {
             for (PlayerCallback callback : callbacks) {
-                if(callback instanceof BilibiliVideoPlayerCallback){
+                if (callback instanceof BilibiliVideoPlayerCallback) {
                     BilibiliVideoPlayerCallback bilibiliVideoPlayerCallback = (BilibiliVideoPlayerCallback) callback;
-                    if(action instanceof SubtitleToggleAction){
+                    if (action instanceof SubtitleToggleAction) {
                         bilibiliVideoPlayerCallback.onSubtitleToggle();
                     }
                 }
@@ -50,6 +50,7 @@ public class BilibiliVideoPlaybackTransportControlGlue extends PlaybackTransport
     }
 
     public abstract static class BilibiliVideoPlayerCallback extends PlayerCallback {
-        public void onSubtitleToggle() {}
+        public void onSubtitleToggle() {
+        }
     }
 }

@@ -88,11 +88,9 @@ public enum CheckboxType
         }
     }
 
-    ;
-
     private final int value;
 
-    private CheckboxType(int value) {
+    CheckboxType(int value) {
         this.value = value;
     }
 

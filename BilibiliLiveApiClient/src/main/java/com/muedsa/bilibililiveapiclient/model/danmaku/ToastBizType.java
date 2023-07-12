@@ -88,11 +88,9 @@ public enum ToastBizType
         }
     }
 
-    ;
-
     private final int value;
 
-    private ToastBizType(int value) {
+    ToastBizType(int value) {
         this.value = value;
     }
 

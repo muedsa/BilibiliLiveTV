@@ -11,7 +11,8 @@ import com.muedsa.bilibililivetv.model.bilibili.VideoDetailViewModel;
 
 public class BilibiliRequestViewModelFactory implements ViewModelProvider.Factory {
 
-    private BilibiliRequestViewModelFactory() {}
+    private BilibiliRequestViewModelFactory() {
+    }
 
     private static final class Holder {
         static final BilibiliRequestViewModelFactory INSTANCE = new BilibiliRequestViewModelFactory();
@@ -25,13 +26,13 @@ public class BilibiliRequestViewModelFactory implements ViewModelProvider.Factor
     @Override
     @SuppressWarnings("unchecked cast")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if(modelClass.isAssignableFrom(UpLastVideosViewModel.class)) {
+        if (modelClass.isAssignableFrom(UpLastVideosViewModel.class)) {
             return (T) new UpLastVideosViewModel();
-        } else if(modelClass.isAssignableFrom(VideoDetailViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(VideoDetailViewModel.class)) {
             return (T) new VideoDetailViewModel();
-        } else if(modelClass.isAssignableFrom(LiveRoomInfoViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(LiveRoomInfoViewModel.class)) {
             return (T) new LiveRoomInfoViewModel();
-        } else if(modelClass.isAssignableFrom(SearchViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(SearchViewModel.class)) {
             return (T) new SearchViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");

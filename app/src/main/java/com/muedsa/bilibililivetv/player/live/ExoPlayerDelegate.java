@@ -5,13 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
 import androidx.leanback.media.PlaybackGlue;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.PlaybackException;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
@@ -30,7 +30,7 @@ public class ExoPlayerDelegate {
     private ExoPlayer exoPlayer;
     private List<MediaItem> mediaItemList;
 
-    private Listener listener;
+    private final Listener listener;
 
     public ExoPlayerDelegate(@NonNull LiveStreamPlaybackFragment fragment, @Nullable Listener listener, LiveRoom liveRoom) {
         this.fragment = fragment;
@@ -38,7 +38,7 @@ public class ExoPlayerDelegate {
         this.liveRoom = liveRoom;
     }
 
-    public void init(){
+    public void init() {
         VideoSupportFragmentGlueHost glueHost =
                 new VideoSupportFragmentGlueHost(fragment);
 
@@ -65,7 +65,7 @@ public class ExoPlayerDelegate {
             @Override
             public void onPlayStateChanged(PlaybackGlue glue) {
                 super.onPlayStateChanged(glue);
-                if(listener != null) listener.onPlayStateChanged(glue);
+                if (listener != null) listener.onPlayStateChanged(glue);
             }
 
             @Override
@@ -76,7 +76,7 @@ public class ExoPlayerDelegate {
             @Override
             public void onDanmakuToggle(boolean enabled) {
                 super.onDanmakuToggle(enabled);
-                if(listener != null) listener.onDanmuToggle(enabled);
+                if (listener != null) listener.onDanmuToggle(enabled);
             }
 
             @Override
@@ -92,17 +92,17 @@ public class ExoPlayerDelegate {
             @Override
             public void onSuperChatToggle(boolean enable) {
                 super.onSuperChatToggle(enable);
-                if(listener != null) listener.onDanmakuSuperChatToggle(enable);
+                if (listener != null) listener.onDanmakuSuperChatToggle(enable);
             }
 
             @Override
             public void onGiftToggle(boolean enable) {
                 super.onGiftToggle(enable);
-                if(listener != null) listener.onDanmakuGiftToggle(enable);
+                if (listener != null) listener.onDanmakuGiftToggle(enable);
             }
         });
         mediaItemList = new ArrayList<>();
-        if(liveRoom.getPlayUrlArr() != null){
+        if (liveRoom.getPlayUrlArr() != null) {
             for (String playUrl : liveRoom.getPlayUrlArr()) {
                 mediaItemList.add(new MediaItem.Builder()
                         .setUri(playUrl)
@@ -113,41 +113,41 @@ public class ExoPlayerDelegate {
                         .build());
             }
         }
-        if(mediaItemList.size() > 0){
+        if (mediaItemList.size() > 0) {
             exoPlayer.setMediaItems(mediaItemList);
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
             glue.play();
-        }else{
+        } else {
             ToastUtil.showLongToast(activity, activity.getString(R.string.live_play_failure));
         }
     }
 
-    public boolean isPlaying(){
+    public boolean isPlaying() {
         boolean flag = false;
-        if(glue != null){
+        if (glue != null) {
             flag = glue.isPlaying();
         }
         return flag;
     }
 
-    public void pause(){
+    public void pause() {
         if (glue != null && glue.isPlaying()) {
             glue.pause();
         }
     }
 
-    public void resume(){
-        if(glue != null){
-            if(glue.isPrepared()
-                    && !glue.isPlaying()){
+    public void resume() {
+        if (glue != null) {
+            if (glue.isPrepared()
+                    && !glue.isPlaying()) {
                 glue.play();
             }
-        }else{
+        } else {
             init();
         }
     }
 
-    public void release(){
+    public void release() {
         if (exoPlayer != null) {
             exoPlayer.release();
             exoPlayer = null;
@@ -158,8 +158,11 @@ public class ExoPlayerDelegate {
 
     public interface Listener {
         void onPlayStateChanged(PlaybackGlue glue);
+
         void onDanmuToggle(boolean enable);
+
         void onDanmakuSuperChatToggle(boolean enable);
+
         void onDanmakuGiftToggle(boolean enable);
     }
 }

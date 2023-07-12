@@ -10,8 +10,8 @@ import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.PlaybackControlsRow;
 import androidx.leanback.widget.PlaybackRowPresenter;
+import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
-import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.player.DanmakuPlayToggleAction;
 import com.muedsa.bilibililivetv.util.DrawableUtil;
@@ -73,14 +73,14 @@ public class BilibiliLivePlaybackTransportControlGlue extends PlaybackTransportC
             ((DanmakuPlayToggleAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
                     action);
-        } else if(action instanceof ChangePlayUrlAction) {
+        } else if (action instanceof ChangePlayUrlAction) {
             dispatchActionCallback(action);
-        }else if(action instanceof SuperChatToggleAction) {
+        } else if (action instanceof SuperChatToggleAction) {
             dispatchActionCallback(action);
             ((SuperChatToggleAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
                     action);
-        } else if(action instanceof GiftToggleAction)  {
+        } else if (action instanceof GiftToggleAction) {
             dispatchActionCallback(action);
             ((GiftToggleAction) action).nextIndex();
             notifyItemChanged((ArrayObjectAdapter) getControlsRow().getPrimaryActionsAdapter(),
@@ -90,19 +90,19 @@ public class BilibiliLivePlaybackTransportControlGlue extends PlaybackTransportC
         }
     }
 
-    private void dispatchActionCallback(Action action){
+    private void dispatchActionCallback(Action action) {
         List<PlayerCallback> callbacks = getPlayerCallbacks();
         if (callbacks != null) {
             for (int i = 0, size = callbacks.size(); i < size; i++) {
-                if(callbacks.get(i) instanceof LiveRoomPlayerCallback){
+                if (callbacks.get(i) instanceof LiveRoomPlayerCallback) {
                     LiveRoomPlayerCallback callback = (LiveRoomPlayerCallback) callbacks.get(i);
                     if (action instanceof DanmakuPlayToggleAction) {
                         callback.onDanmakuToggle(((DanmakuPlayToggleAction) action).getIndex() == DanmakuPlayToggleAction.INDEX_ON);
-                    } else if(action instanceof ChangePlayUrlAction){
+                    } else if (action instanceof ChangePlayUrlAction) {
                         callback.onLiveUrlChange(this);
-                    } else if(action instanceof SuperChatToggleAction){
+                    } else if (action instanceof SuperChatToggleAction) {
                         callback.onSuperChatToggle(((SuperChatToggleAction) action).getIndex() == SuperChatToggleAction.INDEX_ON);
-                    } else if(action instanceof GiftToggleAction){
+                    } else if (action instanceof GiftToggleAction) {
                         callback.onGiftToggle(((GiftToggleAction) action).getIndex() == GiftToggleAction.INDEX_ON);
                     }
                 }
@@ -159,10 +159,17 @@ public class BilibiliLivePlaybackTransportControlGlue extends PlaybackTransportC
     }
 
     public abstract static class LiveRoomPlayerCallback extends PlayerCallback {
-        public void onDanmakuToggle(boolean enable) {}
-        public void onLiveUrlChange(PlaybackGlue glue) {}
-        public void onSuperChatToggle(boolean enable) {}
-        public void onGiftToggle(boolean enable) {}
+        public void onDanmakuToggle(boolean enable) {
+        }
+
+        public void onLiveUrlChange(PlaybackGlue glue) {
+        }
+
+        public void onSuperChatToggle(boolean enable) {
+        }
+
+        public void onGiftToggle(boolean enable) {
+        }
     }
 
 }

@@ -23,7 +23,7 @@ public class DefaultDanmakuContext {
         return danmakuContext;
     }
 
-    private static HashMap<Integer, Integer> getMaxLinesPair(){
+    private static HashMap<Integer, Integer> getMaxLinesPair() {
         HashMap<Integer, Integer> pari = new HashMap<>();
         pari.put(BaseDanmaku.TYPE_SCROLL_RL, Prefs.getInt(Prefs.DANMAKU_MAX_LINES_SCROLL));
         pari.put(BaseDanmaku.TYPE_FIX_TOP, Prefs.getInt(Prefs.DANMAKU_MAX_LINES_FIX_TOP));
@@ -31,7 +31,7 @@ public class DefaultDanmakuContext {
         return pari;
     }
 
-    private static HashMap<Integer, Boolean> getOverlappingEnablePair(){
+    private static HashMap<Integer, Boolean> getOverlappingEnablePair() {
         HashMap<Integer, Boolean> pari = new HashMap<>();
         pari.put(BaseDanmaku.TYPE_SCROLL_RL, Prefs.getBoolean(Prefs.DANMAKU_OVERLAPPING_ENABLE_SCROLL));
         pari.put(BaseDanmaku.TYPE_FIX_TOP, Prefs.getBoolean(Prefs.DANMAKU_OVERLAPPING_ENABLE_FIX_TOP));

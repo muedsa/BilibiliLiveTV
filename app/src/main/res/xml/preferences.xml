@@ -9,7 +9,7 @@
         app:min="0"
         android:max="2000"
         app:seekBarIncrement="5"
-        android:defaultValue="120"/>
+        android:defaultValue="120" />
     <SeekBarPreference
         app:key="@string/perf_key_danmaku_transparency"
         app:title="@string/perf_title_danmaku_transparency"
@@ -17,7 +17,7 @@
         app:min="0"
         android:max="100"
         app:seekBarIncrement="1"
-        android:defaultValue="85"/>
+        android:defaultValue="85" />
     <SeekBarPreference
         app:key="@string/perf_key_danmaku_margin"
         app:title="@string/perf_title_danmaku_margin"
@@ -25,7 +25,7 @@
         app:min="0"
         android:max="50"
         app:seekBarIncrement="1"
-        android:defaultValue="5"/>
+        android:defaultValue="5" />
     <SeekBarPreference
         app:key="@string/perf_key_danmaku_max_lines_scroll"
         app:title="@string/perf_title_danmaku_max_lines_scroll"
@@ -33,7 +33,7 @@
         app:min="1"
         android:max="20"
         app:seekBarIncrement="1"
-        android:defaultValue="5"/>
+        android:defaultValue="5" />
     <SeekBarPreference
         app:key="@string/perf_key_danmaku_max_lines_fix_top"
         app:title="@string/perf_title_danmaku_max_lines_fix_top"
@@ -41,7 +41,7 @@
         app:min="1"
         android:max="20"
         app:seekBarIncrement="1"
-        android:defaultValue="5"/>
+        android:defaultValue="5" />
     <SeekBarPreference
         app:key="@string/perf_key_danmaku_max_lines_fix_bottom"
         app:title="@string/perf_title_danmaku_max_lines_fix_bottom"
@@ -49,20 +49,20 @@
         app:min="1"
         android:max="20"
         app:seekBarIncrement="1"
-        android:defaultValue="8"/>
+        android:defaultValue="8" />
     <SwitchPreference
         app:key="@string/perf_key_danmaku_overlapping_enable_scroll"
         app:title="@string/perf_title_danmaku_overlapping_enable_scroll"
         android:defaultValue="true"
-        app:useSimpleSummaryProvider="true"/>
+        app:useSimpleSummaryProvider="true" />
     <SwitchPreference
         app:key="@string/perf_key_danmaku_overlapping_enable_fix_top"
         app:title="@string/perf_title_danmaku_overlapping_enable_fix_top"
         android:defaultValue="true"
-        app:useSimpleSummaryProvider="true"/>
+        app:useSimpleSummaryProvider="true" />
     <SwitchPreference
         app:key="@string/perf_key_danmaku_overlapping_enable_fix_bottom"
         app:title="@string/perf_title_danmaku_overlapping_enable_fix_bottom"
         android:defaultValue="true"
-        app:useSimpleSummaryProvider="true"/>
+        app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>

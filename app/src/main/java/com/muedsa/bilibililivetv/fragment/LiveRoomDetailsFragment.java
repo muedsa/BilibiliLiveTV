@@ -130,11 +130,11 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
     private void initializeLiveRoomInfo() {
 
         liveRoomInfoViewModel.getResult().observe(this, m -> {
-            if(RMessage.Status.LOADING == m.getStatus()){
+            if (RMessage.Status.LOADING == m.getStatus()) {
                 playAction.setLabel2(getResources().getString(R.string.watch_trailer_loading));
-            } else if(RMessage.Status.SUCCESS == m.getStatus()) {
+            } else if (RMessage.Status.SUCCESS == m.getStatus()) {
                 LiveRoomInfoViewModel.LiveRoomAllInfo data = m.getData();
-                if(data != null){
+                if (data != null) {
                     LargeInfo largeRoomInfo = data.getLargeInfo();
                     LiveRoomConvert.updateRoomInfo(mSelectedLiveRoom, largeRoomInfo);
                     liveRoomViewModel
@@ -154,7 +154,7 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
                             .getDurl().stream().map(Durl::getUrl).toArray(String[]::new));
                     playAction.setLabel2(getResources().getString(R.string.watch_trailer_play));
                 }
-            } else if(RMessage.Status.ERROR == m.getStatus()) {
+            } else if (RMessage.Status.ERROR == m.getStatus()) {
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.live_room_info_failure), m.getError());
             }

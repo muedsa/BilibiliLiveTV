@@ -88,11 +88,9 @@ public enum ToastFunctionType
         }
     }
 
-    ;
-
     private final int value;
 
-    private ToastFunctionType(int value) {
+    ToastFunctionType(int value) {
         this.value = value;
     }
 

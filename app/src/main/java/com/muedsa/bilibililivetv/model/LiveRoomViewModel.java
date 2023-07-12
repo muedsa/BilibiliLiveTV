@@ -41,9 +41,9 @@ public class LiveRoomViewModel extends ViewModel {
     public Completable sync(LiveRoom liveRoom) {
         return Completable.create(emitter -> {
             Optional<LiveRoom> liveRoomOptional = liveRoomDao.getById(liveRoom.getId());
-            if(liveRoomOptional.isPresent()){
+            if (liveRoomOptional.isPresent()) {
                 liveRoomDao.update(liveRoom);
-            }else{
+            } else {
                 liveRoomDao.insert(liveRoom);
             }
         });
@@ -73,7 +73,7 @@ public class LiveRoomViewModel extends ViewModel {
         @Override
         @SuppressWarnings("unchecked cast")
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            if(modelClass.isAssignableFrom(LiveRoomViewModel.class)) {
+            if (modelClass.isAssignableFrom(LiveRoomViewModel.class)) {
                 return (T) new LiveRoomViewModel(liveRoomDao);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");

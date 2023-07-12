@@ -12,9 +12,9 @@ public class DefaultPositionListRowPresenter extends ListRowPresenter {
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
         super.onBindRowViewHolder(holder, item);
         ViewHolder vh = (ListRowPresenter.ViewHolder) holder;
-        if(item instanceof DefaultPositionListRow){
+        if (item instanceof DefaultPositionListRow) {
             int defaultPosition = ((DefaultPositionListRow) item).getDefaultPosition();
-            if(defaultPosition > 0){
+            if (defaultPosition > 0) {
                 Log.d(TAG, "rowList default position: " + defaultPosition);
                 vh.getGridView().setSelectedPosition(defaultPosition);
             }

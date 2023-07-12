@@ -38,30 +38,29 @@ public class BilibiliLiveChannel {
             Optional<PreviewProgram> programOptional = programs.stream().filter(p -> liveRoom.getId() == p.getInternalProviderFlag1()).findFirst();
             if (programOptional.isPresent()) {
                 context.getContentResolver().delete(TvContractCompat.buildPreviewProgramUri(programOptional.get().getId()), null, null);
-            }else{
-                if(programs.size() >= MAX_PROGRAMS_NUM){
+            } else {
+                if (programs.size() >= MAX_PROGRAMS_NUM) {
                     context.getContentResolver().delete(TvContractCompat.buildPreviewProgramUri(programs.get(0).getId()), null, null);
                 }
             }
             createProgramAndPublish(context, channelId, liveRoom);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "channel sync: ", e);
         }
     }
 
-    public static List<PreviewProgram> getPrograms(@NonNull Context context, long channelId){
+    public static List<PreviewProgram> getPrograms(@NonNull Context context, long channelId) {
         List<PreviewProgram> programs = new ArrayList<>();
         Cursor cursor = context.getContentResolver().query(
                 TvContractCompat.buildPreviewProgramsUriForChannel(channelId),
                 PreviewProgram.PROJECTION, null, null, null);
-        if(cursor != null && cursor.moveToFirst()){
+        if (cursor != null && cursor.moveToFirst()) {
             do {
                 PreviewProgram program = PreviewProgram.fromCursor(cursor);
                 if (channelId == program.getChannelId()) {
                     programs.add(program);
                 }
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         return programs;
     }
@@ -100,17 +99,17 @@ public class BilibiliLiveChannel {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Channel channel = Channel.fromCursor(cursor);
-                if(channelName.equals(channel.getInternalProviderId())){
+                if (channelName.equals(channel.getInternalProviderId())) {
                     channelId = channel.getId();
-                    if(AppVersionUtil.getVersionCode(context) > channel.getInternalProviderFlag1()){
+                    if (AppVersionUtil.getVersionCode(context) > channel.getInternalProviderFlag1()) {
                         updateChannel(context, channelId);
                     }
                     break;
-                }else{
+                } else {
                     context.getContentResolver().delete(TvContractCompat.buildChannelUri(channel.getId()), null, null);
                 }
             } while (cursor.moveToNext());
-        }else{
+        } else {
             channelId = createChannelAndPublish(context);
         }
         return channelId;

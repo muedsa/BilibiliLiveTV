@@ -230,11 +230,11 @@ public final class Button extends
     }
 
     public static Builder newBuilder() {
-        return (Builder) DEFAULT_INSTANCE.createBuilder();
+        return DEFAULT_INSTANCE.createBuilder();
     }
 
     public static Builder newBuilder(Button prototype) {
-        return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+        return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -389,7 +389,7 @@ public final class Button extends
 
     @Override
     @SuppressWarnings({"unchecked", "fallthrough"})
-    protected final Object dynamicMethod(
+    protected Object dynamicMethod(
             MethodToInvoke method,
             Object arg0, Object arg1) {
         switch (method) {

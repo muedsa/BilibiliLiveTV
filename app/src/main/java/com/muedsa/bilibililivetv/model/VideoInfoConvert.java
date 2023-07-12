@@ -49,10 +49,10 @@ public class VideoInfoConvert {
             videoPlayInfo.setVideoUrl(video.getBaseUrl());
             videoPlayInfo.setAudioUrl(audioOption.get().getBaseUrl());
             videoPlayInfo.setReferer(url);
-            if(Objects.nonNull(videoInfo.getVideoData().getSubtitle())
-                    && Objects.nonNull(videoInfo.getVideoData().getSubtitle().getList())){
+            if (Objects.nonNull(videoInfo.getVideoData().getSubtitle())
+                    && Objects.nonNull(videoInfo.getVideoData().getSubtitle().getList())) {
                 videoPlayInfo.setSubtitleList(videoInfo.getVideoData().getSubtitle().getList());
-            }else{
+            } else {
                 videoPlayInfo.setSubtitleList(Collections.emptyList());
             }
             // 6分钟一个弹幕片段
@@ -84,7 +84,7 @@ public class VideoInfoConvert {
     public static int findPagePositionByCid(List<VideoPage> pages, Long cid, int defaultPos) {
         int pos = defaultPos;
         for (int i = 0; i < pages.size(); i++) {
-            if(cid.equals(pages.get(i).getCid())){
+            if (cid.equals(pages.get(i).getCid())) {
                 pos = i;
                 break;
             }
@@ -95,7 +95,7 @@ public class VideoInfoConvert {
     public static int findEpisodePositionByCid(List<SectionEpisode> episodes, Long cid, int defaultPos) {
         int pos = defaultPos;
         for (int i = 0; i < episodes.size(); i++) {
-            if(cid.equals(episodes.get(i).getCid())){
+            if (cid.equals(episodes.get(i).getCid())) {
                 pos = i;
                 break;
             }

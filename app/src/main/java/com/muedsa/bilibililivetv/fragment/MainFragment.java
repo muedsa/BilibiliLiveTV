@@ -137,12 +137,12 @@ public class MainFragment extends BrowseSupportFragment {
         loadRows();
     }
 
-    private void setupRows(){
+    private void setupRows() {
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
 
         // 本地直播间访问历史
         FragmentActivity activity = requireActivity();
-        if(liveRoomCardLongClickListener == null) {
+        if (liveRoomCardLongClickListener == null) {
             liveRoomCardLongClickListener = liveRoom -> new AlertDialog.Builder(activity)
                     .setTitle(activity.getResources().getString(R.string.remove_history_alert))
                     .setPositiveButton(activity.getResources().getString(R.string.alert_yes), (dialog, which) ->
@@ -150,7 +150,8 @@ public class MainFragment extends BrowseSupportFragment {
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe())
-                    .setNegativeButton(activity.getResources().getString(R.string.alert_no), (dialog, which) -> {})
+                    .setNegativeButton(activity.getResources().getString(R.string.alert_no), (dialog, which) -> {
+                    })
                     .create()
                     .show();
         }
@@ -200,7 +201,7 @@ public class MainFragment extends BrowseSupportFragment {
         gridRowAdapter.add(activity.getString(R.string.setting));
         gridRowAdapter.add(activity.getString(R.string.clear_history));
         gridRowAdapter.add(activity.getString(R.string.clear_channel));
-        if(EnvConfig.DEBUG){
+        if (EnvConfig.DEBUG) {
             gridRowAdapter.add(activity.getString(R.string.danmaku_test));
             gridRowAdapter.add(activity.getString(R.string.video_test));
         }
@@ -216,7 +217,7 @@ public class MainFragment extends BrowseSupportFragment {
         setAdapter(rowsAdapter);
     }
 
-    private void registerRows(){
+    private void registerRows() {
         liveRoomViewModel = new ViewModelProvider(MainFragment.this,
                 new LiveRoomViewModel.Factory(((App) requireActivity().getApplication()).getDatabase().getLiveRoomDaoWrapper()))
                 .get(LiveRoomViewModel.class);
@@ -225,7 +226,7 @@ public class MainFragment extends BrowseSupportFragment {
                 this::updateLiveHistoryRows);
     }
 
-    private void loadRows(){
+    private void loadRows() {
         liveRoomViewModel.fetchLiveRooms();
         runBilibiliVideoPopularRequest();
         runBilibiliFollowedLivingRoomsRequest();
@@ -251,7 +252,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateBilibiliVideoPopularRows(List<VideoData> list) {
-        if(Objects.isNull(bilibiliVideoPopularDiffCallback)){
+        if (Objects.isNull(bilibiliVideoPopularDiffCallback)) {
             bilibiliVideoPopularDiffCallback = new DiffCallback<VideoData>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull VideoData oldItem, @NonNull VideoData newItem) {
@@ -268,7 +269,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateBilibiliFollowedLiveRoomsRows(List<LiveRoomInfo> list) {
-        if(Objects.isNull(bilibiliFollowedLivingRoomsDiffCallback)){
+        if (Objects.isNull(bilibiliFollowedLivingRoomsDiffCallback)) {
             bilibiliFollowedLivingRoomsDiffCallback = new DiffCallback<LiveRoomInfo>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull LiveRoomInfo oldItem, @NonNull LiveRoomInfo newItem) {
@@ -285,7 +286,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateLiveHistoryRows(List<LiveRoom> list) {
-        if(Objects.isNull(liveRoomDiffCallback)){
+        if (Objects.isNull(liveRoomDiffCallback)) {
             liveRoomDiffCallback = new DiffCallback<LiveRoom>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull LiveRoom oldItem, @NonNull LiveRoom newItem) {
@@ -304,7 +305,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateVideoDynamicRows(List<VideoDynamicCard> list) {
-        if(Objects.isNull(bilibiliVideoDynamicDiffCallback)){
+        if (Objects.isNull(bilibiliVideoDynamicDiffCallback)) {
             bilibiliVideoDynamicDiffCallback = new DiffCallback<VideoDynamicCard>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull VideoDynamicCard oldItem, @NonNull VideoDynamicCard newItem) {
@@ -321,7 +322,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateBilibiliHistoryRows(List<HistoryRecord> list) {
-        if(Objects.isNull(bilibiliHistoryDiffCallback)){
+        if (Objects.isNull(bilibiliHistoryDiffCallback)) {
             bilibiliHistoryDiffCallback = new DiffCallback<HistoryRecord>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull HistoryRecord oldItem, @NonNull HistoryRecord newItem) {
@@ -340,7 +341,7 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void updateVersionRows(GithubReleaseTagInfo githubReleaseTagInfo) {
-        if(Objects.isNull(versionDiffCallback)){
+        if (Objects.isNull(versionDiffCallback)) {
             versionDiffCallback = new DiffCallback<GithubReleaseTagInfo>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull GithubReleaseTagInfo oldItem, @NonNull GithubReleaseTagInfo newItem) {
@@ -349,7 +350,7 @@ public class MainFragment extends BrowseSupportFragment {
 
                 @Override
                 public boolean areContentsTheSame(@NonNull GithubReleaseTagInfo oldItem, @NonNull GithubReleaseTagInfo newItem) {
-                    return  oldItem.getUrl().equals(newItem.getUrl());
+                    return oldItem.getUrl().equals(newItem.getUrl());
                 }
             };
         }
@@ -441,7 +442,7 @@ public class MainFragment extends BrowseSupportFragment {
             Rect bounds = windowMetrics.getBounds();
             Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             defaultWidth = bounds.width() - insets.left - insets.right;
-            defaultHeight = bounds.height()- insets.top - insets.bottom;
+            defaultHeight = bounds.height() - insets.top - insets.bottom;
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -566,15 +567,16 @@ public class MainFragment extends BrowseSupportFragment {
                 jumpToUrl(getString(R.string.latest_version_download_url));
             } else if (item instanceof String) {
                 String desc = (String) item;
-                if(desc.contains(getString(R.string.bilibili_refresh))) {
+                if (desc.contains(getString(R.string.bilibili_refresh))) {
                     loadRows();
-                }else if(desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
+                } else if (desc.contains(getString(R.string.bilibili_scan_qr_code_login))) {
                     Intent intent = new Intent(activity, LoginActivity.class);
                     startActivity(intent);
-                }if(desc.contains(getString(R.string.setting))) {
+                }
+                if (desc.contains(getString(R.string.setting))) {
                     Intent intent = new Intent(activity, SettingsActivity.class);
                     startActivity(intent);
-                }else if(desc.contains(getString(R.string.clear_history))) {
+                } else if (desc.contains(getString(R.string.clear_history))) {
                     new AlertDialog.Builder(activity)
                             .setTitle(getString(R.string.clear_history_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) -> liveRoomViewModel
@@ -582,10 +584,11 @@ public class MainFragment extends BrowseSupportFragment {
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe())
-                            .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
+                            .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {
+                            })
                             .create()
                             .show();
-                }else if(desc.contains(getString(R.string.clear_channel))){
+                } else if (desc.contains(getString(R.string.clear_channel))) {
                     new AlertDialog.Builder(activity)
                             .setTitle(getString(R.string.clear_channel_alert))
                             .setPositiveButton(getString(R.string.alert_yes), (dialog, which) ->
@@ -593,13 +596,14 @@ public class MainFragment extends BrowseSupportFragment {
                                         BilibiliLiveChannel.clear(getContext());
                                         emitter.onComplete();
                                     }).subscribeOn(Schedulers.io()).subscribe())
-                            .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {})
+                            .setNegativeButton(getString(R.string.alert_no), (dialog, which) -> {
+                            })
                             .create()
                             .show();
-                } else if(desc.contains(getString(R.string.danmaku_test))) {
+                } else if (desc.contains(getString(R.string.danmaku_test))) {
                     Intent intent = new Intent(activity, DanmakuTestActivity.class);
                     startActivity(intent);
-                } else if(desc.contains(getString(R.string.video_test))) {
+                } else if (desc.contains(getString(R.string.video_test))) {
 //                    Intent intent = new Intent(getActivity(), VideoTestActivity.class);
 //                    startActivity(intent);
                     Intent intent = new Intent(activity, VideoDetailsActivity.class);
@@ -622,16 +626,16 @@ public class MainFragment extends BrowseSupportFragment {
             if (item instanceof VideoData) {
                 mBackgroundUri = ((VideoData) item).getPic();
                 startBackgroundTimer();
-            }else if (item instanceof VideoDynamicCard) {
+            } else if (item instanceof VideoDynamicCard) {
                 mBackgroundUri = ((VideoDynamicCard) item).getFirstFrame();
                 startBackgroundTimer();
-            }else if (item instanceof LiveRoom) {
+            } else if (item instanceof LiveRoom) {
                 mBackgroundUri = ((LiveRoom) item).getBackgroundImageUrl();
                 startBackgroundTimer();
-            }else if (item instanceof LiveRoomInfo) {
+            } else if (item instanceof LiveRoomInfo) {
                 mBackgroundUri = ((LiveRoomInfo) item).getSystemCover();
                 startBackgroundTimer();
-            }else if(item instanceof HistoryRecord){
+            } else if (item instanceof HistoryRecord) {
                 mBackgroundUri = ((HistoryRecord) item).getCover();
                 startBackgroundTimer();
             }
@@ -672,14 +676,13 @@ public class MainFragment extends BrowseSupportFragment {
         }
     }
 
-    private void jumpToUrl(String url){
-        try{
+    private void jumpToUrl(String url) {
+        try {
             Intent intent = new Intent();
             intent.setAction("android.intent.action.VIEW");
             intent.setData(Uri.parse(url));
             startActivity(intent);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "jumpToUrl: " + url, e);
             ToastUtil.showLongToast(getActivity(), String.format(getString(R.string.toast_msg_jump_url_error), url));
         }

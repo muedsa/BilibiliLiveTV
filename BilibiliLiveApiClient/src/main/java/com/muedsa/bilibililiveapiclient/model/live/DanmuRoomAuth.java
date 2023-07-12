@@ -21,7 +21,7 @@ public class DanmuRoomAuth {
     @JSONField(name = "key")
     private String key;
 
-    public DanmuRoomAuth(){
+    public DanmuRoomAuth() {
 
     }
 

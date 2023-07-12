@@ -10,7 +10,7 @@ import androidx.preference.PreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
-public class SettingsFragment extends LeanbackSettingsFragmentCompat  {
+public class SettingsFragment extends LeanbackSettingsFragmentCompat {
 
     @Override
     public void onPreferenceStartInitialScreen() {
