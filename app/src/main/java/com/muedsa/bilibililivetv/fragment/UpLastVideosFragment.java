@@ -49,6 +49,7 @@ import com.muedsa.bilibililivetv.model.bilibili.UpLastVideosViewModel;
 import com.muedsa.bilibililivetv.model.factory.BilibiliRequestViewModelFactory;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.util.ToastUtil;
+import com.muedsa.bilibililivetv.widget.PageFlowObjectAdapter;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -61,7 +62,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
 
     private static final int NUM_OF_COLS = 6;
 
-    private ArrayObjectAdapter mAdapter;
+    private PageFlowObjectAdapter mAdapter;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static final int BACKGROUND_UPDATE_DELAY = 300;
@@ -168,7 +169,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
         setGridPresenter(verticalGridPresenter);
 
         VideoCardPresenter videoCardPresenter = new VideoCardPresenter();
-        mAdapter = new ArrayObjectAdapter(videoCardPresenter);
+        mAdapter = new PageFlowObjectAdapter(videoCardPresenter);
         setAdapter(mAdapter);
     }
 
@@ -186,12 +187,8 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                     SpacePageInfo page = result.getPage();
                     SpaceUpList spaceUpList = result.getList();
                     if (spaceUpList != null && spaceUpList.getVlist() != null) {
-                        mAdapter.addAll(mAdapter.size(), spaceUpList.getVlist());
-                        if (spaceUpList.getVlist().size() < PAGE_SIZE) {
-                            pageNum = -1;
-                        } else {
-                            pageNum = page.getPn();
-                        }
+                        mAdapter.append(spaceUpList.getVlist(), page.getPn(),
+                                spaceUpList.getVlist().size() < PAGE_SIZE);
                     }
                 }
                 loading = false;
@@ -203,7 +200,9 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
             }
         });
 
-        upLastVideosViewModel.loadVideos(pageNum, PAGE_SIZE, mid);
+        if(mAdapter.hasNextPage()){
+            upLastVideosViewModel.loadVideos(mAdapter.currentPageNum() + 1, PAGE_SIZE, mid);
+        }
     }
 
     private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
@@ -217,8 +216,8 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 mBackgroundUri = ((SearchVideoInfo) item).getPic();
                 startBackgroundTimer();
                 int index = mAdapter.indexOf(item);
-                if (pageNum > 0 && !loading && shouldNextPage(index)) {
-                    upLastVideosViewModel.loadVideos(pageNum + 1, PAGE_SIZE, mid);
+                if (mAdapter.hasNextPage() && !loading && shouldNextPage(index)) {
+                    upLastVideosViewModel.loadVideos(mAdapter.currentPageNum() + 1, PAGE_SIZE, mid);
                 }
             }
         }
