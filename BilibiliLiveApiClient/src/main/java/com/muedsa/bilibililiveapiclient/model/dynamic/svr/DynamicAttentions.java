@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.model.dynamic;
+package com.muedsa.bilibililiveapiclient.model.dynamic.svr;
 
 import java.util.List;
 

@@ -10,12 +10,14 @@ import com.muedsa.bilibililiveapiclient.ChatBroadcastWsClient;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
+import com.muedsa.bilibililiveapiclient.model.FlowItems;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.WbiImg;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
-import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicFlow;
+import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicItem;
+import com.muedsa.bilibililiveapiclient.model.dynamic.svr.DynamicFlow;
 import com.muedsa.bilibililiveapiclient.model.live.AnchorBaseInfo;
 import com.muedsa.bilibililiveapiclient.model.live.AnchorInfo;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuHostInfo;
@@ -384,6 +386,14 @@ public class BilibiliLiveApiClientTest {
     @Test
     public void dynamicNewTest() throws IOException {
         BilibiliResponse<DynamicFlow> response = client.dynamicNew(Collections.singletonList(8));
+        Assertions.assertNotNull(response);
+        // 需要Cookie
+    }
+
+    @Test
+    public void dynamicFeedAllTest() throws IOException {
+        BilibiliResponse<FlowItems<DynamicItem>> response = client.dynamicFeedAll("", 1,
+                "video");
         Assertions.assertNotNull(response);
         // 需要Cookie
     }

@@ -27,4 +27,9 @@ public class BilibiliApiContainer {
     public static final String WEB_LOCATION_SPACE = "1550101";
 
     public static final String PLATFORM_WEB = "platform";
+
+    public static final String DYNAMIC_MAJOR_TYPE_ARCHIVE = "MAJOR_TYPE_ARCHIVE";
+
+    public static final String DYNAMIC_TYPE_AV = "DYNAMIC_TYPE_AV";
+
 }

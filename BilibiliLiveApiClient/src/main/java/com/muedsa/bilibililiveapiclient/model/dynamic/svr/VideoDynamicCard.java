@@ -1,4 +1,4 @@
-package com.muedsa.bilibililiveapiclient.model.dynamic;
+package com.muedsa.bilibililiveapiclient.model.dynamic.svr;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.muedsa.bilibililiveapiclient.model.video.VideoDimension;

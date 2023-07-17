@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.VerticalGridSupportFragment;
-import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.OnItemViewSelectedListener;
@@ -76,11 +75,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
     private long mid;
     private String uname;
 
-    private int pageNum = 1;
-
     private static final int PAGE_SIZE = 50;
-
-    private boolean loading = false;
 
     private UpLastVideosViewModel upLastVideosViewModel;
 
@@ -180,7 +175,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
 
         upLastVideosViewModel.getResult().observe(this, m -> {
             if (m.getStatus() == RMessage.Status.LOADING) {
-                loading = true;
+                mAdapter.setLoading(true);
             } else if (m.getStatus() == RMessage.Status.SUCCESS) {
                 SpaceSearchResult result = m.getData();
                 if (result != null) {
@@ -191,9 +186,9 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                                 spaceUpList.getVlist().size() < PAGE_SIZE);
                     }
                 }
-                loading = false;
+                mAdapter.setLoading(false);
             } else if (m.getStatus() == RMessage.Status.ERROR) {
-                loading = false;
+                mAdapter.setLoading(false);
                 Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.toast_msg_up_last_videos_failure), m.getError());
@@ -216,7 +211,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 mBackgroundUri = ((SearchVideoInfo) item).getPic();
                 startBackgroundTimer();
                 int index = mAdapter.indexOf(item);
-                if (mAdapter.hasNextPage() && !loading && shouldNextPage(index)) {
+                if (mAdapter.hasNextPage() && !mAdapter.isLoading() && shouldNextPage(index)) {
                     upLastVideosViewModel.loadVideos(mAdapter.currentPageNum() + 1, PAGE_SIZE, mid);
                 }
             }

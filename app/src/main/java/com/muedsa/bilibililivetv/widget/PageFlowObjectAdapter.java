@@ -8,7 +8,9 @@ import java.util.Collection;
 
 public class PageFlowObjectAdapter extends ArrayObjectAdapter {
 
-    private int pageNum;
+    protected int pageNum;
+
+    protected boolean loading = false;
 
     public PageFlowObjectAdapter(PresenterSelector presenterSelector) {
         super(presenterSelector);
@@ -45,5 +47,13 @@ public class PageFlowObjectAdapter extends ArrayObjectAdapter {
 
     public int currentPageNum() {
         return pageNum;
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
     }
 }

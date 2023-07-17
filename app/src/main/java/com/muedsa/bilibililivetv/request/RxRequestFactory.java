@@ -7,9 +7,11 @@ import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
+import com.muedsa.bilibililiveapiclient.model.FlowItems;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
-import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicFlow;
-import com.muedsa.bilibililiveapiclient.model.dynamic.VideoDynamicCard;
+import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicItem;
+import com.muedsa.bilibililiveapiclient.model.dynamic.svr.DynamicFlow;
+import com.muedsa.bilibililiveapiclient.model.dynamic.svr.VideoDynamicCard;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
@@ -164,6 +166,16 @@ public class RxRequestFactory {
                         videoDynamicCard.setBvid(card.getDesc().getBvid());
                         return videoDynamicCard;
                     }).collect(Collectors.toList()), "BilibiliVideoDynamic", true, null);
+        });
+    }
+
+    public static Single<FlowItems<DynamicItem>> bilibiliDynamicFeedAll(String offset,
+                                                                        int page,
+                                                                        String type) {
+        return Single.create(emitter -> {
+            BilibiliResponse<FlowItems<DynamicItem>> response = BilibiliLiveApi.client()
+                    .dynamicFeedAll(offset, page, type);
+            handleResponse(response, emitter, Function.identity(), "bilibiliDynamicFeedAll", true, null);
         });
     }
 

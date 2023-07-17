@@ -7,8 +7,6 @@ import androidx.room.Update;
 
 import com.muedsa.bilibililivetv.room.model.BaseModel;
 
-import io.reactivex.rxjava3.core.Completable;
-
 public interface IBaseDao<M extends BaseModel> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

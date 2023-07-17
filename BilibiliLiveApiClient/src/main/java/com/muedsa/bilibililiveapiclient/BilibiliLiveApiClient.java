@@ -5,11 +5,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
+import com.muedsa.bilibililiveapiclient.model.FlowItems;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
-import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicFlow;
+import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicItem;
+import com.muedsa.bilibililiveapiclient.model.dynamic.svr.DynamicFlow;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
@@ -292,6 +294,15 @@ public class BilibiliLiveApiClient {
                 .map(Object::toString).collect(Collectors.joining(",")));
         return httpJsonClient.getJson(url,
                 new TypeReference<BilibiliResponse<DynamicFlow>>() {
+                },
+                requestHeader);
+    }
+
+    public BilibiliResponse<FlowItems<DynamicItem>> dynamicFeedAll(String offset, int page, String type)
+            throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.DYNAMIC_FEED_ALL, offset, page, type);
+        return httpJsonClient.getJson(url,
+                new TypeReference<BilibiliResponse<FlowItems<DynamicItem>>>() {
                 },
                 requestHeader);
     }

@@ -41,5 +41,7 @@ public class ApiUrlContainer {
 
     public static String DYNAMIC_NEW = "https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=%d&type_list=%s";
 
+    public static String DYNAMIC_FEED_ALL = "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?timezone_offset=-480&offset=%s&page=%d&type=%s&features=itemOpusStyle";
+
     public static String SPACE_SEARCH = "https://api.bilibili.com/x/space/wbi/arc/search";
 }
