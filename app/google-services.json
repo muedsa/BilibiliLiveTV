@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "509743366950",
+    "project_id": "bilibililivetv-debug",
+    "storage_bucket": "bilibililivetv-debug.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509743366950:android:cd805f4a4c092e16ccf7e7",
+        "android_client_info": {
+          "package_name": "com.muedsa.bilibililivetv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509743366950-p9u6qhb47qd972r4kcda4if5i144ll24.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT1xiv36knuozheiq9QXTfEHp1wN_fTx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "509743366950-p9u6qhb47qd972r4kcda4if5i144ll24.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
