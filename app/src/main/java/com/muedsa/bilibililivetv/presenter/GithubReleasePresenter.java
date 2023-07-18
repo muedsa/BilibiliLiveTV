@@ -38,9 +38,9 @@ public class GithubReleasePresenter extends AbstractImageCardPresenter {
         GithubReleaseTagInfo info = (GithubReleaseTagInfo) item;
         ImageCardView cardView = (ImageCardView) viewHolder.view;
         if (info.getImage() != null) {
-            cardView.setTitleText("Latest Version: " + info.getTag());
-            cardView.setContentText("Current Version:" + AppVersionUtil
-                    .getVersionCode(viewHolder.view.getContext()));
+            cardView.setTitleText("最新版本: " + info.getTag());
+            cardView.setContentText("当前版本:" + AppVersionUtil
+                    .getVersionName(viewHolder.view.getContext()));
             int cardHeightDp = CARD_WIDTH_DP * info.getImageHeight() / info.getImageWidth();
             int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
             int height = DpUtil.convertDpToPixel(viewHolder.view.getContext(), cardHeightDp);

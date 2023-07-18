@@ -135,7 +135,6 @@ public class LoginFragment extends Fragment {
                         prepareLogin();
                     }
                 }, throwable -> {
-                    //todo handler throwable
                     Log.d(TAG, "bilibiliNav: ", throwable);
                     if (throwable instanceof HttpRequestException) {
                         if (((HttpRequestException) throwable).getCode() == ErrorCode.NOT_LOGIN) {
@@ -158,7 +157,7 @@ public class LoginFragment extends Fragment {
                     startCheckScan(loginUrl.getOauthKey());
                 }, throwable -> {
                     Log.d(TAG, "bilibiliLoginUrl: ", throwable);
-                    ToastUtil.showLongToast(requireActivity(), throwable.getMessage());
+                    ToastUtil.error(requireActivity(), "bilibiliLoginUrl", throwable);
                 }, listCompositeDisposable);
     }
 
@@ -189,7 +188,6 @@ public class LoginFragment extends Fragment {
                 FragmentActivity activity = requireActivity();
                 if (timerCount > 40) {
                     releaseTimer();
-                    listCompositeDisposable.clear();
                     ToastUtil.showLongToast(activity, activity.getString(R.string.login_timeout));
                     prepareLogin();
                 } else {

@@ -19,4 +19,15 @@ public class AppVersionUtil {
         }
         return code;
     }
+
+    public static String getVersionName(Context context) {
+        String versionName = null;
+        try {
+            versionName = context.getPackageManager().
+                    getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "getVersionName error", e);
+        }
+        return versionName;
+    }
 }
