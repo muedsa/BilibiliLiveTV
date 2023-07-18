@@ -1,27 +1,13 @@
 package com.muedsa.bilibililivetv.fragment;
 
 import android.content.Intent;
-import android.graphics.Insets;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowInsets;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.SearchSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
@@ -37,13 +23,11 @@ import androidx.leanback.widget.RowPresenter;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.search.SearchLiveRoom;
 import com.muedsa.bilibililiveapiclient.model.search.SearchLiveUser;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
-import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
 import com.muedsa.bilibililivetv.activity.VideoDetailsActivity;
@@ -58,11 +42,10 @@ import com.muedsa.bilibililivetv.presenter.LiveUserCardPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.ToastUtil;
+import com.muedsa.bilibililivetv.widget.BackgroundManagerDelegate;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -75,21 +58,17 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
 
     private ArrayObjectAdapter mRowsAdapter;
 
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private static final int BACKGROUND_UPDATE_DELAY = 300;
-    private Drawable mDefaultBackground;
-    private int defaultWidth;
-    private int defaultHeight;
-    private Timer mBackgroundTimer;
-    private String mBackgroundUri;
-    private BackgroundManager mBackgroundManager;
+    private BackgroundManagerDelegate backgroundManagerDelegate;
 
     private SearchViewModel searchViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prepareBackgroundManager();
+
+        backgroundManagerDelegate = new BackgroundManagerDelegate(requireActivity(),
+                r -> r.transform(new FitCenter(), new BlurTransformation(25, 3)));
+
         setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
@@ -115,64 +94,6 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
             }
         });
     }
-
-    private void prepareBackgroundManager() {
-        mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
-        FragmentActivity activity = requireActivity();
-        mBackgroundManager = BackgroundManager.getInstance(activity);
-        mBackgroundManager.attach(activity.getWindow());
-        WindowManager windowManager = activity.getWindowManager();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
-            Rect bounds = windowMetrics.getBounds();
-            Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
-            defaultWidth = bounds.width() - insets.left - insets.right;
-            defaultHeight = bounds.height() - insets.top - insets.bottom;
-        } else {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-            defaultWidth = displayMetrics.widthPixels;
-            defaultHeight = displayMetrics.heightPixels;
-        }
-    }
-
-    private void updateBackground(String uri) {
-        int width = defaultWidth;
-        int height = defaultHeight;
-        GlideApp.with(requireActivity())
-                .load(uri)
-                .transform(new FitCenter(), new BlurTransformation(25, 3))
-                .error(mDefaultBackground)
-                .into(new CustomTarget<Drawable>(width, height) {
-                    @Override
-                    public void onResourceReady(@NonNull Drawable drawable,
-                                                @Nullable Transition<? super Drawable> transition) {
-                        mBackgroundManager.setDrawable(drawable);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
-        mBackgroundTimer.cancel();
-    }
-
-    private void startBackgroundTimer() {
-        if (null != mBackgroundTimer) {
-            mBackgroundTimer.cancel();
-        }
-        mBackgroundTimer = new Timer();
-        mBackgroundTimer.schedule(new SearchFragment.UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
-    }
-
-    private class UpdateBackgroundTask extends TimerTask {
-        @Override
-        public void run() {
-            mHandler.post(() -> updateBackground(mBackgroundUri));
-        }
-    }
-
 
     @Override
     public ObjectAdapter getResultsAdapter() {
@@ -233,6 +154,14 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
         mRowsAdapter.add(new ListRow(liveUserHeader, listRowAdapter));
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (backgroundManagerDelegate != null) {
+            backgroundManagerDelegate.dispose();
+        }
+    }
+
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
@@ -287,15 +216,17 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
+            String newBackgroundUri = null;
             if (item instanceof LiveUser) {
-                mBackgroundUri = ((LiveUser) item).getUface();
-                startBackgroundTimer();
+                newBackgroundUri = ((LiveUser) item).getUface();
             } else if (item instanceof SearchLiveRoom) {
-                mBackgroundUri = LiveRoomConvert.getImageUrl(((SearchLiveRoom) item));
-                startBackgroundTimer();
+                newBackgroundUri = LiveRoomConvert.getImageUrl(((SearchLiveRoom) item));
             } else if (item instanceof SearchVideoInfo) {
-                mBackgroundUri = ((SearchVideoInfo) item).getPic();
-                startBackgroundTimer();
+                newBackgroundUri = ((SearchVideoInfo) item).getPic();
+            }
+
+            if (!Strings.isNullOrEmpty(newBackgroundUri)) {
+                backgroundManagerDelegate.startBackgroundUpdate(newBackgroundUri);
             }
         }
     }

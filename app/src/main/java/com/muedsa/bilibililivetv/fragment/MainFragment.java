@@ -4,29 +4,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Insets;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.DiffCallback;
@@ -41,8 +29,7 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.BilibiliApiContainer;
 import com.muedsa.bilibililiveapiclient.model.FlowItems;
 import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicItem;
@@ -52,7 +39,6 @@ import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.video.VideoData;
 import com.muedsa.bilibililivetv.App;
 import com.muedsa.bilibililivetv.EnvConfig;
-import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.activity.DanmakuTestActivity;
 import com.muedsa.bilibililivetv.activity.LiveRoomDetailsActivity;
@@ -73,14 +59,13 @@ import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
+import com.muedsa.bilibililivetv.widget.BackgroundManagerDelegate;
 import com.muedsa.bilibililivetv.widget.OffsetPageFlowObjectAdapter;
 import com.muedsa.github.model.GithubReleaseTagInfo;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -106,13 +91,7 @@ public class MainFragment extends BrowseSupportFragment {
 
     private static final String VIDEO_BUSINESS = "archive";
 
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private Drawable mDefaultBackground;
-    private int defaultWidth;
-    private int defaultHeight;
-    private Timer mBackgroundTimer;
-    private String mBackgroundUri;
-    private BackgroundManager mBackgroundManager;
+    private BackgroundManagerDelegate backgroundManagerDelegate;
 
     private LiveRoomViewModel liveRoomViewModel;
     private DynamicFeedViewModel dynamicFeedViewModel;
@@ -136,7 +115,7 @@ public class MainFragment extends BrowseSupportFragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreated");
         super.onCreate(savedInstanceState);
-        prepareBackgroundManager();
+        backgroundManagerDelegate = new BackgroundManagerDelegate(requireActivity());
         setupUIElements();
         setupEventListeners();
         setupRows();
@@ -272,9 +251,8 @@ public class MainFragment extends BrowseSupportFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (null != mBackgroundTimer) {
-            Log.d(TAG, "onDestroy: " + mBackgroundTimer);
-            mBackgroundTimer.cancel();
+        if (null != backgroundManagerDelegate) {
+            backgroundManagerDelegate.dispose();
         }
         disposable.dispose();
     }
@@ -433,27 +411,6 @@ public class MainFragment extends BrowseSupportFragment {
                 }, disposable);
     }
 
-    private void prepareBackgroundManager() {
-        FragmentActivity activity = requireActivity();
-        mBackgroundManager = BackgroundManager.getInstance(activity);
-        mBackgroundManager.attach(activity.getWindow());
-
-        mDefaultBackground = ContextCompat.getDrawable(requireContext(), R.drawable.default_background);
-        WindowManager windowManager = activity.getWindowManager();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
-            Rect bounds = windowMetrics.getBounds();
-            Insets insets = windowMetrics.getWindowInsets().getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
-            defaultWidth = bounds.width() - insets.left - insets.right;
-            defaultHeight = bounds.height() - insets.top - insets.bottom;
-        } else {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-            defaultWidth = displayMetrics.widthPixels;
-            defaultHeight = displayMetrics.heightPixels;
-        }
-    }
-
     private void setupUIElements() {
         Context context = requireContext();
         setBadgeDrawable(ContextCompat.getDrawable(context, R.drawable.bilibili_logo));
@@ -474,36 +431,6 @@ public class MainFragment extends BrowseSupportFragment {
 
         setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
-    }
-
-    private void updateBackground(String uri) {
-        int width = defaultWidth;
-        int height = defaultHeight;
-        GlideApp.with(requireActivity())
-                .load(uri)
-                .centerCrop()
-                .error(mDefaultBackground)
-                .into(new CustomTarget<Drawable>(width, height) {
-                    @Override
-                    public void onResourceReady(@NonNull Drawable drawable,
-                                                @Nullable Transition<? super Drawable> transition) {
-                        mBackgroundManager.setDrawable(drawable);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
-        mBackgroundTimer.cancel();
-    }
-
-    private void startBackgroundTimer() {
-        if (null != mBackgroundTimer) {
-            mBackgroundTimer.cancel();
-        }
-        mBackgroundTimer = new Timer();
-        mBackgroundTimer.schedule(new UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
     }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
@@ -641,24 +568,19 @@ public class MainFragment extends BrowseSupportFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
+            String newBackgroundUri = null;
             if (item instanceof VideoData) {
-                mBackgroundUri = ((VideoData) item).getPic();
-                startBackgroundTimer();
+                newBackgroundUri = ((VideoData) item).getPic();
             } else if (item instanceof VideoDynamicCard) {
-                mBackgroundUri = ((VideoDynamicCard) item).getFirstFrame();
-                startBackgroundTimer();
+                newBackgroundUri = ((VideoDynamicCard) item).getFirstFrame();
             } else if (item instanceof LiveRoom) {
-                mBackgroundUri = ((LiveRoom) item).getBackgroundImageUrl();
-                startBackgroundTimer();
+                newBackgroundUri = ((LiveRoom) item).getBackgroundImageUrl();
             } else if (item instanceof LiveRoomInfo) {
-                mBackgroundUri = ((LiveRoomInfo) item).getSystemCover();
-                startBackgroundTimer();
+                newBackgroundUri = ((LiveRoomInfo) item).getSystemCover();
             } else if (item instanceof HistoryRecord) {
-                mBackgroundUri = ((HistoryRecord) item).getCover();
-                startBackgroundTimer();
+                newBackgroundUri = ((HistoryRecord) item).getCover();
             } else if (item instanceof DynamicItem) {
-                mBackgroundUri = ((DynamicItem) item).getModules().getModuleDynamic().getMajor().getArchive().getCover();
-                startBackgroundTimer();
+                newBackgroundUri = ((DynamicItem) item).getModules().getModuleDynamic().getMajor().getArchive().getCover();
             }
 
             if (row.getHeaderItem().getId() == HEAD_TITLE_VIDEO_DYNAMIC) {
@@ -671,14 +593,10 @@ public class MainFragment extends BrowseSupportFragment {
                             bilibiliVideoDynamicRowAdapter.currentPageNum() + 1);
                 }
             }
-        }
-    }
 
-    private class UpdateBackgroundTask extends TimerTask {
-
-        @Override
-        public void run() {
-            mHandler.post(() -> updateBackground(mBackgroundUri));
+            if (!Strings.isNullOrEmpty(newBackgroundUri)) {
+                backgroundManagerDelegate.startBackgroundUpdate(newBackgroundUri);
+            }
         }
     }
 
