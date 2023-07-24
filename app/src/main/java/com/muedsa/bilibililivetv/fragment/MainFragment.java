@@ -245,7 +245,6 @@ public class MainFragment extends BrowseSupportFragment {
     @Override
     public void onResume() {
         super.onResume();
-        reloadRows();
     }
 
     @Override
