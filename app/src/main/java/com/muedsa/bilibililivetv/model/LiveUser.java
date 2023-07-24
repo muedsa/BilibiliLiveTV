@@ -11,7 +11,7 @@ public class LiveUser {
     private Long shortId;
     private int liveStatus;
     private String uface;
-    private Integer uid;
+    private Long uid;
     private String uname;
 
     public LiveUser() {
@@ -57,11 +57,11 @@ public class LiveUser {
         this.uface = uface;
     }
 
-    public Integer getUid() {
+    public Long getUid() {
         return uid;
     }
 
-    public void setUid(Integer uid) {
+    public void setUid(Long uid) {
         this.uid = uid;
     }
 

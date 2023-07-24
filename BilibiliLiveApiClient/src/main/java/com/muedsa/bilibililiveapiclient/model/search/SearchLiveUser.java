@@ -56,7 +56,7 @@ public class SearchLiveUser {
     private String uface;
 
     @JSONField(name = "uid")
-    private Integer uid;
+    private Long uid;
 
     @JSONField(name = "uname")
     private String uname;
@@ -189,11 +189,11 @@ public class SearchLiveUser {
         this.uface = uface;
     }
 
-    public Integer getUid() {
+    public Long getUid() {
         return uid;
     }
 
-    public void setUid(Integer uid) {
+    public void setUid(Long uid) {
         this.uid = uid;
     }
 
