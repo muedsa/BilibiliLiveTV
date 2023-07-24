@@ -245,6 +245,10 @@ public class MainFragment extends BrowseSupportFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (bilibiliVideoDynamicRowAdapter.size() == 0
+                && bilibiliVideoHistoryRowAdapter.size() == 0) {
+            reloadRows();
+        }
     }
 
     @Override
