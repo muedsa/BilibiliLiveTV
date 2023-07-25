@@ -15,6 +15,7 @@ import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class ExoPlayerDelegate {
             public void onPlayerError(@NonNull PlaybackException error) {
                 Player.Listener.super.onPlayerError(error);
                 ToastUtil.showLongToast(activity, error.getMessage());
+                CrashlyticsUtil.log(error);
             }
         });
         playerAdapter = new LeanbackPlayerAdapter(activity, exoPlayer, 50);

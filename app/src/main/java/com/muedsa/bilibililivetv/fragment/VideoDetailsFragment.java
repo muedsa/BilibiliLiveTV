@@ -54,6 +54,7 @@ import com.muedsa.bilibililivetv.presenter.DefaultPositionListRow;
 import com.muedsa.bilibililivetv.presenter.DefaultPositionListRowPresenter;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
@@ -149,6 +150,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.toast_msg_jump_video_detail_error), m.getError());
+                CrashlyticsUtil.log(m.getError());
             }
         });
         videoDetailViewModel.fetchVideoDetail(bv, page);

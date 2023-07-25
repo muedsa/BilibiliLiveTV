@@ -47,6 +47,7 @@ import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
 import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleDecoder;
 import com.muedsa.bilibililivetv.player.video.BilibiliVideoPlaybackTransportControlGlue;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.httpjsonclient.HttpClientContainer;
 
@@ -183,6 +184,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
             public void onPlayerError(@NonNull PlaybackException error) {
                 Player.Listener.super.onPlayerError(error);
                 ToastUtil.showLongToast(context, error.getMessage());
+                CrashlyticsUtil.log(error);
             }
         });
         LeanbackPlayerAdapter playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);

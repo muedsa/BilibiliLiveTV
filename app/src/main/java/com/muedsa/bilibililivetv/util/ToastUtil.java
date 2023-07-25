@@ -57,6 +57,10 @@ public class ToastUtil {
         }
     }
 
+    public static void error(@Nullable Context context, @Nullable Throwable throwable) {
+        error(context, "", throwable);
+    }
+
     public static void error(@Nullable Context context, CharSequence text, @Nullable Throwable throwable) {
         if (throwable != null) {
             text += ":" + throwable.getMessage();

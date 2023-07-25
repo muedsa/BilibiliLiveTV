@@ -41,6 +41,7 @@ import com.muedsa.bilibililivetv.presenter.LiveRoomCardPresenter;
 import com.muedsa.bilibililivetv.presenter.LiveUserCardPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.bilibililivetv.widget.BackgroundManagerDelegate;
 
@@ -91,6 +92,7 @@ public class SearchFragment extends SearchSupportFragment implements SearchSuppo
             } else if (RMessage.Status.ERROR.equals(m.getStatus())) {
                 Log.e(TAG, "bilibiliSearchLive error", m.getError());
                 ToastUtil.error(requireActivity(), "search error", m.getError());
+                CrashlyticsUtil.log(m.getError());
             }
         });
     }

@@ -30,6 +30,7 @@ import com.muedsa.bilibililivetv.model.RMessage;
 import com.muedsa.bilibililivetv.model.bilibili.UpLastVideosViewModel;
 import com.muedsa.bilibililivetv.model.factory.BilibiliRequestViewModelFactory;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.bilibililivetv.widget.BackgroundManagerDelegate;
 import com.muedsa.bilibililivetv.widget.PageFlowObjectAdapter;
@@ -111,6 +112,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.toast_msg_up_last_videos_failure), m.getError());
+                CrashlyticsUtil.log(m.getError());
             }
         });
 

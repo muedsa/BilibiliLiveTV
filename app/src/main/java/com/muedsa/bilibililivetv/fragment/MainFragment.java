@@ -57,6 +57,7 @@ import com.muedsa.bilibililivetv.presenter.LiveRoomCardPresenter;
 import com.muedsa.bilibililivetv.presenter.VideoCardPresenter;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 import com.muedsa.bilibililivetv.widget.BackgroundManagerDelegate;
@@ -76,7 +77,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = MainFragment.class.getSimpleName();
 
-    private static final int BACKGROUND_UPDATE_DELAY = 300;
+
     private static final int GRID_ITEM_WIDTH_DP = 100;
     private static final int GRID_ITEM_HEIGHT_DP = 100;
 
@@ -226,7 +227,7 @@ public class MainFragment extends BrowseSupportFragment {
             } else if (RMessage.Status.ERROR.equals(m.getStatus())) {
                 bilibiliVideoDynamicRowAdapter.setLoading(false);
                 Log.e(TAG, "dynamicFeedViewModel error", m.getError());
-                ToastUtil.error(requireActivity(), "dynamic feed error", m.getError());
+                CrashlyticsUtil.log(m.getError());
             }
         });
     }
@@ -367,7 +368,8 @@ public class MainFragment extends BrowseSupportFragment {
                         }
                     }
                 }, throwable -> {
-                    Log.w(TAG, "bilibiliFollowedLivingRooms error", throwable);
+                    Log.e(TAG, "bilibiliFollowedLivingRooms error", throwable);
+                    CrashlyticsUtil.log(throwable);
                 }, disposable);
     }
 
@@ -383,6 +385,7 @@ public class MainFragment extends BrowseSupportFragment {
                     }
                 }, throwable -> {
                     Log.e(TAG, "bilibiliVideoPopular error", throwable);
+                    CrashlyticsUtil.log(throwable);
                 }, disposable);
     }
 
@@ -401,6 +404,7 @@ public class MainFragment extends BrowseSupportFragment {
                     }
                 }, throwable -> {
                     Log.e(TAG, "bilibiliHistory error", throwable);
+                    CrashlyticsUtil.log(throwable);
                 }, disposable);
     }
 
@@ -409,8 +413,8 @@ public class MainFragment extends BrowseSupportFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateVersionRows, throwable -> {
-                    ToastUtil.showLongToast(getActivity(), throwable.getMessage());
                     Log.e(TAG, "githubLatestRelease error", throwable);
+                    CrashlyticsUtil.log(throwable);
                 }, disposable);
     }
 

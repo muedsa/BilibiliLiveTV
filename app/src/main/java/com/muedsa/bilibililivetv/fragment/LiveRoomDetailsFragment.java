@@ -46,11 +46,11 @@ import com.muedsa.bilibililivetv.model.bilibili.LiveRoomInfoViewModel;
 import com.muedsa.bilibililivetv.model.factory.BilibiliRequestViewModelFactory;
 import com.muedsa.bilibililivetv.presenter.DetailsDescriptionPresenter;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.DpUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.internal.disposables.ListCompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class LiveRoomDetailsFragment extends DetailsSupportFragment {
@@ -77,8 +77,6 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
 
     private DetailsSupportFragmentBackgroundController mDetailsBackground;
 
-    private ListCompositeDisposable listCompositeDisposable;
-
     private LiveRoomViewModel liveRoomViewModel;
 
     private LiveRoomInfoViewModel liveRoomInfoViewModel;
@@ -95,7 +93,6 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
                 .getSerializableExtra(LiveRoomDetailsActivity.LIVE_ROOM);
 
         if (mSelectedLiveRoom != null && mSelectedLiveRoom.getId() > 0) {
-            listCompositeDisposable = new ListCompositeDisposable();
             liveRoomViewModel = new ViewModelProvider(LiveRoomDetailsFragment.this,
                     new LiveRoomViewModel.Factory(((App) activity.getApplication()).getDatabase().getLiveRoomDaoWrapper()))
                     .get(LiveRoomViewModel.class);
@@ -157,6 +154,7 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
             } else if (RMessage.Status.ERROR == m.getStatus()) {
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.live_room_info_failure), m.getError());
+                CrashlyticsUtil.log(m.getError());
             }
         });
         liveRoomInfoViewModel.fetchAllInfo(mSelectedLiveRoom.getId());
