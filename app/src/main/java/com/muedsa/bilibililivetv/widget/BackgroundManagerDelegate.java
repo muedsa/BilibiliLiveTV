@@ -19,6 +19,7 @@ import androidx.leanback.app.BackgroundManager;
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.common.base.Strings;
 import com.muedsa.bilibililivetv.GlideApp;
 import com.muedsa.bilibililivetv.GlideRequest;
 import com.muedsa.bilibililivetv.R;
@@ -107,13 +108,15 @@ public class BackgroundManagerDelegate {
     }
 
     private void updateBackground(String uri) {
-        if (activity != null && !activity.isDestroyed()) {
+        if (!Strings.isNullOrEmpty(uri) || activity != null && !activity.isDestroyed()) {
             glideTransform.andThen(r -> r.error(defaultBackground)
                             .into(new CustomTarget<Drawable>(defaultWidth, defaultHeight) {
                                 @Override
                                 public void onResourceReady(@NonNull Drawable drawable,
                                                             @Nullable Transition<? super Drawable> transition) {
-                                    backgroundManager.setDrawable(drawable);
+                                    if (backgroundManager != null) {
+                                        backgroundManager.setDrawable(drawable);
+                                    }
                                 }
 
                                 @Override

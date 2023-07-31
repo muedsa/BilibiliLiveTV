@@ -34,6 +34,7 @@ import androidx.media3.extractor.text.SubtitleExtractor;
 import androidx.media3.ui.SubtitleView;
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
+import com.alibaba.fastjson2.JSON;
 import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoSubtitle;
 import com.muedsa.bilibililivetv.EnvConfig;
@@ -185,6 +186,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                 Player.Listener.super.onPlayerError(error);
                 ToastUtil.showLongToast(context, error.getMessage());
                 CrashlyticsUtil.log(error);
+                CrashlyticsUtil.log("playback error, source: " + JSON.toJSONString(videoPlayInfo));
             }
         });
         LeanbackPlayerAdapter playerAdapter = new LeanbackPlayerAdapter(context, exoPlayer, 50);
