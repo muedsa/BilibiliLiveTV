@@ -123,6 +123,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     //视频信息 封面图
                     videoInfo = videoDetail.getVideoInfo();
                     url = videoDetail.getUrl();
+                    mAdapter.clear();
                     setupDetailsOverviewRow();
                     setupVideoPagesRow();
                     setupVideoSeasonRows();
