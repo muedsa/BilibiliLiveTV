@@ -1,8 +1,6 @@
 package com.muedsa.bilibililivetv.request;
 
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.TypeReference;
 import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.ErrorCode;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
@@ -10,8 +8,6 @@ import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.FlowItems;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicItem;
-import com.muedsa.bilibililiveapiclient.model.dynamic.svr.DynamicFlow;
-import com.muedsa.bilibililiveapiclient.model.dynamic.svr.VideoDynamicCard;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryTable;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
@@ -38,12 +34,10 @@ import com.muedsa.github.model.GithubReleaseTagInfo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleEmitter;
@@ -138,7 +132,7 @@ public class RxRequestFactory {
     public static Single<List<VideoData>> bilibiliVideoPopular(int pageNum, int pageSize) {
         return Single.create(emitter -> {
             BilibiliResponse<BilibiliPageInfo<VideoData>> response = BilibiliLiveApi.client().popular(pageNum, pageSize);
-            handleResponse(response, emitter, BilibiliPageInfo::getList, "BilibiliPopular", true, null);
+            handleResponse(response, emitter, BilibiliPageInfo::getList, "BilibiliPopular", false, null);
         });
     }
 
@@ -152,20 +146,7 @@ public class RxRequestFactory {
     public static Single<List<LiveRoomInfo>> bilibiliFollowedLivingRooms(int pageNum, int pageSize) {
         return Single.create(emitter -> {
             BilibiliResponse<UserWebListResult> response = BilibiliLiveApi.client().liveUserWebList(pageNum, pageSize);
-            handleResponse(response, emitter, UserWebListResult::getRooms, "BilibiliFollowedLivingRooms", true, null);
-        });
-    }
-
-    public static Single<List<VideoDynamicCard>> bilibiliVideoDynamic() {
-        return Single.create(emitter -> {
-            BilibiliResponse<DynamicFlow> response = BilibiliLiveApi.client().dynamicNew(Collections.singletonList(8));
-            handleResponse(response, emitter, resp -> resp.getCards().stream()
-                    .filter(card -> card.getDesc().getType() == 8).map(card -> {
-                        VideoDynamicCard videoDynamicCard = JSON.parseObject(card.getCard(), new TypeReference<VideoDynamicCard>() {
-                        });
-                        videoDynamicCard.setBvid(card.getDesc().getBvid());
-                        return videoDynamicCard;
-                    }).collect(Collectors.toList()), "BilibiliVideoDynamic", true, null);
+            handleResponse(response, emitter, UserWebListResult::getRooms, "BilibiliFollowedLivingRooms", false, null);
         });
     }
 
