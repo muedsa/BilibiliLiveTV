@@ -116,7 +116,7 @@ public class BackgroundManagerDelegate {
                                 @Override
                                 public void onResourceReady(@NonNull Drawable drawable,
                                                             @Nullable Transition<? super Drawable> transition) {
-                                    if (backgroundManager != null) {
+                                    if (backgroundManager != null && backgroundManager.isAttached()) {
                                         backgroundManager.setDrawable(drawable);
                                     }
                                 }
