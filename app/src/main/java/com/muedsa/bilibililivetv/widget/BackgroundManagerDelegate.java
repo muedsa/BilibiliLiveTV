@@ -82,7 +82,9 @@ public class BackgroundManagerDelegate {
 
     private void prepareBackgroundManager(Activity activity) {
         backgroundManager = BackgroundManager.getInstance(activity);
-        backgroundManager.attach(activity.getWindow());
+        if (!backgroundManager.isAttached()) {
+            backgroundManager.attach(activity.getWindow());
+        }
         WindowManager windowManager = activity.getWindowManager();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
