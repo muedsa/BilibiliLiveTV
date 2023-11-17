@@ -171,6 +171,7 @@ public class BilibiliLiveApiClient {
     }
 
     public VideoDetail getVideoDetail(String bv, int page) throws IOException {
+        // todo get subtitle_url from https://api.bilibili.com/x/player/wbi/v2?aid=xxxx&cid=xxx
         String url = ApiUtil.fillUrl(ApiUrlContainer.VIDEO_URL, bv, page);
         String html = httpJsonClient.get(url, requestHeader);
         VideoInfo videoInfo = parseVideoInfo(html);

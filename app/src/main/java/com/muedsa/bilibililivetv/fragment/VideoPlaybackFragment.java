@@ -37,6 +37,7 @@ import androidx.media3.ui.SubtitleView;
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.video.Heartbeat;
 import com.muedsa.bilibililiveapiclient.model.video.VideoSubtitle;
 import com.muedsa.bilibililivetv.EnvConfig;
@@ -256,7 +257,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     private MediaSource buildSubtitleMediaSourceList(List<VideoSubtitle> subtitleList,
                                                      MediaSource videoMediaSource,
                                                      MediaSource audioMediaSource) {
-        subtitleList = subtitleList.stream().filter(i -> !"ai-zh".equals(i.getLan())).collect(Collectors.toList());
+        subtitleList = subtitleList.stream()
+                .filter(i -> !Strings.isNullOrEmpty(i.getSubtitleUrl()))
+                .filter(i -> !"ai-zh".equals(i.getLan())).collect(Collectors.toList());
         MediaSource[] arr = new MediaSource[subtitleList.size() + 2];
         arr[0] = videoMediaSource;
         arr[1] = audioMediaSource;
