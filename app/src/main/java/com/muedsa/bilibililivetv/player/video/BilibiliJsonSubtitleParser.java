@@ -12,11 +12,12 @@ import com.muedsa.bilibililivetv.model.BilibiliSubtitle;
 import com.muedsa.bilibililivetv.model.BilibiliSubtitleInfo;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @UnstableApi
 public class BilibiliJsonSubtitleParser implements SubtitleParser {
+    private final String TAG = BilibiliJsonSubtitleParser.class.getSimpleName();
 
     @Override
     public void parse(byte[] data, int offset, int length, OutputOptions outputOptions, Consumer<CuesWithTiming> output) {
@@ -24,14 +25,13 @@ public class BilibiliJsonSubtitleParser implements SubtitleParser {
         BilibiliSubtitleInfo bilibiliSubtitleInfo = JSON.parseObject(json, new TypeReference<BilibiliSubtitleInfo>() {
         });
         List<BilibiliSubtitle> list = bilibiliSubtitleInfo.getBody();
-        List<Cue> cues = new ArrayList<>(list.size());
         for (BilibiliSubtitle bilibiliSubtitle : list) {
-            cues.add(new Cue.Builder()
+            Cue cue = new Cue.Builder()
                     .setText(bilibiliSubtitle.getContent())
-                    .build());
+                    .build();
             long startTimeUs = (long) (bilibiliSubtitle.getFrom() * 1000 * 1000);
             long endTimeUs = (long) (bilibiliSubtitle.getTo() * 1000 * 1000);
-            output.accept(new CuesWithTiming(cues, startTimeUs, endTimeUs - startTimeUs));
+            output.accept(new CuesWithTiming(Collections.singletonList(cue), startTimeUs, endTimeUs - startTimeUs - 1));
         }
     }
 
