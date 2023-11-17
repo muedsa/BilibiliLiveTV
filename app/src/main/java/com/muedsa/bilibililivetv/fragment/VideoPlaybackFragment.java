@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
@@ -19,6 +20,7 @@ import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.text.CueGroup;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
@@ -45,7 +47,7 @@ import com.muedsa.bilibililivetv.model.VideoPlayInfo;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
 import com.muedsa.bilibililivetv.player.TrackSelectionDialogBuilder;
 import com.muedsa.bilibililivetv.player.video.BilibiliDanmakuParser;
-import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleDecoder;
+import com.muedsa.bilibililivetv.player.video.BilibiliJsonSubtitleParser;
 import com.muedsa.bilibililivetv.player.video.BilibiliVideoPlaybackTransportControlGlue;
 import com.muedsa.bilibililivetv.request.RxRequestFactory;
 import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
@@ -70,6 +72,7 @@ import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.ui.widget.DanmakuSurfaceView;
 
+@OptIn(markerClass = UnstableApi.class)
 public class VideoPlaybackFragment extends VideoSupportFragment {
     private static final String TAG = VideoPlaybackFragment.class.getSimpleName();
 
@@ -269,7 +272,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                             .setId(videoSubtitle.getIdStr())
                             .build();
             ExtractorsFactory extractorsFactory = () -> new Extractor[]{
-                    new SubtitleExtractor(new BilibiliJsonSubtitleDecoder(), format)};
+                    new SubtitleExtractor(new BilibiliJsonSubtitleParser(), format)};
             ProgressiveMediaSource.Factory subtitleMediaSourceFactory =
                     new ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory);
             arr[i++] = subtitleMediaSourceFactory

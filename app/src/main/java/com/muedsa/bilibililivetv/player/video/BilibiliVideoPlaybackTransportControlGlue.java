@@ -2,9 +2,11 @@ package com.muedsa.bilibililivetv.player.video;
 
 import android.content.Context;
 
+import androidx.annotation.OptIn;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.ui.leanback.LeanbackPlayerAdapter;
 
 import com.muedsa.bilibililivetv.player.SubtitleToggleAction;
@@ -12,8 +14,10 @@ import com.muedsa.bilibililivetv.player.SubtitleToggleAction;
 import java.util.List;
 import java.util.Objects;
 
+
 public class BilibiliVideoPlaybackTransportControlGlue extends PlaybackTransportControlGlue<LeanbackPlayerAdapter> {
 
+    @OptIn(markerClass = UnstableApi.class)
     public BilibiliVideoPlaybackTransportControlGlue(Context context, LeanbackPlayerAdapter impl) {
         super(context, impl);
     }
