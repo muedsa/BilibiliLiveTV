@@ -1,9 +1,10 @@
 package com.muedsa.bilibililivetv.player.video;
 
 import androidx.media3.common.text.Cue;
-import androidx.media3.common.util.LongArray;
-import androidx.media3.extractor.text.SimpleSubtitleDecoder;
-import androidx.media3.extractor.text.Subtitle;
+import androidx.media3.common.util.Consumer;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.extractor.text.CuesWithTiming;
+import androidx.media3.extractor.text.SubtitleParser;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -14,34 +15,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BilibiliJsonSubtitleDecoder extends SimpleSubtitleDecoder {
-    private static final String TAG = BilibiliJsonSubtitleDecoder.class.getSimpleName();
-
-    public BilibiliJsonSubtitleDecoder() {
-        super("BilibiliJsonSubtitleDecoder");
-    }
+@UnstableApi
+public class BilibiliJsonSubtitleParser implements SubtitleParser {
 
     @Override
-    protected Subtitle decode(byte[] data, int size, boolean reset) {
+    public void parse(byte[] data, int offset, int length, OutputOptions outputOptions, Consumer<CuesWithTiming> output) {
         String json = new String(data, StandardCharsets.UTF_8);
         BilibiliSubtitleInfo bilibiliSubtitleInfo = JSON.parseObject(json, new TypeReference<BilibiliSubtitleInfo>() {
         });
         List<BilibiliSubtitle> list = bilibiliSubtitleInfo.getBody();
         List<Cue> cues = new ArrayList<>(list.size());
-        LongArray cueTimesUs = new LongArray(list.size());
         for (BilibiliSubtitle bilibiliSubtitle : list) {
             cues.add(new Cue.Builder()
                     .setText(bilibiliSubtitle.getContent())
                     .build());
             long startTimeUs = (long) (bilibiliSubtitle.getFrom() * 1000 * 1000);
-            cueTimesUs.add(startTimeUs);
+            long endTimeUs = (long) (bilibiliSubtitle.getTo() * 1000 * 1000);
+            output.accept(new CuesWithTiming(cues, startTimeUs, endTimeUs - startTimeUs));
         }
-        Cue[] cuesArray = cues.toArray(new Cue[0]);
-        long[] cueTimesUsArray = cueTimesUs.toArray();
-        return new BilibiliJsonSubtitle(cuesArray, cueTimesUsArray);
     }
 
     @Override
-    public void setPositionUs(long positionUs) {
+    public int getCueReplacementBehavior() {
+        return 0;
     }
 }
