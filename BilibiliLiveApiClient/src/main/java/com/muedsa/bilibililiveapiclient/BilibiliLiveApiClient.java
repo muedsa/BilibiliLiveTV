@@ -1,7 +1,6 @@
 package com.muedsa.bilibililiveapiclient;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
 import com.muedsa.bilibililiveapiclient.model.BilibiliPageInfo;
 import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
@@ -19,9 +18,8 @@ import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.live.Qn;
 import com.muedsa.bilibililiveapiclient.model.live.UserWebListResult;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginInfo;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
+import com.muedsa.bilibililiveapiclient.model.passport.QrcodeLoginResult;
+import com.muedsa.bilibililiveapiclient.model.passport.QrcodeUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
@@ -38,7 +36,6 @@ import com.muedsa.httpjsonclient.HttpJsonClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -142,23 +139,17 @@ public class BilibiliLiveApiClient {
         }, requestHeader);
     }
 
-    public BilibiliResponse<LoginUrl> getLoginUrl() throws IOException {
-        return httpJsonClient.getJson(ApiUrlContainer.GET_LOGIN_URL, new TypeReference<BilibiliResponse<LoginUrl>>() {
+    public BilibiliResponse<QrcodeUrl> loginQrcodeGenerate() throws IOException {
+        return httpJsonClient.getJson(ApiUrlContainer.LOGIN_QRCODE_GENERATE, new TypeReference<BilibiliResponse<QrcodeUrl>>() {
         }, requestHeader);
     }
 
-    public LoginResponse getLoginInfo(String oauthKey) throws IOException {
-        String json = httpJsonClient.post(ApiUrlContainer.GET_LOGIN_INFO,
-                Collections.singletonMap("oauthKey", oauthKey), requestHeader);
-        JSONObject jsonObject = JSON.parseObject(json);
-        LoginResponse response = jsonObject.to(new TypeReference<LoginResponse>() {
-        });
-        if (response.getStatus()) {
-            response.setData(jsonObject.getObject("data", LoginInfo.class));
-        } else {
-            response.setIntData(jsonObject.getIntValue("data"));
-        }
-        return response;
+    public BilibiliResponse<QrcodeLoginResult> loginQrcodePull(String qrcodeKey) throws IOException {
+        String url = ApiUtil.fillUrl(ApiUrlContainer.LOGIN_QRCODE_POLL, qrcodeKey);
+        return httpJsonClient.getJson(url,
+                new TypeReference<BilibiliResponse<QrcodeLoginResult>>() {
+                },
+                requestHeader);
     }
 
     public BilibiliResponse<UserNav> nav() throws IOException {

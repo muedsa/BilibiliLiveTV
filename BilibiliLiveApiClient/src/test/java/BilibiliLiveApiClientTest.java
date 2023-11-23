@@ -28,8 +28,6 @@ import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.live.Qn;
 import com.muedsa.bilibililiveapiclient.model.live.RoomInfo;
 import com.muedsa.bilibililiveapiclient.model.live.UserWebListResult;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
@@ -187,27 +185,6 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public LoginUrl getLoginUrlTest() throws IOException {
-        BilibiliResponse<LoginUrl> response = client.getLoginUrl();
-        Assertions.assertEquals(0L, response.getCode());
-        LoginUrl loginUrl = response.getData();
-        Assertions.assertNotNull(loginUrl);
-        Assertions.assertNotNull(loginUrl.getUrl());
-        Assertions.assertNotNull(loginUrl.getOauthKey());
-        return loginUrl;
-    }
-
-    @Test
-    public void getLoginInfoTest() throws IOException {
-        LoginUrl loginUrl = getLoginUrlTest();
-        LoginResponse loginResponse = client.getLoginInfo(loginUrl.getOauthKey());
-        Assertions.assertNotNull(loginResponse);
-        //Assertions.assertNotNull(loginResponse.getIntData());
-        String message = String.format("oauthKey:%s, message:%s", loginUrl.getOauthKey(), loginResponse.getMessage());
-        logger.info(message);
-    }
-
-    @Test
     public void navTest() throws IOException {
         BilibiliResponse<UserNav> response = client.nav();
         Assertions.assertNotNull(response);
@@ -268,25 +245,6 @@ public class BilibiliLiveApiClientTest {
             }
         } else {
             logger.info("get play info fail:" + playInfoResponse.getMessage());
-        }
-    }
-
-    //@Test
-    public void getVideDetailWithLogin() throws IOException, WriterException, InterruptedException {
-        LoginUrl loginUrl = getLoginUrlTest();
-        printQRCode(loginUrl.getUrl());
-        for (int i = 0; i < 60; i++) {
-            Thread.sleep(1500);
-            LoginResponse loginResponse = client.getLoginInfo(loginUrl.getOauthKey());
-            if (Objects.nonNull(loginResponse)
-                    && Objects.nonNull(loginResponse.getStatus())
-                    && loginResponse.getStatus()) {
-                logger.info("登录成功!");
-                String sessData = getSessData(loginResponse.getData().getUrl());
-                client.putCookie(BilibiliApiContainer.COOKIE_KEY_SESSDATA, sessData);
-                getVideDetailTest();
-                break;
-            }
         }
     }
 

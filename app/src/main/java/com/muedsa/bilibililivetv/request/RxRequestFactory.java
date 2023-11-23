@@ -15,8 +15,8 @@ import com.muedsa.bilibililiveapiclient.model.live.LiveRoomInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililiveapiclient.model.live.Qn;
 import com.muedsa.bilibililiveapiclient.model.live.UserWebListResult;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginResponse;
-import com.muedsa.bilibililiveapiclient.model.passport.LoginUrl;
+import com.muedsa.bilibililiveapiclient.model.passport.QrcodeLoginResult;
+import com.muedsa.bilibililiveapiclient.model.passport.QrcodeUrl;
 import com.muedsa.bilibililiveapiclient.model.search.SearchAggregation;
 import com.muedsa.bilibililiveapiclient.model.search.SearchResult;
 import com.muedsa.bilibililiveapiclient.model.search.SearchVideoInfo;
@@ -93,21 +93,17 @@ public class RxRequestFactory {
         });
     }
 
-    public static Single<LoginUrl> bilibiliLoginUrl() {
+    public static Single<QrcodeUrl> bilibiliLoginQrcodeGenerate() {
         return Single.create(emitter -> {
-            BilibiliResponse<LoginUrl> response = BilibiliLiveApi.client().getLoginUrl();
-            handleResponse(response, emitter, Function.identity(), "BilibiliLoginUrl", true, null);
+            BilibiliResponse<QrcodeUrl> response = BilibiliLiveApi.client().loginQrcodeGenerate();
+            handleResponse(response, emitter, Function.identity(), "loginQrcodeGenerate", true, null);
         });
     }
 
-    public static Single<LoginResponse> bilibiliLoginInfo(String oauthKey) {
+    public static Single<QrcodeLoginResult> bilibiliLoginQrcodePull(String qrcodeKey) {
         return Single.create(emitter -> {
-            LoginResponse loginResponse = BilibiliLiveApi.client().getLoginInfo(oauthKey);
-            if (Objects.nonNull(loginResponse)) {
-                emitter.onSuccess(loginResponse);
-            } else {
-                emitter.onError(HttpRequestException.create("request loginResponse error"));
-            }
+            BilibiliResponse<QrcodeLoginResult> response = BilibiliLiveApi.client().loginQrcodePull(qrcodeKey);
+            handleResponse(response, emitter, Function.identity(), "bilibiliLoginInfo", true, null);
         });
     }
 

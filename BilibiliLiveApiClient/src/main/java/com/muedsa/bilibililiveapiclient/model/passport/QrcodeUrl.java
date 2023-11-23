@@ -2,13 +2,13 @@ package com.muedsa.bilibililiveapiclient.model.passport;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
-public class LoginUrl {
+public class QrcodeUrl {
 
     @JSONField(name = "url")
     private String url;
 
-    @JSONField(name = "oauthKey")
-    private String oauthKey;
+    @JSONField(name = "qrcode_key")
+    private String qrcodeKey;
 
     public String getUrl() {
         return url;
@@ -18,11 +18,11 @@ public class LoginUrl {
         this.url = url;
     }
 
-    public String getOauthKey() {
-        return oauthKey;
+    public String getQrcodeKey() {
+        return qrcodeKey;
     }
 
-    public void setOauthKey(String oauthKey) {
-        this.oauthKey = oauthKey;
+    public void setQrcodeKey(String qrcodeKey) {
+        this.qrcodeKey = qrcodeKey;
     }
 }

@@ -148,13 +148,13 @@ public class LoginFragment extends Fragment {
         Log.d(TAG, "prepareLogin");
         button.setVisibility(View.GONE);
         listCompositeDisposable.clear();
-        RxRequestFactory.bilibiliLoginUrl()
+        RxRequestFactory.bilibiliLoginQrcodeGenerate()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loginUrl -> {
-                    updateQRCode(loginUrl.getUrl());
+                .subscribe(qrcodeUrl -> {
+                    updateQRCode(qrcodeUrl.getUrl());
                     textView.setText(requireActivity().getString(R.string.bilibili_scan_qr_code_login));
-                    startCheckScan(loginUrl.getOauthKey());
+                    startCheckScan(qrcodeUrl.getQrcodeKey());
                 }, throwable -> {
                     Log.d(TAG, "bilibiliLoginUrl: ", throwable);
                     ToastUtil.error(requireActivity(), "bilibiliLoginUrl", throwable);
@@ -177,7 +177,7 @@ public class LoginFragment extends Fragment {
         imageView.setImageBitmap(bitmap);
     }
 
-    private void startCheckScan(String oauthKey) {
+    private void startCheckScan(String qrcodeKey) {
         Log.d(TAG, "startCheckScan");
         releaseTimer();
         timer = new Timer();
@@ -186,25 +186,27 @@ public class LoginFragment extends Fragment {
             @Override
             public void run() {
                 FragmentActivity activity = requireActivity();
-                if (timerCount > 40) {
+                if (timerCount > 119) {
                     releaseTimer();
                     ToastUtil.showLongToast(activity, activity.getString(R.string.login_timeout));
                     prepareLogin();
                 } else {
-                    Log.d(TAG, "bilibiliLoginInfo: oauthKey=" + oauthKey);
-                    RxRequestFactory.bilibiliLoginInfo(oauthKey)
+                    Log.d(TAG, "bilibiliLoginQrcodePull: qrcodeKey=" + qrcodeKey);
+                    RxRequestFactory.bilibiliLoginQrcodePull(qrcodeKey)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(loginInfo -> {
-                                if (loginInfo.getStatus()) {
-                                    Log.d(TAG, "login success: " + loginInfo.getData().getUrl());
+                            .subscribe(qrcodeLoginResult -> {
+                                if (qrcodeLoginResult.getCode() == 0) {
+                                    Log.d(TAG, "login success: " + qrcodeLoginResult.getUrl());
                                     releaseTimer();
                                     listCompositeDisposable.clear();
-                                    Map<String, String> cookieMap = getLoginCookie(loginInfo.getData().getUrl());
+                                    Map<String, String> cookieMap = getLoginCookie(qrcodeLoginResult.getUrl());
                                     Prefs.putString(Prefs.BILIBILI_COOKIE_JSON, JSON.toJSONString(cookieMap));
-                                    Prefs.putString(Prefs.BILIBILI_REFRESH_TOKEN, loginInfo.getData().getRefreshToken());
+                                    Prefs.putString(Prefs.BILIBILI_REFRESH_TOKEN, qrcodeLoginResult.getRefreshToken());
                                     BilibiliLiveApi.login(cookieMap);
                                     checkLogin();
+                                } else if (qrcodeLoginResult.getCode() == 86038) {
+                                    timerCount = 999;
                                 }
                             }, throwable -> {
                                 Log.d(TAG, "startCheckScan: ", throwable);

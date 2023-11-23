@@ -21,9 +21,15 @@ public class ApiUrlContainer {
 
     public static String USER_NAV = "https://api.bilibili.com/x/web-interface/nav";
 
+    @Deprecated
     public static String GET_LOGIN_URL = "https://passport.bilibili.com/qrcode/getLoginUrl";
 
+    @Deprecated
     public static String GET_LOGIN_INFO = "https://passport.bilibili.com/qrcode/getLoginInfo";
+
+    public static String LOGIN_QRCODE_GENERATE = "https://passport.bilibili.com/x/passport-login/web/qrcode/generate";
+
+    public static String LOGIN_QRCODE_POLL = "https://passport.bilibili.com/x/passport-login/web/qrcode/poll?qrcode_key=%s";
 
     public static String VIDEO_URL = "https://www.bilibili.com/video/%s?p=%d";
 
