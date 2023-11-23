@@ -22,6 +22,10 @@ public class BilibiliApiContainer {
     public static final String QUERY_KEY_PLATFORM = "platform";
     public static final String QUERY_KEY_WEB_LOCATION = "web_location";
 
+    public static final String QUERY_KEY_DM_IMG_STR = "dm_img_str";
+
+    public static final String QUERY_KEY_DM_COVER_IMG_STR = "dm_cover_img_str";
+
     public static final String ORDER_BY_PUBLIC_DATE = "pubdate";
 
     public static final String WEB_LOCATION_SPACE = "1550101";
@@ -31,5 +35,7 @@ public class BilibiliApiContainer {
     public static final String DYNAMIC_MAJOR_TYPE_ARCHIVE = "MAJOR_TYPE_ARCHIVE";
 
     public static final String DYNAMIC_TYPE_AV = "DYNAMIC_TYPE_AV";
+
+    public static final String DISABLED_WEB_GL = "bm8gd2ViZ2";
 
 }

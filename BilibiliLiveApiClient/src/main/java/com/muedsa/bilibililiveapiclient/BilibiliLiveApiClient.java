@@ -319,6 +319,8 @@ public class BilibiliLiveApiClient {
         params.put(BilibiliApiContainer.QUERY_KEY_ORDER_AVOIDED, this);
         params.put(BilibiliApiContainer.QUERY_KEY_PLATFORM, BilibiliApiContainer.PLATFORM_WEB);
         params.put(BilibiliApiContainer.QUERY_KEY_WEB_LOCATION, BilibiliApiContainer.WEB_LOCATION_SPACE);
+        params.put(BilibiliApiContainer.QUERY_KEY_DM_IMG_STR, BilibiliApiContainer.DISABLED_WEB_GL);
+        params.put(BilibiliApiContainer.QUERY_KEY_DM_COVER_IMG_STR, BilibiliApiContainer.DISABLED_WEB_GL);
         WbiUtil.fillWbiParams(params, mixinKey);
         return httpJsonClient.getJson(ApiUtil.buildUrlWithParams(ApiUrlContainer.SPACE_SEARCH, params),
                 new TypeReference<BilibiliResponse<SpaceSearchResult>>() {
