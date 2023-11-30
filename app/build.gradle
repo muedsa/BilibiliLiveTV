@@ -64,7 +64,7 @@ dependencies {
     def media3_version = "1.2.0"
     def rxjava3_version = "3.1.8"
     def rxjava3_android_version = "3.0.2"
-    def room_version = "2.6.0"
+    def room_version = "2.6.1"
 
     implementation project(path: ':BilibiliLiveApiClient')
 
