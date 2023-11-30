@@ -24,6 +24,8 @@ jobs:
       run: chmod +x gradlew
     - name: Test with Gradle
       run: ./gradlew test
+    - name: build Debug with Gradle
+      run: ./gradlew :app:assembleDebug
     - name: Upload a Build Artifact
       if: always()
       uses: actions/upload-artifact@v3.1.3
@@ -32,3 +34,4 @@ jobs:
         path: |
           app/build/reports
           BilibiliLiveApiClient/build/test-results/test
+          ./**/*.apk
