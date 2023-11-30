@@ -38,4 +38,7 @@ public class BilibiliApiContainer {
 
     public static final String DISABLED_WEB_GL = "bm8gd2ViZ2";
 
+    public static final String DM_IMG_STR = "V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ";
+
+    public static final String DM_COVER_IMG_STR = "QU5HTEUgKEludGVsLCBJbnRlbChSKSBVSEQgR3JhcGhpY3MgNjMwICgweDAwMDA5QkM4KSBEaXJlY3QzRDExIHZzXzVfMCBwc181XzAsIEQzRDExKUdvb2dsZSBJbmMuIChJbnRlbC";
 }

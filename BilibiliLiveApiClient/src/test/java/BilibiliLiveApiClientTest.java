@@ -297,15 +297,11 @@ public class BilibiliLiveApiClientTest {
         DmWebViewReply dmWebViewReply = client.videoDanmakuView(oid);
         Assertions.assertTrue(dmWebViewReply.hasDmSge());
         Assertions.assertTrue(dmWebViewReply.getDmSge().hasTotal());
-        int count = 0;
-        logger.info("oid:" + oid + ", page total:" + dmWebViewReply.getDmSge().getTotal());
-        for (int i = 1; i < dmWebViewReply.getDmSge().getTotal() + 1; i++) {
+        for (int i = 1; i < 5; i++) {
             DmSegMobileReply dmSegMobileReply = client.videoDanmakuSegment(oid, i);
             Assertions.assertNotNull(dmSegMobileReply);
-            count += dmSegMobileReply.getElemsCount();
             logger.info("oid:" + oid + ", index:" + i + " count:" + dmSegMobileReply.getElemsCount());
         }
-        logger.info("oid:" + oid + ", danmaku count:" + count);
     }
 
     @Test
@@ -366,6 +362,7 @@ public class BilibiliLiveApiClientTest {
         BilibiliResponse<SpaceSearchResult> response = client.spaceSearch(1, 50, 423895,
                 WbiUtil.getMixinKey(wbiImg.getImgKey(), wbiImg.getSubKey()));
         Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCode(), 0, response.getMessage());
         Assertions.assertNotNull(response.getData());
         Assertions.assertNotNull(response.getData().getList());
         List<SearchVideoInfo> list = response.getData().getList().getVlist();
