@@ -109,7 +109,7 @@ public class UpLastVideosFragment extends VerticalGridSupportFragment {
                 mAdapter.setLoading(false);
             } else if (m.getStatus() == RMessage.Status.ERROR) {
                 mAdapter.setLoading(false);
-                Log.e(TAG, "bilibiliVideoDetail error:", m.getError());
+                Log.e(TAG, "bilibiliSpaceSearchVideos error:", m.getError());
                 FragmentActivity activity = requireActivity();
                 ToastUtil.error(activity, activity.getString(R.string.toast_msg_up_last_videos_failure), m.getError());
                 CrashlyticsUtil.log(m.getError());
