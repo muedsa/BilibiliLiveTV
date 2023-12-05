@@ -1,6 +1,7 @@
 package com.muedsa.bilibililivetv;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -23,8 +24,10 @@ public class App extends Application {
         super.onCreate();
         database = AppDatabase.getDatabase(this);
         Prefs.init(getApplicationContext());
-        RxJavaPlugins.setErrorHandler(throwable ->
-                FirebaseCrashlytics.getInstance().recordException(throwable));
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            Log.e("RxJavaPlugins ErrorHandler", "", throwable);
+            FirebaseCrashlytics.getInstance().recordException(throwable);
+        });
         String json = Prefs.getString(Prefs.BILIBILI_COOKIE_JSON);
         if (!Strings.isNullOrEmpty(json)) {
             BilibiliLiveApi.login(JSON.parseObject(json, new TypeReference<Map<String, String>>() {

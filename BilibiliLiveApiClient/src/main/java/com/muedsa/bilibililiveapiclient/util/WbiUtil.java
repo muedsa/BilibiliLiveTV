@@ -1,5 +1,6 @@
 package com.muedsa.bilibililiveapiclient.util;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Map;
@@ -31,6 +32,6 @@ public class WbiUtil {
 
     public static void fillWbiParams(Map<String, Object> params, String mixinKey) {
         params.put(QUERY_KEY_WTS, System.currentTimeMillis() / 1000);
-        params.put(QUERY_KEY_W_RID, DigestUtils.md5Hex(ApiUtil.stringSortedParams(params) + mixinKey));
+        params.put(QUERY_KEY_W_RID, new String(Hex.encodeHex(DigestUtils.md5(ApiUtil.stringSortedParams(params) + mixinKey))));
     }
 }

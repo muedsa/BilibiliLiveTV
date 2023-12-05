@@ -176,15 +176,18 @@ public class RxRequestFactory {
                 emitter.onSuccess(wbiKey);
             } else {
                 BilibiliResponse<UserNav> response = BilibiliLiveApi.client().nav();
-                handleResponse(response, emitter,
-                        nav -> WbiUtil.getMixinKey(nav.getWbiImg().getImgKey(), nav.getWbiImg().getSubKey()),
-                        "BilibiliNav wbi key", true,
-                        (resp, result) -> {
-                            Prefs.putString(Prefs.BILIBILI_WBI_KEY, result);
-                            Prefs.putLong(Prefs.BILIBILI_WBI_KEY_TIME, System.currentTimeMillis());
-                            return true;
-                        }
-                );
+                if (response.getData() != null
+                        && response.getData().getWbiImg() != null
+                        && !Strings.isNullOrEmpty(response.getData().getWbiImg().getImgKey())
+                        && !Strings.isNullOrEmpty(response.getData().getWbiImg().getSubKey())) {
+                    wbiKey = WbiUtil.getMixinKey(response.getData().getWbiImg().getImgKey(),
+                            response.getData().getWbiImg().getSubKey());
+                    Prefs.putString(Prefs.BILIBILI_WBI_KEY, wbiKey);
+                    Prefs.putLong(Prefs.BILIBILI_WBI_KEY_TIME, System.currentTimeMillis());
+                    emitter.onSuccess(wbiKey);
+                } else {
+                    emitter.onError(HttpRequestException.create(-200, "getWbiKey failure"));
+                }
             }
         });
     }
