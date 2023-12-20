@@ -9,7 +9,7 @@ java {
 
 dependencies {
     api project(path: ':HttpJsonClient')
-    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.5'
     api 'com.google.protobuf:protobuf-javalite:4.0.0-rc-2'
 
     implementation 'commons-codec:commons-codec:1.16.0'
