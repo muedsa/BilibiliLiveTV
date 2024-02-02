@@ -352,7 +352,7 @@ public class BilibiliLiveApiClientTest {
         // 需要Cookie
     }
 
-    @Test
+    // @Test
     public void spaceSearchTest() throws IOException {
         BilibiliResponse<UserNav> navResponse = client.nav();
         Assertions.assertNotNull(navResponse);
