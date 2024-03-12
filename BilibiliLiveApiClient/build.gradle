@@ -10,7 +10,7 @@ java {
 dependencies {
     api project(path: ':HttpJsonClient')
     implementation 'org.java-websocket:Java-WebSocket:1.5.6'
-    api 'com.google.protobuf:protobuf-javalite:4.26.0-RC2'
+    api 'com.google.protobuf:protobuf-javalite:4.26.0-RC3'
 
     implementation 'commons-codec:commons-codec:1.16.1'
 
