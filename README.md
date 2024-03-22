@@ -9,3 +9,9 @@
 多P视频的视频列表请在视频详情页按↓
 
 ![](screenshot/record.webp)
+
+
+## Others
+- [JCYTV](https://github.com/muedsa/JCYTV)
+- [AGETV](https://github.com/muedsa/AGETV)
+- [HATV](https://github.com/muedsa/HATV)
