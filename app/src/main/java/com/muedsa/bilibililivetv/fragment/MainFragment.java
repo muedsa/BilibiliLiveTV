@@ -121,7 +121,7 @@ public class MainFragment extends BrowseSupportFragment {
         setupEventListeners();
         setupRows();
         registerRows();
-        reloadRows();
+        // reloadRows();
     }
 
     private void setupRows() {
@@ -315,9 +315,14 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void appendVideoDynamicRows(FlowItems<DynamicItem> flowItems) {
-        List<DynamicItem> list = flowItems.getItems().stream()
+        List<DynamicItem> items = flowItems.getItems();
+        List<DynamicItem> list = items.stream()
                 .filter(i -> BilibiliApiContainer.DYNAMIC_TYPE_AV.equals(i.getType()))
                 .collect(Collectors.toList());
+        if (!items.isEmpty()) {
+            Log.d(TAG, "appendVideoDynamicRows add: " + items.get(0).getIdStr()
+                    + "-" + items.get(items.size() - 1).getIdStr());
+        }
         bilibiliVideoDynamicRowAdapter.append(list, flowItems.getOffset(), !flowItems.isHasMore());
     }
 
