@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.leanback.widget.ImageCardView;
 
-import com.google.common.base.Strings;
 import com.muedsa.bilibililiveapiclient.model.dynamic.DynamicItem;
 import com.muedsa.bilibililiveapiclient.model.dynamic.svr.VideoDynamicCard;
 import com.muedsa.bilibililiveapiclient.model.history.HistoryRecord;
@@ -69,8 +68,8 @@ public class VideoCardPresenter extends AbstractImageCardPresenter {
             content = dynamicItem.getModules().getModuleAuthor().getName();
             url = dynamicItem.getModules().getModuleDynamic().getMajor().getArchive().getCover();
         }
-        if (!Strings.isNullOrEmpty(url)) {
-            ImageCardView cardView = (ImageCardView) viewHolder.view;
+        ImageCardView cardView = (ImageCardView) viewHolder.view;
+        if (cardView.getMainImageView() != null) {
             cardView.setTitleText(title);
             cardView.setContentText(content);
             int width = DpUtil.convertDpToPixel(viewHolder.view.getContext(), CARD_WIDTH_DP);
