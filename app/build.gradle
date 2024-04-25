@@ -32,8 +32,8 @@ android {
         applicationId "com.muedsa.bilibililivetv"
         minSdk 26
         targetSdk 34
-        versionCode 53
-        versionName "1.9.13"
+        versionCode 54
+        versionName "1.9.14"
         setProperty("archivesBaseName", "BilibiliLiveTV")
     }
 
