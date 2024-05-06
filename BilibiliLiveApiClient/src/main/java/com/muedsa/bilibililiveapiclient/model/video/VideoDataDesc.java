@@ -11,7 +11,7 @@ public class VideoDataDesc {
     private Integer type;
 
     @JSONField(name = "biz_id")
-    private Integer bizId;
+    private Long bizId;
 
     public String getRawText() {
         return rawText;
@@ -29,11 +29,11 @@ public class VideoDataDesc {
         this.type = type;
     }
 
-    public Integer getBizId() {
+    public Long getBizId() {
         return bizId;
     }
 
-    public void setBizId(Integer bizId) {
+    public void setBizId(Long bizId) {
         this.bizId = bizId;
     }
 }
