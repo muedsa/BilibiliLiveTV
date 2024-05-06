@@ -339,11 +339,11 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
             heartbeat.setVideoDuration(videoPlayInfo.getVideoDuration());
             heartbeat.setStartTs(current);
             heartbeat.setRealtime(0L);
-            heartbeatTimer.scheduleAtFixedRate(new TimerTask() {
+            heartbeatTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     FragmentActivity activity = getActivity();
-                    if (activity != null) {
+                    if (activity != null && exoPlayer != null) {
                         activity.runOnUiThread(() -> {
                             if (exoPlayer.isPlaying()) {
                                 long progress = glue.getCurrentPosition() / 1000;

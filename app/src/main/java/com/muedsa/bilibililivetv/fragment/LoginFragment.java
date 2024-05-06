@@ -182,7 +182,7 @@ public class LoginFragment extends Fragment {
         releaseTimer();
         timer = new Timer();
         timerCount = 0;
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 FragmentActivity activity = requireActivity();

@@ -111,7 +111,7 @@ public class ChatBroadcastWsClient {
         }
         if (heartTimer == null) {
             heartTimer = new Timer();
-            heartTimer.scheduleAtFixedRate(new TimerTask() {
+            heartTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     if (webSocketClient.isOpen()) {

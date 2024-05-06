@@ -30,7 +30,7 @@ public class BilibiliLivePlaybackTransportRowPresenter extends PlaybackTransport
         TextView durationView = mvh.getDurationView();
         if (timer == null) {
             timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
+            timer.schedule(new TimerTask() {
                 private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm",
                         context.getResources().getConfiguration().getLocales().get(0));
 

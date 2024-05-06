@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.FragmentActivity;
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
@@ -14,6 +15,7 @@ import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
@@ -31,6 +33,7 @@ import com.muedsa.httpjsonclient.HttpClientContainer;
 import java.util.HashMap;
 import java.util.Map;
 
+@OptIn(markerClass = UnstableApi.class)
 public class VideoTestFragment extends VideoSupportFragment {
     private static final String TAG = VideoTestFragment.class.getSimpleName();
 

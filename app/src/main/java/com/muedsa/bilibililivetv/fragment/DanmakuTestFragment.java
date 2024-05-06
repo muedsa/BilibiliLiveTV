@@ -111,7 +111,7 @@ public class DanmakuTestFragment extends Fragment {
 
     private void timer1() {
         timer1 = new Timer();
-        timer1.scheduleAtFixedRate(new TimerTask() {
+        timer1.schedule(new TimerTask() {
             @Override
             public void run() {
                 giftDanmakuManager.add(randStr(5) + "投喂" + randStr(4) + "X3");
