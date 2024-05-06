@@ -74,6 +74,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     private String url;
     private VideoInfo videoInfo;
 
+    private Long cid; // 当前视频cid
+
     private List<VideoPlayInfo> videoPlayInfoList;
 
     private DetailsOverviewRow detailsOverviewRow;
@@ -123,6 +125,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     //视频信息 封面图
                     videoInfo = videoDetail.getVideoInfo();
                     url = videoDetail.getUrl();
+                    cid = VideoInfoConvert.findCidByPage(videoDetail.getVideoInfo().getVideoData(), page);
                     mAdapter.clear();
                     setupDetailsOverviewRow();
                     setupVideoPagesRow();
@@ -134,7 +137,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                     if (Objects.nonNull(playInfoResponse)) {
                         if (Objects.nonNull(playInfoResponse.getCode()) &&
                                 ErrorCode.SUCCESS == playInfoResponse.getCode()) {
-                            videoPlayInfoList = VideoInfoConvert.buildVideoPlayInfoList(videoInfo, playInfoResponse.getData(), url);
+                            videoPlayInfoList = VideoInfoConvert.buildVideoPlayInfoList(cid, videoInfo, playInfoResponse.getData(), url);
                             updateDetailsOverviewActions();
                         } else {
                             ToastUtil.showLongToast(activity, Objects.nonNull(playInfoResponse.getMessage()) ?
@@ -174,8 +177,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
             ArrayObjectAdapter arrayObjectAdapter = new ArrayObjectAdapter(presenter);
             arrayObjectAdapter.addAll(0, videoInfo.getVideoData().getPages());
             HeaderItem headerItem = new HeaderItem("视频选集");
-            int pos = VideoInfoConvert.findPagePositionByCid(videoInfo.getVideoData().getPages(),
-                    videoInfo.getVideoData().getCid(), 0);
+            int pos = VideoInfoConvert.findPagePositionByCid(videoInfo.getVideoData().getPages(), cid, 0);
             ListRow listRow = new DefaultPositionListRow(headerItem, arrayObjectAdapter, pos);
             mAdapter.add(listRow);
         }

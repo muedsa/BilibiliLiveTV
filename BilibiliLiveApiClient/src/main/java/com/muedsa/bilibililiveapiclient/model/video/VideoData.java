@@ -62,7 +62,7 @@ public class VideoData {
     private String dynamic;
 
     @JSONField(name = "cid")
-    private Long cid;
+    private Long cid; // 多P视频为第一P的cid
 
     @JSONField(name = "dimension")
     private VideoDimension dimension;

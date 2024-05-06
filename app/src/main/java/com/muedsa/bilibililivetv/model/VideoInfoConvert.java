@@ -25,7 +25,7 @@ public class VideoInfoConvert {
 
     }
 
-    public static List<VideoPlayInfo> buildVideoPlayInfoList(VideoInfo videoInfo, PlayInfo playInfo, String url) {
+    public static List<VideoPlayInfo> buildVideoPlayInfoList(Long cid, VideoInfo videoInfo, PlayInfo playInfo, String url) {
         PlayDash dash = playInfo.getDash();
         if (Objects.isNull(dash) || Objects.isNull(dash.getVideo()) || Objects.isNull(dash.getAudio())
                 || dash.getVideo().isEmpty() || dash.getAudio().isEmpty()) {
@@ -39,7 +39,7 @@ public class VideoInfoConvert {
         return dash.getVideo().stream().map(video -> {
             VideoPlayInfo videoPlayInfo = new VideoPlayInfo();
             videoPlayInfo.setBv(videoInfo.getBvid());
-            videoPlayInfo.setCid(videoInfo.getVideoData().getCid());
+            videoPlayInfo.setCid(cid);
             videoPlayInfo.setTitle(findTitle(videoInfo));
             videoPlayInfo.setSubTitle(Objects.nonNull(videoInfo.getVideoData().getOwner()) ? videoInfo.getVideoData().getOwner().getName() : "");
             videoPlayInfo.setQuality(video.getId());
@@ -101,5 +101,16 @@ public class VideoInfoConvert {
             }
         }
         return pos;
+    }
+
+    public static Long findCidByPage(VideoData videoData, int page) {
+        Long cid = videoData.getCid();
+        if (page > 1 && videoData.getVideos() > 1 && !videoData.getPages().isEmpty()) {
+            Optional<VideoPage> optional = videoData.getPages().stream().filter(p -> p.getPage() == page).findFirst();
+            if (optional.isPresent()) {
+                cid = optional.get().getCid();
+            }
+        }
+        return cid;
     }
 }

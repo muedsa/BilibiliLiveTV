@@ -13,6 +13,7 @@ import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.FlowItems;
 import com.muedsa.bilibililiveapiclient.model.UserNav;
 import com.muedsa.bilibililiveapiclient.model.WbiImg;
+import com.muedsa.bilibililiveapiclient.model.danmaku.CommandDm;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DanmakuElem;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmSegMobileReply;
 import com.muedsa.bilibililiveapiclient.model.danmaku.DmWebViewReply;
@@ -192,8 +193,65 @@ public class BilibiliLiveApiClientTest {
     }
 
     @Test
-    public void getVideDetailTest() throws IOException {
-        VideoDetail videoDetail = client.getVideoDetail("BV11e411N7dy");
+    public void getVideoDetailTest() throws IOException {
+        VideoDetail videoDetail = client.getVideoDetail("BV1Jx411o7aW");
+        Assertions.assertNotNull(videoDetail);
+        VideoInfo videoInfo = videoDetail.getVideoInfo();
+        Assertions.assertNotNull(videoInfo);
+        VideoData videoData = videoInfo.getVideoData();
+        Assertions.assertNotNull(videoData);
+        BilibiliResponse<PlayInfo> playInfoResponse = videoDetail.getPlayInfoResponse();
+        Assertions.assertNotNull(playInfoResponse);
+        Assertions.assertNotNull(playInfoResponse.getCode());
+        if (ErrorCode.SUCCESS == playInfoResponse.getCode()) {
+            PlayInfo playInfo = playInfoResponse.getData();
+            Assertions.assertNotNull(playInfo);
+            PlayDash dash = playInfo.getDash();
+            Assertions.assertNotNull(dash);
+            List<PlayDashInfo> videoList = dash.getVideo();
+            List<PlayDashInfo> audioList = dash.getAudio();
+            Assertions.assertNotNull(videoList);
+            Assertions.assertFalse(videoList.isEmpty());
+            Assertions.assertNotNull(audioList);
+            Assertions.assertFalse(audioList.isEmpty());
+            String videoDataMessage = String.format("BV:%s, title:%s, desc:%s", videoInfo.getBvid(), videoData.getTitle(), videoData.getDesc());
+            logger.info(videoDataMessage);
+            Season season = videoData.getUgcSeason();
+            if (Objects.nonNull(season)) {
+                String seasonMessage = String.format("Season title:%s, intro:%s, cover:%s", season.getTitle(), season.getIntro(), season.getCover());
+                logger.info(seasonMessage);
+                if (Objects.nonNull(season.getSections())) {
+                    for (SeasonSection section : season.getSections()) {
+                        String sectionMessage = String.format("Section title:%s, type:%d, isActive:%b", section.getTitle(), section.getType(), section.getActive());
+                        logger.info(sectionMessage);
+                        if (Objects.nonNull(section.getEpisodes())) {
+                            for (SectionEpisode episode : section.getEpisodes()) {
+                                String episodeMessage = String.format("Episode title:%s, bv:%s", episode.getTitle(), episode.getBvId());
+                                if (Objects.nonNull(episode.getArc())) {
+                                    episodeMessage += String.format(", arc.pic:%s", episode.getArc().getPic());
+                                }
+                                logger.info(episodeMessage);
+                            }
+                        }
+                    }
+                }
+            }
+            for (PlayDashInfo video : videoList) {
+                String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", video.getMimeType(), video.getCodecs(), video.getId(), video.getBaseUrl());
+                logger.info(message);
+            }
+            for (PlayDashInfo audio : audioList) {
+                String message = String.format("mimeType:%s, codecs:%s, quality:%s, baseUrl:%s", audio.getMimeType(), audio.getCodecs(), audio.getId(), audio.getBaseUrl());
+                logger.info(message);
+            }
+        } else {
+            logger.info("get play info fail:" + playInfoResponse.getMessage());
+        }
+    }
+
+    @Test
+    public void getMorePageVideoDetailTest() throws IOException {
+        VideoDetail videoDetail = client.getVideoDetail("BV1Jx411o7aW", 19);
         Assertions.assertNotNull(videoDetail);
         VideoInfo videoInfo = videoDetail.getVideoInfo();
         Assertions.assertNotNull(videoInfo);
@@ -289,6 +347,9 @@ public class BilibiliLiveApiClientTest {
         Assertions.assertTrue(dmWebViewReply.hasDmSge());
         Assertions.assertTrue(dmWebViewReply.getDmSge().hasTotal());
         logger.info("count:" + dmWebViewReply.getCount());
+        for (CommandDm commandDm : dmWebViewReply.getCommandDmsList()) {
+            logger.info(commandDm.getMtime() + ">" + commandDm.getContent());
+        }
     }
 
     @Test

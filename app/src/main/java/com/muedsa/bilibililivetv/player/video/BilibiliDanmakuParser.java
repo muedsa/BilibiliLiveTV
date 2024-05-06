@@ -31,7 +31,7 @@ public class BilibiliDanmakuParser extends BaseDanmakuParser {
         List<DanmakuElem> list = new ArrayList<>(1);
         try {
             list = BilibiliLiveApi.client().videoDanmakuElemList(cid, segmentSize);
-            Log.d(TAG, "initDanmakuList: count=" + list.size());
+            Log.d(TAG, "initDanmakuList: count=" + list.size() + ", lastDanmakuTime=" + list.get(list.size() - 1).getProgress());
         } catch (Exception e) {
             Log.d(TAG, "initDanmakuList:", e);
             list.add(DanmakuElem.newBuilder()
