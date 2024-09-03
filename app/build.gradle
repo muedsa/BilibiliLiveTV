@@ -62,7 +62,7 @@ dependencies {
     def leanback_version = "1.2.0-alpha04"
     def glide_version = "4.16.0"
     def media3_version = "1.4.1"
-    def rxjava3_version = "3.1.8"
+    def rxjava3_version = "3.1.9"
     def rxjava3_android_version = "3.0.2"
     def room_version = "2.6.1"
 
