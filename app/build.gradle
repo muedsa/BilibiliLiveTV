@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id 'androidx.room'
 }
 
 Properties localProps = new Properties()
@@ -11,6 +12,19 @@ if (localPropsFile.exists() && localPropsFile.canRead()) {
 }
 
 android {
+    namespace 'com.muedsa.bilibililivetv'
+
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.muedsa.bilibililivetv"
+        minSdk 26
+        targetSdk 35
+        versionCode 56
+        versionName "1.9.16"
+        setProperty("archivesBaseName", "BilibiliLiveTV")
+    }
+
     signingConfigs {
         release {
             if (localProps.containsKey('bltv.signingConfig.storeFile')) {
@@ -25,16 +39,6 @@ android {
                 keyAlias signingConfigs.debug.keyAlias
             }
         }
-    }
-    compileSdk 34
-
-    defaultConfig {
-        applicationId "com.muedsa.bilibililivetv"
-        minSdk 26
-        targetSdk 34
-        versionCode 55
-        versionName "1.9.15"
-        setProperty("archivesBaseName", "BilibiliLiveTV")
     }
 
     buildTypes {
@@ -52,10 +56,14 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
     buildFeatures {
         viewBinding true
     }
-    namespace 'com.muedsa.bilibililivetv'
+
+    room {
+        schemaDirectory "$projectDir/schemas"
+    }
 }
 
 dependencies {

@@ -145,7 +145,10 @@ public class LiveRoomDetailsFragment extends DetailsSupportFragment {
                     liveStatusAction.setLabel2(mSelectedLiveRoom.getLiveStatusDesc(getResources()));
                     onlineNumAction.setLabel2(String.valueOf(mSelectedLiveRoom.getOnlineNum()));
 
-                    mSelectedLiveRoom.setDanmuWsToken(data.getToken());
+                    String url = String.format("wss://%s:%s/sub", data.getDanmakuInfo().getHostList().get(0).getHost(),
+                            data.getDanmakuInfo().getHostList().get(0).getWssPort());
+                    mSelectedLiveRoom.setDanmuWssUrl(url);
+                    mSelectedLiveRoom.setDanmuWsToken(data.getDanmakuInfo().getToken());
 
                     mSelectedLiveRoom.setPlayUrlArr(data.getPlayUrlData()
                             .getDurl().stream().map(Durl::getUrl).toArray(String[]::new));

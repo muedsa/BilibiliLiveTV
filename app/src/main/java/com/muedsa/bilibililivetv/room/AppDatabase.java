@@ -4,16 +4,25 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.room.AutoMigration;
 import androidx.room.Database;
+import androidx.room.DeleteColumn;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.AutoMigrationSpec;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.muedsa.bilibililivetv.room.dao.LiveRoomDao;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
 
-@Database(entities = {LiveRoom.class}, version = 2, exportSchema = false)
+@Database(
+        entities = {LiveRoom.class},
+        version = 3,
+        autoMigrations = {
+                @AutoMigration(from = 2, to = 3, spec = AppDatabase.AutoMigration_2_3.class)
+        }
+)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String TAG = AppDatabase.class.getSimpleName();
@@ -46,4 +55,11 @@ public abstract class AppDatabase extends RoomDatabase {
             Log.d(TAG, "Migration 1 to 2");
         }
     };
+
+    @DeleteColumn(tableName = "live_room", columnName = "play_url_arr")
+    @DeleteColumn(tableName = "live_room", columnName = "live_status")
+    @DeleteColumn(tableName = "live_room", columnName = "online_num")
+    @DeleteColumn(tableName = "live_room", columnName = "danmu_ws_token")
+    static class AutoMigration_2_3 implements AutoMigrationSpec {
+    }
 }

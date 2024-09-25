@@ -65,10 +65,10 @@ public class RxRequestFactory {
         });
     }
 
-    public static Single<String> bilibiliDanmuToken(long roomId) {
+    public static Single<DanmakuInfo> bilibiliDanmuInfo(long roomId) {
         return Single.create(emitter -> {
             BilibiliResponse<DanmakuInfo> response = BilibiliLiveApi.client().getDanmuInfo(roomId);
-            handleResponse(response, emitter, DanmakuInfo::getToken, "BilibiliDanmuToken", true, null);
+            handleResponse(response, emitter, Function.identity(), "bilibiliDanmuInfo", true, null);
         });
     }
 

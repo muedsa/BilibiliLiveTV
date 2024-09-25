@@ -8,10 +8,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 import com.muedsa.bilibililivetv.R;
-import com.muedsa.bilibililivetv.room.TypeConvertor;
 
 import java.io.Serializable;
 import java.util.regex.Pattern;
@@ -52,17 +50,19 @@ public class LiveRoom extends BaseModel implements Serializable {
     @ColumnInfo(name = "background_image_url")
     private String backgroundImageUrl;
 
-    @ColumnInfo(name = "play_url_arr")
-    @TypeConverters(TypeConvertor.class)
+    @Ignore
     private String[] playUrlArr;
 
-    @ColumnInfo(name = "live_status")
+    @Ignore
     private int liveStatus;
 
-    @ColumnInfo(name = "online_num")
+    @Ignore
     private int onlineNum;
 
-    @ColumnInfo(name = "danmu_ws_token")
+    @Ignore
+    private String danmuWssUrl;
+
+    @Ignore
     private String danmuWsToken;
 
     public LiveRoom() {
@@ -170,6 +170,14 @@ public class LiveRoom extends BaseModel implements Serializable {
             liveStatusDesc = resources.getString(R.string.room_living);
         }
         return liveStatusDesc;
+    }
+
+    public String getDanmuWssUrl() {
+        return danmuWssUrl;
+    }
+
+    public void setDanmuWssUrl(String danmuWssUrl) {
+        this.danmuWssUrl = danmuWssUrl;
     }
 
     public String getDanmuWsToken() {

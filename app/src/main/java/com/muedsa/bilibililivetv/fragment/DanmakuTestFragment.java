@@ -122,7 +122,7 @@ public class DanmakuTestFragment extends Fragment {
     private void initChatBroadcast() {
         chatBroadcastWsClient = new ChatBroadcastWsClient(8864977, "null");
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
-            @Override
+
             public void onStart() {
                 FragmentActivity activity = requireActivity();
                 ToastUtil.debug(activity, activity.getString(R.string.toast_msg_danmu_connect_success));

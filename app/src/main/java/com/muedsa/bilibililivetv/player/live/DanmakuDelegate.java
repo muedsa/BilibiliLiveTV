@@ -13,6 +13,7 @@ import com.muedsa.bilibililivetv.R;
 import com.muedsa.bilibililivetv.fragment.LiveStreamPlaybackFragment;
 import com.muedsa.bilibililivetv.player.DefaultDanmakuContext;
 import com.muedsa.bilibililivetv.room.model.LiveRoom;
+import com.muedsa.bilibililivetv.util.CrashlyticsUtil;
 import com.muedsa.bilibililivetv.util.ToastUtil;
 
 import master.flame.danmaku.controller.DrawHandler;
@@ -82,12 +83,12 @@ public class DanmakuDelegate {
     }
 
     private void initChatBroadcast() {
-        chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId(), liveRoom.getDanmuWsToken());
+        chatBroadcastWsClient = new ChatBroadcastWsClient(liveRoom.getId(), liveRoom.getDanmuWsToken(), liveRoom.getDanmuWssUrl());
         chatBroadcastWsClient.setCallBack(new ChatBroadcastWsClient.CallBack() {
             @Override
             public void onStart() {
                 FragmentActivity activity = fragment.requireActivity();
-                String message = activity.getString(R.string.toast_msg_danmu_connect_success);
+                String message = activity.getString(R.string.toast_msg_danmu_connect_success) + " " + liveRoom.getDanmuWssUrl();
                 Log.d(TAG, message);
                 ToastUtil.showShortToast(activity, message);
             }
@@ -95,6 +96,7 @@ public class DanmakuDelegate {
             @Override
             public void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent, String msg) {
                 addDanmaku(text, textSize, textColor, textShadowTransparent);
+                Log.d(TAG, "onReceiveDanmu: " + text);
             }
 
             @Override
@@ -123,15 +125,17 @@ public class DanmakuDelegate {
             }
 
             @Override
-            public void onReceiveOtherMessage(String message) {
-            }
-
-            @Override
             public void onClose(int code, String reason, boolean remote) {
                 FragmentActivity activity = fragment.requireActivity();
                 String message = String.format(activity.getString(R.string.toast_msg_danmu_connect_error), reason);
                 Log.d(TAG, message);
                 ToastUtil.debug(fragment.requireActivity(), message);
+            }
+
+            @Override
+            protected void onError(Throwable throwable) {
+                Log.e(TAG, "ChatBroadcastError", throwable);
+                CrashlyticsUtil.log(throwable);
             }
         });
         startChatBroadcastWsClient();

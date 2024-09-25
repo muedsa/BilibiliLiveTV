@@ -7,6 +7,7 @@ import com.muedsa.bilibililiveapiclient.model.BilibiliResponse;
 import com.muedsa.bilibililiveapiclient.model.chat.ChatBroadcast;
 import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.util.ChatBroadcastPacketUtil;
+import com.muedsa.httpjsonclient.HttpClientContainer;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
@@ -15,6 +16,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -30,12 +32,19 @@ public class ChatBroadcastWsClient {
 
     private Timer heartTimer;
 
+
     private CallBack callBack;
 
     public ChatBroadcastWsClient(long roomId, String token) {
+        this(roomId, token, ApiUrlContainer.WS_CHAT);
+    }
+
+    public ChatBroadcastWsClient(long roomId, String token, String url) {
         this.roomId = roomId;
         this.token = token;
-        webSocketClient = new WebSocketClient(URI.create(ApiUrlContainer.WS_CHAT), new Draft_6455()) {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put(HttpClientContainer.HEADER_KEY_USER_AGENT, HttpClientContainer.HEADER_VALUE_USER_AGENT);
+        webSocketClient = new WebSocketClient(URI.create(url), new Draft_6455(), headers) {
             @Override
             public void onOpen(ServerHandshake handshakeData) {
                 if (callBack != null) callBack.onStart();
@@ -54,7 +63,7 @@ public class ChatBroadcastWsClient {
                                     JSONArray infoJsonArray = jsonObject.getJSONArray("info");
                                     JSONArray propertyJsonArray = infoJsonArray.getJSONArray(0);
                                     float textSize = propertyJsonArray.getFloatValue(2);
-                                    int textColor = (int) (0x00000000ff000000 | propertyJsonArray.getLongValue(3));
+                                    int textColor = (int) (0x00000000ff000000L | propertyJsonArray.getLongValue(3));
                                     boolean textShadowTransparent = "true".equalsIgnoreCase(propertyJsonArray.getString(11));
                                     String text = infoJsonArray.getString(1);
                                     callBack.onReceiveDanmu(text, textSize, textColor, textShadowTransparent, msg);
@@ -76,7 +85,7 @@ public class ChatBroadcastWsClient {
                                     callBack.onReceiveOtherMessage(msg);
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                callBack.onError(e);
                             }
                         }
                     }
@@ -98,7 +107,9 @@ public class ChatBroadcastWsClient {
 
             @Override
             public void onError(Exception ex) {
-                //ex.printStackTrace();
+                if (callBack != null) {
+                    callBack.onError(ex);
+                }
             }
         };
     }
@@ -145,26 +156,13 @@ public class ChatBroadcastWsClient {
         this.callBack = callBack;
     }
 
-    public interface CallBack {
-        void onStart();
-
-        void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent, String origin);
-
-        void onReceiveSuperChatMessage(String message, String messageFontColor, String uname, String origin);
-
-        void onReceiveSendGift(String action, String giftName, Integer num, String uname, String origin);
-
-        void onReceiveOtherMessage(String message);
-
-        void onClose(int code, String reason, boolean remote);
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        long roomId = 1440094;
+        long roomId = 22603245;
         BilibiliLiveApiClient httpClient = new BilibiliLiveApiClient();
         BilibiliResponse<DanmakuInfo> response = httpClient.getDanmuInfo(roomId);
-        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, response.getData().getToken());
-        client.start();
+        String url = "wss://" + response.getData().getHostList().get(0).getHost() + ":" + response.getData().getHostList().get(0).getWssPort() + "/sub";
+//        System.out.println("connect to: " + url);
+        ChatBroadcastWsClient client = new ChatBroadcastWsClient(roomId, response.getData().getToken(), url);
         client.setCallBack(new CallBack() {
 
             @Override
@@ -179,25 +177,44 @@ public class ChatBroadcastWsClient {
 
             @Override
             public void onReceiveSuperChatMessage(String message, String messageFontColor, String uname, String origin) {
-                String m = String.format(Locale.CHINA, "[SC]%s:%s, textColor:%s", uname, message, messageFontColor);
-                System.out.println(m);
+//                String m = String.format(Locale.CHINA, "[SC]%s:%s, textColor:%s", uname, message, messageFontColor);
+//                System.out.println(m);
             }
 
             @Override
             public void onReceiveSendGift(String action, String giftName, Integer num, String uname, String origin) {
 //                String m = String.format(Locale.CHINA, "[礼物]%s%s%sX%d", uname, action, giftName, num);
-                System.out.println(origin);
+//                System.out.println(origin);
             }
 
             @Override
             public void onReceiveOtherMessage(String message) {
-                System.out.println(message);
-            }
-
-            @Override
-            public void onClose(int code, String reason, boolean remote) {
-
+//                System.out.println(message);
             }
         });
+        client.start();
+    }
+
+    public abstract static class CallBack {
+        protected void onStart() {
+        }
+
+        protected void onReceiveDanmu(String text, float textSize, int textColor, boolean textShadowTransparent, String origin) {
+        }
+
+        protected void onReceiveSuperChatMessage(String message, String messageFontColor, String uname, String origin) {
+        }
+
+        protected void onReceiveSendGift(String action, String giftName, Integer num, String uname, String origin) {
+        }
+
+        protected void onReceiveOtherMessage(String message) {
+        }
+
+        protected void onClose(int code, String reason, boolean remote) {
+        }
+
+        protected void onError(Throwable throwable) {
+        }
     }
 }

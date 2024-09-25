@@ -3,6 +3,7 @@ package com.muedsa.bilibililivetv.model.bilibili;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.muedsa.bilibililiveapiclient.model.live.DanmakuInfo;
 import com.muedsa.bilibililiveapiclient.model.live.LargeInfo;
 import com.muedsa.bilibililiveapiclient.model.live.PlayUrlData;
 import com.muedsa.bilibililivetv.model.RMessage;
@@ -25,7 +26,7 @@ public class LiveRoomInfoViewModel extends ViewModel {
 
     public void fetchAllInfo(long roomId) {
         Single.zip(RxRequestFactory.bilibiliDanmuRoomInfo(roomId),
-                        RxRequestFactory.bilibiliDanmuToken(roomId),
+                        RxRequestFactory.bilibiliDanmuInfo(roomId),
                         RxRequestFactory.bilibiliPlayUrlMessage(roomId),
                         LiveRoomAllInfo::new)
                 .subscribeOn(Schedulers.io())
@@ -44,12 +45,12 @@ public class LiveRoomInfoViewModel extends ViewModel {
 
     public static class LiveRoomAllInfo {
         private LargeInfo largeInfo;
-        private String token;
+        private DanmakuInfo danmakuInfo;
         private PlayUrlData playUrlData;
 
-        public LiveRoomAllInfo(LargeInfo largeInfo, String token, PlayUrlData playUrlData) {
+        public LiveRoomAllInfo(LargeInfo largeInfo, DanmakuInfo danmakuInfo, PlayUrlData playUrlData) {
             this.largeInfo = largeInfo;
-            this.token = token;
+            this.danmakuInfo = danmakuInfo;
             this.playUrlData = playUrlData;
         }
 
@@ -61,12 +62,12 @@ public class LiveRoomInfoViewModel extends ViewModel {
             this.largeInfo = largeInfo;
         }
 
-        public String getToken() {
-            return token;
+        public DanmakuInfo getDanmakuInfo() {
+            return danmakuInfo;
         }
 
-        public void setToken(String token) {
-            this.token = token;
+        public void setDanmakuInfo(DanmakuInfo danmakuInfo) {
+            this.danmakuInfo = danmakuInfo;
         }
 
         public PlayUrlData getPlayUrlData() {
