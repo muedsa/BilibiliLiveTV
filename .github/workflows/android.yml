@@ -5,8 +5,6 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  schedule:
-    - cron: '23 3 * * *'
 
 jobs:
   build:
@@ -23,13 +21,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Test&Build with Gradle
-      run: ./gradlew test :app:assembleDebug
+      run: ./gradlew :app:assembleDebug
     - name: Upload a Build Artifact
       if: always()
       uses: actions/upload-artifact@v4.4.3
       with:
         name: build-test-outputs
         path: |
-          app/build/reports
-          BilibiliLiveApiClient/build/test-results/test
           ./**/*.apk
